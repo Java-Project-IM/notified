@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="1080.0" prefWidth="1920.0" style="-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #CAE5DE 0%, #EFF0F2 50%, #C8DAE6 100%);" stylesheets="@LandingPage.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="notif1ed.LandingPageController">
+
+    <children>
+        <ImageView fitHeight="442.0" fitWidth="846.0" layoutX="123.0" layoutY="144.0">
+            <image>
+                <Image url="@srcIMGs/Notifyed_Logo.png" />
+            </image>
+        </ImageView>
+
+        <ImageView fitHeight="1092.0" fitWidth="980.0" layoutX="974.0" layoutY="-14.0">
+            <image>
+                <Image url="@srcIMGs/Silhoutte%20log.png" />
+            </image>
+        </ImageView>
+
+        <Pane layoutX="73.0" layoutY="461.0" prefHeight="246.0" prefWidth="1009.0">
+            <children>
+                <Text layoutX="16.0" layoutY="51.0" text="Notifyed is a smart school attendance system that keeps parents informed" wrappingWidth="978.9">
+                    <font><Font name="Poppins Regular" size="25.0" /></font>
+                </Text>
+                <Text layoutX="16.0" layoutY="81.0" text="and students accounted for. It automatically tracks arrivals and departures." wrappingWidth="978.9">
+                    <font><Font name="Poppins Regular" size="25.0" /></font>
+                </Text>
+                <Text layoutX="16.0" layoutY="113.0" text="Sending instant email alerts to guardians for better school-home communication. With real-time logging and a user-friendly design, it ensures efficient attendance management." wrappingWidth="970.3666748046875">
+                    <font><Font name="Poppins Regular" size="25.0" /></font>
+                </Text>
+            </children>
+        </Pane>
+
+        <Button fx:id="startButton" layoutX="227.0" layoutY="717.0" onAction="#handleStartClick" prefHeight="60.0" prefWidth="650.0" style="-fx-border-color: white; -fx-background-color: #011E37; -fx-border-width: 3;" styleClass="start-button" text="START" textFill="WHITE">
+            <font><Font name="Poppins Bold" size="30.0" /></font>
+        </Button>
+    </children>
+</AnchorPane>

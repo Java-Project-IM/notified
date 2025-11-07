@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane id="AnchorPane" prefHeight="1074.0" prefWidth="1618.0" style="-fx-background-color: linear-gradient(to bottom, #343a40, #6c757d);;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <ImageView fitHeight="1077.0" fitWidth="1676.0" layoutX="2.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../../../../../Wallpaper/3d-rendering-abstract-black-white-geometric-background.jpg" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="320.0" fitWidth="282.0" layoutX="688.0" layoutY="120.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../../../../../NetbeansSystems/Images(Notifyed)/Logo%20Dark.png" />
+         </image>
+         <effect>
+            <DropShadow />
+         </effect>
+      </ImageView>
+      <Text fill="#00ffe8" layoutX="585.0" layoutY="512.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Notif1ed" textAlignment="CENTER" wrappingWidth="460.5364990234375">
+         <font>
+            <Font name="Poppins Bold" size="88.0" />
+         </font>
+         <effect>
+            <DropShadow />
+         </effect>
+      </Text>
+      <Text fill="WHITE" layoutX="105.0" layoutY="610.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Notif1ed is a smart school attendance system that keeps parents informed and students accounted for. It automatically tracks arrivals and departures, sending instant email alerts to guardians for better school-home communication. With real-time logging and a user-friendly design, it ensures secure and efficient attendance management" textAlignment="CENTER" wrappingWidth="1430.1363983154297">
+         <font>
+            <Font name="Poppins Regular" size="25.0" />
+         </font>
+      </Text>
+      <Button layoutX="677.0" layoutY="872.0" mnemonicParsing="false" prefHeight="80.0" prefWidth="294.0" style="-fx-background-color: #00FFE8; -fx-border-color: white; -fx-border-width: 5; -fx-background-radius: 10; -fx-border-radius: 10;" text="START" textAlignment="CENTER">
+         <font>
+            <Font name="Poppins Bold" size="29.0" />
+         </font>
+         <effect>
+            <DropShadow />
+         </effect>
+      </Button>
+   </children>
+</AnchorPane>
