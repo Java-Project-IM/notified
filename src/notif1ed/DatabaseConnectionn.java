@@ -8,8 +8,8 @@ public class DatabaseConnectionn {
 
     // ✅ Update DB name here
     private static final String URL = "jdbc:mysql://localhost:3306/notified_DB";
-    private static final String USER = "root"; // your MySQL username
-    private static final String PASSWORD = ""; // leave blank if no password
+    private static final String USER = "root";
+    private static final String PASSWORD = "";
 
     public static Connection connect() {
         Connection connection = null;

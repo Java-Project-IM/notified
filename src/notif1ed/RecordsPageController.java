@@ -4,6 +4,7 @@
  */
 package notif1ed;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,12 +15,19 @@ import java.time.LocalTime;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 
 /**
  * FXML Controller class
@@ -44,6 +52,14 @@ public class RecordsPageController implements Initializable {
     private TableColumn<RecordEntry, LocalTime> timeCol;
     @FXML
     private TableColumn<RecordEntry, String> typeCol;
+    @FXML
+    private Button homeButton;
+    @FXML
+    private Button subjectsButton;
+    @FXML
+    private Button studentsButton;
+    @FXML
+    private Button recordsButton;
     
     private ObservableList<RecordEntry> recordsList = FXCollections.observableArrayList();
 
@@ -79,29 +95,67 @@ public class RecordsPageController implements Initializable {
         loadRecords();
     }
     
+    @FXML
+    private void handleHomeClick(ActionEvent event) {
+        navigateToPage(event, "Homepage.fxml");
+    }
+    
+    @FXML
+    private void handleSubjectsClick(ActionEvent event) {
+        navigateToPage(event, "SubjectPage.fxml");
+    }
+    
+    @FXML
+    private void handleStudentsClick(ActionEvent event) {
+        navigateToPage(event, "Student Page.fxml");
+    }
+    
+    @FXML
+    private void handleRecordsClick(ActionEvent event) {
+        // Already on records page, just refresh
+        refreshTable();
+    }
+    
+    private void navigateToPage(ActionEvent event, String fxmlFile) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource(fxmlFile));
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load page: " + fxmlFile);
+            e.printStackTrace();
+        }
+    }
+    
     private void loadRecords() {
         recordsList.clear();
         
         try (Connection conn = DatabaseConnectionn.connect()) {
             if (conn != null) {
                 // Join records with students to get student details
-                String sql = "SELECT r.id, s.student_number, s.first_name, s.last_name, s.email, " +
-                           "r.record_date, r.record_time, r.record_type " +
+                String sql = "SELECT r.record_id, s.student_number, s.first_name, s.last_name, s.email, " +
+                           "r.created_at, r.record_type " +
                            "FROM records r " +
-                           "JOIN students s ON r.student_id = s.id " +
-                           "ORDER BY r.record_date DESC, r.record_time DESC";
+                           "JOIN students s ON r.student_id = s.student_id " +
+                           "ORDER BY r.created_at DESC";
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 ResultSet rs = stmt.executeQuery();
                 
                 while (rs.next()) {
+                    java.sql.Timestamp timestamp = rs.getTimestamp("created_at");
+                    LocalDate date = timestamp.toLocalDateTime().toLocalDate();
+                    LocalTime time = timestamp.toLocalDateTime().toLocalTime();
+                    
                     RecordEntry record = new RecordEntry(
-                        rs.getInt("id"),
+                        rs.getInt("record_id"),
                         rs.getString("student_number"),
                         rs.getString("last_name"),
                         rs.getString("first_name"),
                         rs.getString("email"),
-                        rs.getDate("record_date").toLocalDate(),
-                        rs.getTime("record_time").toLocalTime(),
+                        date,
+                        time,
                         rs.getString("record_type")
                     );
                     recordsList.add(record);

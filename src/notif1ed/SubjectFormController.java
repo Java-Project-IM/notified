@@ -84,7 +84,10 @@ public class SubjectFormController implements Initializable {
             
             if (rowsAffected > 0) {
                 showAlert(Alert.AlertType.INFORMATION, "Success", "Subject added successfully!");
-                clearFields();
+                
+                // Close the form window after success
+                Stage stage = (Stage) nameField.getScene().getWindow();
+                stage.close();
             } else {
                 showAlert(Alert.AlertType.ERROR, "Error", "Failed to add subject.");
             }

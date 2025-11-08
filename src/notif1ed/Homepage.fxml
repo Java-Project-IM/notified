@@ -26,22 +26,22 @@
                   <Image url="@../../../../Notifyed/Notifyed_Logo.png" />
                </image>
             </ImageView>
-            <Button graphicTextGap="10.0" layoutX="531.0" layoutY="32.0" lineSpacing="100.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="197.0" style="-fx-background-color: transparent;" text="HOME" textFill="#2f92dc">
+            <Button fx:id="homeButton" graphicTextGap="10.0" layoutX="531.0" layoutY="32.0" lineSpacing="100.0" mnemonicParsing="false" onAction="#handleHomeClick" prefHeight="43.0" prefWidth="197.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="HOME" textFill="#1976D2">
                <font>
                   <Font name="Poppins Bold" size="20.0" />
                </font>
             </Button>
-            <Button graphicTextGap="10.0" layoutX="760.0" layoutY="32.0" lineSpacing="100.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="197.0" style="-fx-background-color: transparent;" text="SUBJECTS">
+            <Button fx:id="subjectsButton" graphicTextGap="10.0" layoutX="760.0" layoutY="32.0" lineSpacing="100.0" mnemonicParsing="false" onAction="#handleSubjectsClick" prefHeight="43.0" prefWidth="197.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="SUBJECTS" textFill="#616161">
                <font>
                   <Font name="Poppins Bold" size="20.0" />
                </font>
             </Button>
-            <Button graphicTextGap="10.0" layoutX="991.0" layoutY="32.0" lineSpacing="100.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="197.0" style="-fx-background-color: transparent;" text="STUDENTS">
+            <Button fx:id="studentsButton" graphicTextGap="10.0" layoutX="991.0" layoutY="32.0" lineSpacing="100.0" mnemonicParsing="false" onAction="#handleStudentsClick" prefHeight="43.0" prefWidth="197.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="STUDENTS" textFill="#616161">
                <font>
                   <Font name="Poppins Bold" size="20.0" />
                </font>
             </Button>
-            <Button graphicTextGap="10.0" layoutX="1220.0" layoutY="32.0" lineSpacing="100.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="197.0" style="-fx-background-color: transparent;" text="RECORDS">
+            <Button fx:id="recordsButton" graphicTextGap="10.0" layoutX="1220.0" layoutY="32.0" lineSpacing="100.0" mnemonicParsing="false" onAction="#handleRecordsClick" prefHeight="43.0" prefWidth="197.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="RECORDS" textFill="#616161">
                <font>
                   <Font name="Poppins Bold" size="20.0" />
                </font>

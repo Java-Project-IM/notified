@@ -75,13 +75,13 @@ public class StudentFormController implements Initializable {
         // Save to database
         try (Connection conn = DatabaseConnectionn.connect()) {
             if (conn != null) {
-                String sql = "INSERT INTO students (student_number, first_name, last_name, email, phone, created_by) VALUES (?, ?, ?, ?, ?, 1)";
+                String sql = "INSERT INTO students (student_number, first_name, section, guardian_name, email, created_by) VALUES (?, ?, ?, ?, ?, 1)";
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 stmt.setString(1, studentNumber);
                 stmt.setString(2, firstName);
-                stmt.setString(3, guardianName); // Using guardian name as last name
-                stmt.setString(4, guardianEmail);
-                stmt.setString(5, section); // Using section as phone for now
+                stmt.setString(3, section);
+                stmt.setString(4, guardianName);
+                stmt.setString(5, guardianEmail);
                 
                 int rowsInserted = stmt.executeUpdate();
                 
@@ -90,7 +90,10 @@ public class StudentFormController implements Initializable {
                             "Student added successfully!\n" +
                             "Student Number: " + studentNumber + "\n" +
                             "Name: " + firstName);
-                    clearFields();
+                    
+                    // Close the form window after success
+                    Stage stage = (Stage) studentID.getScene().getWindow();
+                    stage.close();
                 }
             } else {
                 showAlert(Alert.AlertType.ERROR, "Database Error", "Could not connect to database!");

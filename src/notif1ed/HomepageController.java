@@ -4,16 +4,24 @@
  */
 package notif1ed;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.stage.Stage;
 
 /**
  * FXML Controller class
@@ -30,6 +38,14 @@ public class HomepageController implements Initializable {
     private Label totalRecordsLabel;
     @FXML
     private Label todayRecordsLabel;
+    @FXML
+    private Button homeButton;
+    @FXML
+    private Button subjectsButton;
+    @FXML
+    private Button studentsButton;
+    @FXML
+    private Button recordsButton;
 
     /**
      * Initializes the controller class.
@@ -38,6 +54,40 @@ public class HomepageController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // Load dashboard statistics
         loadDashboardStats();
+    }
+    
+    @FXML
+    private void handleHomeClick(ActionEvent event) {
+        // Already on home page, just refresh stats
+        refreshStats();
+    }
+    
+    @FXML
+    private void handleSubjectsClick(ActionEvent event) {
+        navigateToPage(event, "SubjectPage.fxml");
+    }
+    
+    @FXML
+    private void handleStudentsClick(ActionEvent event) {
+        navigateToPage(event, "Student Page.fxml");
+    }
+    
+    @FXML
+    private void handleRecordsClick(ActionEvent event) {
+        navigateToPage(event, "RecordsPage.fxml");
+    }
+    
+    private void navigateToPage(ActionEvent event, String fxmlFile) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource(fxmlFile));
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load page: " + fxmlFile);
+            e.printStackTrace();
+        }
     }
     
     private void loadDashboardStats() {
@@ -68,7 +118,7 @@ public class HomepageController implements Initializable {
                 }
                 
                 // Get today's records
-                String todayQuery = "SELECT COUNT(*) as count FROM records WHERE record_date = CURDATE()";
+                String todayQuery = "SELECT COUNT(*) as count FROM records WHERE DATE(created_at) = CURDATE()";
                 stmt = conn.prepareStatement(todayQuery);
                 rs = stmt.executeQuery();
                 if (rs.next() && todayRecordsLabel != null) {
