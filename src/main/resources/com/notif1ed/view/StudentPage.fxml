@@ -17,9 +17,9 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane id="AnchorPane" prefHeight="1080.0" prefWidth="1920.0" style="-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #CAE5DE 0%, #EFF0F2 50%, #C8DAE6 100%);" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="notif1ed.StudentPageController">
+<AnchorPane id="AnchorPane" prefHeight="1080.0" prefWidth="1920.0" style="-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #CAE5DE 0%, #EFF0F2 50%, #C8DAE6 100%);" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.notif1ed.controller.StudentPageController">
     <stylesheets>
-        <URL value="@student page.css" />
+        <URL value="@studentpage.css" />
         <URL value="@table-styles.css" />
     </stylesheets>
    <children>
@@ -27,7 +27,7 @@
          <children>
             <ImageView fitHeight="125.0" fitWidth="222.0" layoutX="39.0" layoutY="-3.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../../../../../../Users/Vincent%20Martin/Downloads/Notifyed/Notifyed_Logo.png" />
+                  <Image url="@../../../../../../../Users/Vincent%20Martin/Downloads/Notifyed/logo.png" />
                </image>
             </ImageView>
             <Button fx:id="homeButton" graphicTextGap="10.0" layoutX="531.0" layoutY="32.0" lineSpacing="100.0" mnemonicParsing="false" onAction="#handleHomeClick" prefHeight="43.0" prefWidth="197.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="HOME" textFill="#616161">

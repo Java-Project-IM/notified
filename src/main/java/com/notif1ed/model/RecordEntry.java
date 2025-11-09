@@ -1,4 +1,6 @@
-package notif1ed;
+package com.notif1ed.model;
+
+import com.notif1ed.model.RecordEntry;
 
 import javafx.beans.property.*;
 import java.time.LocalDate;

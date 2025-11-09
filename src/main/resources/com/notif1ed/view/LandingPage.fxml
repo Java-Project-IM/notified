@@ -8,12 +8,12 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="1080.0" prefWidth="1920.0" style="-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #CAE5DE 0%, #EFF0F2 50%, #C8DAE6 100%);" stylesheets="@LandingPage.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="notif1ed.LandingPageController">
+<AnchorPane prefHeight="1080.0" prefWidth="1920.0" style="-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #CAE5DE 0%, #EFF0F2 50%, #C8DAE6 100%);" stylesheets="@/com/notif1ed/css/LandingPage.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.notif1ed.controller.LandingPageController">
 
     <children>
         <ImageView fitHeight="442.0" fitWidth="846.0" layoutX="123.0" layoutY="144.0">
             <image>
-                <Image url="@srcIMGs/Notifyed_Logo.png" />
+                <Image url="@srcIMGs/logo.png" />
             </image>
         </ImageView>
 

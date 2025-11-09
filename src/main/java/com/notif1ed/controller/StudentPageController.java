@@ -2,7 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/javafx/FXMLController.java to edit this template
  */
-package notif1ed;
+package com.notif1ed.controller;
+
+import com.notif1ed.model.StudentEntry;
+import com.notif1ed.util.DatabaseConnectionn;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -163,7 +166,7 @@ public class StudentPageController implements Initializable {
     
     private void openEmailPrompt(String email) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("EmailPrompt.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/com/notif1ed/view//com/notif1ed/view/EmailPrompt.fxml"));
             Stage stage = new Stage();
             stage.setTitle("Send Email - " + email);
             stage.setScene(new Scene(root));
@@ -176,7 +179,7 @@ public class StudentPageController implements Initializable {
     
     private void openEmailPromptForAll() {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("EmailPrompt.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/com/notif1ed/view//com/notif1ed/view/EmailPrompt.fxml"));
             Stage stage = new Stage();
             stage.setTitle("Send Email to All Students");
             stage.setScene(new Scene(root));

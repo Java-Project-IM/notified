@@ -13,7 +13,7 @@
 <?import javafx.scene.text.Text?>
 
 
-<AnchorPane id="AnchorPane" prefHeight="1080.0" prefWidth="1920.0" style="-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #CAE5DE 0%, #EFF0F2 50%, #C8DAE6 100%);" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="notif1ed.SubjectFormController">
+<AnchorPane id="AnchorPane" prefHeight="1080.0" prefWidth="1920.0" style="-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #CAE5DE 0%, #EFF0F2 50%, #C8DAE6 100%);" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="com.notif1ed.controller.SubjectFormController">
    <children>
       <Pane layoutX="540.0" layoutY="78.0" prefHeight="944.0" prefWidth="874.0" style="-fx-background-color: white; -fx-background-radius: 15;">
          <effect>
@@ -22,7 +22,7 @@
          <children>
             <ImageView fitHeight="285.0" fitWidth="505.0" layoutX="184.0" layoutY="-5.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@srcIMGs/Notifyed_Logo.png" />
+                  <Image url="@srcIMGs/logo.png" />
                </image>
             </ImageView>
             <Text layoutX="314.0" layoutY="276.0" text="Add Subject">

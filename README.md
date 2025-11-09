@@ -2,6 +2,34 @@
 
 A JavaFX-based student notification and management system built with Java 21 and Maven.
 
+## 🚀 Features
+
+- **Student Management**: Add, edit, and track student information
+- **Subject Tracking**: Manage subjects and course assignments
+- **Records Management**: View and manage academic records
+- **Email Notifications**: Send automated email notifications
+- **Database Integration**: MySQL backend for data persistence
+- **Modern UI**: Clean JavaFX interface with custom styling
+
+## 📁 Project Structure
+
+This project follows standard Maven conventions. See [STRUCTURE.md](STRUCTURE.md) for detailed documentation.
+
+```
+src/
+├── main/
+│   ├── java/com/notif1ed/
+│   │   ├── Notif1ed.java          # Main application
+│   │   ├── controller/            # UI controllers (MVC)
+│   │   ├── model/                 # Data models
+│   │   └── util/                  # Utilities (DB connection)
+│   └── resources/com/notif1ed/
+│       ├── view/                  # FXML files
+│       ├── css/                   # Stylesheets
+│       └── images/                # Application images
+└── test/java/com/notif1ed/        # Unit tests
+```
+
 ## Quick start (standardized Linux workflow)
 
 This section describes a tested, repeatable way to run the app on Linux (adapt the paths for macOS/Windows).
@@ -43,10 +71,10 @@ GRANT ALL PRIVILEGES ON notified_DB.* TO 'notifuser'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-- Update `src/notif1ed/DatabaseConnectionn.java` to match your DB credentials:
+- Update `src/main/java/com/notif1ed/util/DatabaseConnectionn.java` to match your DB credentials:
 
 ```java
-private static final String URL = "jdbc:mysql://localhost:3306/notified_db";
+private static final String URL = "jdbc:mysql://localhost:3306/notified_DB";
 private static final String USER = "notifuser";
 private static final String PASSWORD = "your_password";
 ```
@@ -77,13 +105,13 @@ java --module-path /path/to/javafx-sdk-21/lib --add-modules=javafx.controls,java
 
 - Import the project as a Maven project in IntelliJ or NetBeans.
 - Set the project's SDK to JDK 21.
-- Run `notif1ed.Notif1ed` as a Java application. If the IDE complains about JavaFX runtime, either use the Maven run configuration or add JavaFX as a library/module.
+- Run `com.notif1ed.Notif1ed` as a Java application. If the IDE complains about JavaFX runtime, either use the Maven run configuration or add JavaFX as a library/module.
 
 Troubleshooting
 
 - If `./mvnw` fails with a Java version error, ensure `java -version` reports a Java 21 runtime.
 - If you see `MySQL JDBC Driver not found`, Maven should download `mysql-connector-j` from `pom.xml`; make sure `./mvnw clean package` completes without errors.
-- If FXML resources are not found, verify they exist in `src/notif1ed/` and that code loads them with `getResource("LandingPage.fxml")` (relative to `notif1ed` package).
+- If FXML resources are not found, verify they exist in `src/main/resources/com/notif1ed/view/` and that code loads them with `getResource("/com/notif1ed/view/LandingPage.fxml")` (absolute path from classpath root).
 
 Helpful commands
 
@@ -107,13 +135,26 @@ java --module-path /path/to/javafx-sdk-21/lib --add-modules=javafx.controls,java
 
 Files to edit for local setup
 
-- `src/notif1ed/DatabaseConnectionn.java` — set your JDBC URL, username, and password.
-- Optionally: any controller that contains email settings (search for SMTP or mail properties in `src/notif1ed`).
+- `src/main/java/com/notif1ed/util/DatabaseConnectionn.java` — set your JDBC URL, username, and password.
+- Optionally: any controller that contains email settings (search for SMTP or mail properties in `src/main/java/com/notif1ed/controller`).
 
 Notes
 
 - `pom.xml` targets Java 21 and pulls JavaFX 21.0.5 via Maven dependencies and the `javafx-maven-plugin`.
 - For a portable runtime image consider adding a `jlink` or an assembly profile — I can add a `jlink` profile if you want a single native image for Linux.
+
+## 📚 Documentation
+
+- **[STRUCTURE.md](STRUCTURE.md)**: Detailed project structure and organization
+- **[database/README.md](database/README.md)**: Database schema and setup instructions
+
+## 🛠️ Technology Stack
+
+- **Java 21** - Latest LTS version
+- **JavaFX 21.0.5** - UI framework
+- **Maven** - Build and dependency management
+- **MySQL Connector/J 9.2.0** - Database connectivity
+- **JavaMail 1.6.2** - Email functionality
 
 If you'd like, I can also:
 

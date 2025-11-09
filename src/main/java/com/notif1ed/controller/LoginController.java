@@ -1,4 +1,6 @@
-package notif1ed;
+package com.notif1ed.controller;
+
+import com.notif1ed.util.DatabaseConnectionn;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -76,7 +78,7 @@ public class LoginController {
     
     private void navigateToHomepage(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("Homepage.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/notif1ed/view/Homepage.fxml"));
             Scene scene = new Scene(loader.load());
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(scene);
@@ -90,7 +92,7 @@ public class LoginController {
     @FXML
     private void handleSignUpRedirect(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("SignUp.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/notif1ed/view/SignUp.fxml"));
             Scene scene = new Scene(loader.load());
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(scene);

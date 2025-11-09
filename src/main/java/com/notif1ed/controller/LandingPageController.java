@@ -1,4 +1,4 @@
-package notif1ed;
+package com.notif1ed.controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,7 +13,7 @@ public class LandingPageController {
     @FXML
     private void handleStartClick(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("SignUp.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/notif1ed/view/SignUp.fxml"));
             Scene scene = new Scene(loader.load());
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(scene);

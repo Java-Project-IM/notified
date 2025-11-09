@@ -2,7 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/javafx/FXMLController.java to edit this template
  */
-package notif1ed;
+package com.notif1ed.controller;
+
+import com.notif1ed.model.SubjectEntry;
+import com.notif1ed.util.DatabaseConnectionn;
 
 import java.io.IOException;
 import java.net.URL;
@@ -93,7 +96,7 @@ public class SubjectPageController implements Initializable {
     
     @FXML
     private void handleStudentsClick(ActionEvent event) {
-        navigateToPage(event, "Student Page.fxml");
+        navigateToPage(event, "StudentPage.fxml");
     }
     
     @FXML

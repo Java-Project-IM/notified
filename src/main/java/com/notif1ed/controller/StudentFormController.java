@@ -2,7 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/javafx/FXMLController.java to edit this template
  */
-package notif1ed;
+package com.notif1ed.controller;
+
+import com.notif1ed.util.DatabaseConnectionn;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

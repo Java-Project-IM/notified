@@ -1,4 +1,6 @@
-package notif1ed;
+package com.notif1ed.util;
+
+import com.notif1ed.util.DatabaseConnectionn;
 
 import java.sql.Connection;
 

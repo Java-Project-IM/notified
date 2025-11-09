@@ -1,4 +1,4 @@
-package notif1ed;
+package com.notif1ed;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -10,7 +10,7 @@ public class Notif1ed extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("LandingPage.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/notif1ed/view//com/notif1ed/view/LandingPage.fxml"));
             Scene scene = new Scene(loader.load());
             primaryStage.setTitle("Notifyed");
             primaryStage.setScene(scene);

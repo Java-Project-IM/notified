@@ -1,4 +1,6 @@
-package notif1ed;
+package com.notif1ed.model;
+
+import com.notif1ed.model.SubjectEntry;
 
 import javafx.beans.property.*;
 
