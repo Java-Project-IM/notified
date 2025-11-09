@@ -12,7 +12,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="1080.0" prefWidth="1920.0" style="-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #CAE5DE 0%, #EFF0F2 50%, #C8DAE6 100%);" stylesheets="@/com/notif1ed/css/SignUp.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.notif1ed.controller.SignUpController">
+<AnchorPane prefHeight="1080.0" prefWidth="1920.0" style="-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #CAE5DE 0%, #EFF0F2 50%, #C8DAE6 100%);" stylesheets="@/com/notif1ed/css/signup.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.notif1ed.controller.SignUpController">
    <children>
       <Pane layoutX="530.0" layoutY="68.0" prefHeight="944.0" prefWidth="874.0" style="-fx-background-color: white; -fx-background-radius: 15;">
          <effect>
@@ -21,7 +21,7 @@
          <children>
             <ImageView fitHeight="285.0" fitWidth="505.0" layoutX="184.0" layoutY="-5.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@srcIMGs/logo.png" />
+                  <Image url="@/com/notif1ed/images/logo.png" />
                </image>
             </ImageView>
             <Text layoutX="264.0" layoutY="266.0" text="Create Account">

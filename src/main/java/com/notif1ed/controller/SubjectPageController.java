@@ -126,7 +126,7 @@ public class SubjectPageController implements Initializable {
     
     private void openFormWindow(String fxmlFile, String title) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource(fxmlFile));
+            Parent root = FXMLLoader.load(getClass().getResource("/com/notif1ed/view/" + fxmlFile));
             Stage stage = new Stage();
             stage.setTitle(title);
             stage.setScene(new Scene(root));
@@ -142,7 +142,7 @@ public class SubjectPageController implements Initializable {
     
     private void navigateToPage(ActionEvent event, String fxmlFile) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource(fxmlFile));
+            Parent root = FXMLLoader.load(getClass().getResource("/com/notif1ed/view/" + fxmlFile));
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
             stage.setScene(scene);

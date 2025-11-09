@@ -22,7 +22,7 @@
          <children>
             <ImageView fitHeight="285.0" fitWidth="505.0" layoutX="184.0" layoutY="-5.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@srcIMGs/logo.png" />
+                  <Image url="@/com/notif1ed/images/logo.png" />
                </image>
             </ImageView>
             <Text layoutX="314.0" layoutY="276.0" text="Add Subject">

@@ -166,7 +166,7 @@ public class StudentPageController implements Initializable {
     
     private void openEmailPrompt(String email) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/com/notif1ed/view//com/notif1ed/view/EmailPrompt.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/com/notif1ed/view/EmailPrompt.fxml"));
             Stage stage = new Stage();
             stage.setTitle("Send Email - " + email);
             stage.setScene(new Scene(root));
@@ -179,7 +179,7 @@ public class StudentPageController implements Initializable {
     
     private void openEmailPromptForAll() {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/com/notif1ed/view//com/notif1ed/view/EmailPrompt.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/com/notif1ed/view/EmailPrompt.fxml"));
             Stage stage = new Stage();
             stage.setTitle("Send Email to All Students");
             stage.setScene(new Scene(root));
@@ -192,7 +192,7 @@ public class StudentPageController implements Initializable {
     
     private void openFormWindow(String fxmlFile, String title) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource(fxmlFile));
+            Parent root = FXMLLoader.load(getClass().getResource("/com/notif1ed/view/" + fxmlFile));
             Stage stage = new Stage();
             stage.setTitle(title);
             stage.setScene(new Scene(root));
@@ -208,7 +208,7 @@ public class StudentPageController implements Initializable {
     
     private void navigateToPage(ActionEvent event, String fxmlFile) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource(fxmlFile));
+            Parent root = FXMLLoader.load(getClass().getResource("/com/notif1ed/view/" + fxmlFile));
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
             stage.setScene(scene);
