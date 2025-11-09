@@ -84,26 +84,27 @@
             <!-- TableView for displaying student data -->
             <TableView fx:id="studentTable" layoutX="45.0" layoutY="96.0" prefHeight="564.0" prefWidth="1736.0" style="-fx-background-color: white; -fx-background-radius: 0 0 10 10; -fx-border-color: transparent;">
                <columns>
-                  <TableColumn fx:id="studentNumberCol" prefWidth="280.0" text="STUDENT NUMBER" style="-fx-alignment: CENTER-LEFT; -fx-font-family: 'Poppins SemiBold'; -fx-font-size: 14px;">
+                  <TableColumn fx:id="studentNumberCol" prefWidth="200.0" text="STUDENT NUMBER" style="-fx-alignment: CENTER-LEFT; -fx-font-family: 'Poppins SemiBold'; -fx-font-size: 14px;">
                      <cellValueFactory>
                         <javafx.scene.control.cell.PropertyValueFactory property="studentNumber" />
                      </cellValueFactory>
                   </TableColumn>
-                  <TableColumn fx:id="firstNameCol" prefWidth="480.0" text="FIRST NAME" style="-fx-alignment: CENTER-LEFT; -fx-font-family: 'Poppins SemiBold'; -fx-font-size: 14px;">
+                  <TableColumn fx:id="firstNameCol" prefWidth="350.0" text="FIRST NAME" style="-fx-alignment: CENTER-LEFT; -fx-font-family: 'Poppins SemiBold'; -fx-font-size: 14px;">
                      <cellValueFactory>
                         <javafx.scene.control.cell.PropertyValueFactory property="firstName" />
                      </cellValueFactory>
                   </TableColumn>
-                  <TableColumn fx:id="lastNameCol" prefWidth="480.0" text="LAST NAME / GUARDIAN" style="-fx-alignment: CENTER-LEFT; -fx-font-family: 'Poppins SemiBold'; -fx-font-size: 14px;">
+                  <TableColumn fx:id="lastNameCol" prefWidth="350.0" text="LAST NAME / GUARDIAN" style="-fx-alignment: CENTER-LEFT; -fx-font-family: 'Poppins SemiBold'; -fx-font-size: 14px;">
                      <cellValueFactory>
                         <javafx.scene.control.cell.PropertyValueFactory property="lastName" />
                      </cellValueFactory>
                   </TableColumn>
-                  <TableColumn fx:id="emailCol" prefWidth="496.0" text="EMAIL" style="-fx-alignment: CENTER-LEFT; -fx-font-family: 'Poppins SemiBold'; -fx-font-size: 14px;">
+                  <TableColumn fx:id="emailCol" prefWidth="450.0" text="EMAIL" style="-fx-alignment: CENTER-LEFT; -fx-font-family: 'Poppins SemiBold'; -fx-font-size: 14px;">
                      <cellValueFactory>
                         <javafx.scene.control.cell.PropertyValueFactory property="email" />
                      </cellValueFactory>
                   </TableColumn>
+                  <TableColumn fx:id="actionsCol" prefWidth="386.0" text="ACTIONS" style="-fx-alignment: CENTER; -fx-font-family: 'Poppins SemiBold'; -fx-font-size: 14px;" />
                </columns>
             </TableView>
             
@@ -126,8 +127,8 @@
                   <Image url="@../../../../Notifyed/Delete.png" />
                </image>
             </ImageView>
-            <Button fx:id="btnDelete" layoutX="1163.0" layoutY="28.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent;" />
-            <Button fx:id="btnEdit" layoutX="1213.0" layoutY="28.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent;" />
+            <Button fx:id="btnDelete" onAction="#handleDeleteStudent" layoutX="1163.0" layoutY="28.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-cursor: hand;" />
+            <Button fx:id="btnEdit" onAction="#handleEditStudent" layoutX="1213.0" layoutY="28.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-cursor: hand;" />
          </children>
       </Pane>
       <Text layoutX="104.0" layoutY="321.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Student's Information" fill="#424242">

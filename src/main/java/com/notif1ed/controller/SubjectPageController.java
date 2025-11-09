@@ -114,13 +114,32 @@ public class SubjectPageController implements Initializable {
         // Get selected subject
         if (subjectTable.getSelectionModel().getSelectedItem() != null) {
             SubjectEntry selectedSubject = subjectTable.getSelectionModel().getSelectedItem();
-            showAlert(Alert.AlertType.INFORMATION, "Open Subject", 
-                "Opening subject: " + selectedSubject.getSubjectCode() + " - " + selectedSubject.getSubjectName());
-            // TODO: Open a detailed view or form for this subject
-            openFormWindow("SubjectForm.fxml", "Edit Subject - " + selectedSubject.getSubjectCode());
+            openSubjectDetailView(selectedSubject);
         } else {
             showAlert(Alert.AlertType.WARNING, "No Selection", 
                 "Please select a subject to open.");
+        }
+    }
+    
+    private void openSubjectDetailView(SubjectEntry subject) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/notif1ed/view/SubjectDetailView.fxml"));
+            Parent root = loader.load();
+            
+            // Get the controller and pass the subject data
+            SubjectDetailController controller = loader.getController();
+            controller.setSubject(subject);
+            
+            Stage stage = new Stage();
+            stage.setTitle(subject.getSubjectCode() + " - Class Management");
+            stage.setScene(new Scene(root));
+            stage.show();
+            
+            // Refresh table when detail window is closed
+            stage.setOnHidden(e -> refreshTable());
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Error", "Could not open subject detail view");
+            e.printStackTrace();
         }
     }
     

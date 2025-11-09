@@ -1,0 +1,185 @@
+package com.notif1ed.controller;
+
+import com.notif1ed.model.StudentEntry;
+import com.notif1ed.util.DatabaseConnectionn;
+
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.stage.Stage;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ResourceBundle;
+
+public class StudentEditFormController implements Initializable {
+
+    @FXML
+    private TextField studentID;
+    
+    @FXML
+    private TextField FnameField;
+    
+    @FXML
+    private TextField LnameField;
+    
+    @FXML
+    private TextField sectionTXT;
+    
+    @FXML
+    private TextField studentEmailField;
+    
+    @FXML
+    private TextField GNameField;
+    
+    @FXML
+    private TextField GEmailField;
+    
+    @FXML
+    private Button updateBTN;
+    
+    @FXML
+    private Button CancelButton;
+    
+    private StudentEntry currentStudent;
+
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        // Student ID is not editable
+        studentID.setEditable(false);
+        studentID.setStyle("-fx-opacity: 1.0; -fx-background-color: #F5F5F5;");
+    }
+    
+    public void setStudent(StudentEntry student) {
+        this.currentStudent = student;
+        loadStudentData();
+    }
+    
+    private void loadStudentData() {
+        if (currentStudent != null) {
+            studentID.setText(currentStudent.getStudentNumber());
+            FnameField.setText(currentStudent.getFirstName());
+            LnameField.setText(currentStudent.getLastName());
+            studentEmailField.setText(currentStudent.getEmail());
+            
+            // Load additional data from database
+            loadFullStudentData();
+        }
+    }
+    
+    private void loadFullStudentData() {
+        String sql = "SELECT section, guardian_name, guardian_email FROM students WHERE student_number = ?";
+        
+        try (Connection conn = DatabaseConnectionn.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, currentStudent.getStudentNumber());
+            var rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                String section = rs.getString("section");
+                String guardianName = rs.getString("guardian_name");
+                String guardianEmail = rs.getString("guardian_email");
+                
+                if (section != null) sectionTXT.setText(section);
+                if (guardianName != null) GNameField.setText(guardianName);
+                if (guardianEmail != null) GEmailField.setText(guardianEmail);
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("Error loading student data: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
+    @FXML
+    private void handleUpdateClick(ActionEvent event) {
+        updateStudent();
+    }
+    
+    @FXML
+    private void handleCancelClick(ActionEvent event) {
+        closeForm();
+    }
+    
+    private void updateStudent() {
+        String firstName = FnameField.getText().trim();
+        String lastName = LnameField.getText().trim();
+        String section = sectionTXT.getText().trim();
+        String studentEmail = studentEmailField.getText().trim();
+        String guardianName = GNameField.getText().trim();
+        String guardianEmail = GEmailField.getText().trim();
+        
+        // Validate inputs
+        if (firstName.isEmpty() || lastName.isEmpty() || studentEmail.isEmpty() || guardianEmail.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Validation Error", 
+                    "Please fill in First Name, Last Name, Student Email, and Guardian's Email!");
+            return;
+        }
+        
+        // Validate email formats
+        if (!studentEmail.contains("@") || !studentEmail.contains(".")) {
+            showAlert(Alert.AlertType.WARNING, "Validation Error", 
+                    "Please enter a valid student email address!");
+            return;
+        }
+        
+        if (!guardianEmail.contains("@") || !guardianEmail.contains(".")) {
+            showAlert(Alert.AlertType.WARNING, "Validation Error", 
+                    "Please enter a valid guardian email address!");
+            return;
+        }
+        
+        // Update in database
+        String sql = "UPDATE students SET first_name = ?, last_name = ?, email = ?, section = ?, guardian_name = ?, guardian_email = ?, " +
+                    "updated_at = CURRENT_TIMESTAMP WHERE student_number = ?";
+        
+        try (Connection conn = DatabaseConnectionn.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, firstName);
+            stmt.setString(2, lastName);
+            stmt.setString(3, studentEmail);
+            stmt.setString(4, section);
+            stmt.setString(5, guardianName);
+            stmt.setString(6, guardianEmail);
+            stmt.setString(7, currentStudent.getStudentNumber());
+            
+            int rowsUpdated = stmt.executeUpdate();
+            
+            if (rowsUpdated > 0) {
+                showAlert(Alert.AlertType.INFORMATION, "Success", 
+                        "Student updated successfully!\n" +
+                        "Student Number: " + currentStudent.getStudentNumber() + "\n" +
+                        "Name: " + firstName + " " + lastName);
+                
+                // Close the form window after success
+                Stage stage = (Stage) studentID.getScene().getWindow();
+                stage.close();
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Error", "Could not update student!");
+            }
+            
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Database Error", "Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
+    private void closeForm() {
+        Stage stage = (Stage) CancelButton.getScene().getWindow();
+        stage.close();
+    }
+    
+    private void showAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+}

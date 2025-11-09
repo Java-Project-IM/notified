@@ -18,9 +18,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.geometry.Pos;
 import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
@@ -51,6 +54,9 @@ public class StudentPageController implements Initializable {
     private TableColumn<StudentEntry, String> emailCol;
     
     @FXML
+    private TableColumn<StudentEntry, Void> actionsCol;
+    
+    @FXML
     private Button homeButton;
     @FXML
     private Button subjectsButton;
@@ -77,6 +83,52 @@ public class StudentPageController implements Initializable {
         }
         if (emailCol != null) {
             emailCol.setCellValueFactory(new PropertyValueFactory<>("email"));
+        }
+        
+        // Setup actions column with Edit and Delete buttons
+        if (actionsCol != null) {
+            actionsCol.setCellFactory(param -> new TableCell<StudentEntry, Void>() {
+                private final Button editBtn = new Button("Edit");
+                private final Button deleteBtn = new Button("Delete");
+                private final HBox buttons = new HBox(10, editBtn, deleteBtn);
+                
+                {
+                    // Style Edit button
+                    editBtn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; " +
+                                   "-fx-font-family: 'Poppins SemiBold'; -fx-font-size: 12px; " +
+                                   "-fx-padding: 8 20; -fx-background-radius: 5; -fx-cursor: hand;");
+                    
+                    // Style Delete button
+                    deleteBtn.setStyle("-fx-background-color: #F44336; -fx-text-fill: white; " +
+                                     "-fx-font-family: 'Poppins SemiBold'; -fx-font-size: 12px; " +
+                                     "-fx-padding: 8 20; -fx-background-radius: 5; -fx-cursor: hand;");
+                    
+                    // Center buttons
+                    buttons.setAlignment(Pos.CENTER);
+                    
+                    // Edit button action
+                    editBtn.setOnAction(event -> {
+                        StudentEntry student = getTableView().getItems().get(getIndex());
+                        openEditStudentForm(student);
+                    });
+                    
+                    // Delete button action
+                    deleteBtn.setOnAction(event -> {
+                        StudentEntry student = getTableView().getItems().get(getIndex());
+                        confirmAndDeleteStudent(student);
+                    });
+                }
+                
+                @Override
+                protected void updateItem(Void item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        setGraphic(null);
+                    } else {
+                        setGraphic(buttons);
+                    }
+                }
+            });
         }
         
         // Load students from database
@@ -215,6 +267,98 @@ public class StudentPageController implements Initializable {
             stage.show();
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load page: " + fxmlFile);
+            e.printStackTrace();
+        }
+    }
+    
+    @FXML
+    private void handleEditStudent(ActionEvent event) {
+        StudentEntry selectedStudent = studentTable.getSelectionModel().getSelectedItem();
+        
+        if (selectedStudent == null) {
+            showAlert(Alert.AlertType.WARNING, "No Selection", 
+                     "Please select a student to edit.");
+            return;
+        }
+        
+        openEditStudentForm(selectedStudent);
+    }
+    
+    @FXML
+    private void handleDeleteStudent(ActionEvent event) {
+        StudentEntry selectedStudent = studentTable.getSelectionModel().getSelectedItem();
+        
+        if (selectedStudent == null) {
+            showAlert(Alert.AlertType.WARNING, "No Selection", 
+                     "Please select a student to delete.");
+            return;
+        }
+        
+        confirmAndDeleteStudent(selectedStudent);
+    }
+    
+    private void confirmAndDeleteStudent(StudentEntry student) {
+        // Confirm deletion
+        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmAlert.setTitle("Confirm Deletion");
+        confirmAlert.setHeaderText("Delete Student");
+        confirmAlert.setContentText("Are you sure you want to delete student:\n" +
+                                   student.getStudentNumber() + " - " +
+                                   student.getFirstName() + " " + 
+                                   student.getLastName() + "?\n\n" +
+                                   "This will also remove all their enrollments and records.");
+        
+        confirmAlert.showAndWait().ifPresent(response -> {
+            if (response == javafx.scene.control.ButtonType.OK) {
+                deleteStudent(student);
+            }
+        });
+    }
+    
+    private void openEditStudentForm(StudentEntry student) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/notif1ed/view/StudentEditForm.fxml"));
+            Parent root = loader.load();
+            
+            // Get the controller and pass the student data
+            StudentEditFormController controller = loader.getController();
+            controller.setStudent(student);
+            
+            Stage stage = new Stage();
+            stage.setTitle("Edit Student - " + student.getStudentNumber());
+            stage.setScene(new Scene(root));
+            stage.show();
+            
+            // Refresh table when edit window is closed
+            stage.setOnHidden(e -> refreshTable());
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Error", "Could not open edit form");
+            e.printStackTrace();
+        }
+    }
+    
+    private void deleteStudent(StudentEntry student) {
+        String sql = "DELETE FROM students WHERE student_number = ?";
+        
+        try (Connection conn = DatabaseConnectionn.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, student.getStudentNumber());
+            
+            int rowsAffected = stmt.executeUpdate();
+            
+            if (rowsAffected > 0) {
+                showAlert(Alert.AlertType.INFORMATION, "Success", 
+                         "Student " + student.getStudentNumber() + " has been deleted successfully.");
+                refreshTable();
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Error", 
+                         "Could not delete student. Student may not exist.");
+            }
+            
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Database Error", 
+                     "Error deleting student: " + e.getMessage());
             e.printStackTrace();
         }
     }

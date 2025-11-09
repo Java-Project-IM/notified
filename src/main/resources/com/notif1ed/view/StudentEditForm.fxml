@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="600.0" style="-fx-background-color: linear-gradient(to bottom, #1976D2, #1565C0); -fx-background-radius: 15;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.notif1ed.controller.StudentEditFormController">
+   <children>
+      <VBox alignment="TOP_CENTER" layoutX="50.0" layoutY="30.0" prefHeight="590.0" prefWidth="500.0" spacing="15.0">
+         <children>
+            <Label alignment="CENTER" prefHeight="40.0" prefWidth="500.0" text="Edit Student" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="28.0" />
+               </font>
+            </Label>
+            
+            <VBox spacing="5.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 20;">
+               <children>
+                  <!-- Student Number (Read-only) -->
+                  <Label text="Student Number: (Cannot be changed)" textFill="#1976D2">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="studentID" editable="false" promptText="25-XXXX" style="-fx-background-color: #F5F5F5; -fx-opacity: 1.0;">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </TextField>
+                  
+                  <!-- First Name -->
+                  <Label text="First Name:" textFill="#1976D2">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
+                  </Label>
+                  <TextField fx:id="FnameField" promptText="Enter student's first name">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </TextField>
+                  
+                  <!-- Last Name -->
+                  <Label text="Last Name:" textFill="#1976D2">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
+                  </Label>
+                  <TextField fx:id="LnameField" promptText="Enter student's last name">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </TextField>
+                  
+                  <!-- Section -->
+                  <Label text="Section:" textFill="#1976D2">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
+                  </Label>
+                  <TextField fx:id="sectionTXT" promptText="Enter section (optional)">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </TextField>
+                  
+                  <!-- Student Email -->
+                  <Label text="Student Email:" textFill="#1976D2">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
+                  </Label>
+                  <TextField fx:id="studentEmailField" promptText="Enter student's email">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </TextField>
+                  
+                  <!-- Guardian's Name -->
+                  <Label text="Guardian's Name:" textFill="#1976D2">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
+                  </Label>
+                  <TextField fx:id="GNameField" promptText="Enter guardian's name (optional)">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </TextField>
+                  
+                  <!-- Guardian's Email -->
+                  <Label text="Guardian's Email:" textFill="#1976D2">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
+                  </Label>
+                  <TextField fx:id="GEmailField" promptText="Enter guardian's email">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </TextField>
+               </children>
+            </VBox>
+            
+            <!-- Buttons -->
+            <HBox alignment="CENTER" spacing="20.0">
+               <VBox.margin>
+                  <Insets top="15.0" />
+               </VBox.margin>
+               <children>
+                  <Button fx:id="updateBTN" mnemonicParsing="false" onAction="#handleUpdateClick" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;" text="UPDATE">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="CancelButton" mnemonicParsing="false" onAction="#handleCancelClick" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #F44336; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;" text="CANCEL">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
