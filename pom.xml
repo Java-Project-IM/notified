@@ -74,20 +74,6 @@
     </dependencies>
 
     <build>
-        <sourceDirectory>src</sourceDirectory>
-        <resources>
-            <resource>
-                <directory>src</directory>
-                <includes>
-                    <include>**/*.fxml</include>
-                    <include>**/*.css</include>
-                    <include>**/*.png</include>
-                    <include>**/*.jpg</include>
-                    <include>**/*.jpeg</include>
-                    <include>**/*.gif</include>
-                </includes>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -103,7 +89,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>notif1ed.Notif1ed</mainClass>
+                    <mainClass>com.notif1ed.Notif1ed</mainClass>
                 </configuration>
             </plugin>
             <plugin>
@@ -113,7 +99,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>notif1ed.Notif1ed</mainClass>
+                            <mainClass>com.notif1ed.Notif1ed</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
