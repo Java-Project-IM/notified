@@ -33,6 +33,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
+import java.util.Map;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ResourceBundle;
 
 /**
  * FXML Controller class for Student Page
@@ -197,7 +202,119 @@ public class StudentPageController implements Initializable {
     
     @FXML
     private void handleAddStudentClick(ActionEvent event) {
-        openFormWindow("StudentForm.fxml", "Add New Student");
+        Stage stage = (Stage) studentTable.getScene().getWindow();
+        
+        // Generate student number first
+        String newStudentNumber = generateStudentNumber();
+        
+        // Create form fields
+        CustomModal.FormField[] fields = {
+            new CustomModal.FormField("studentNumber", "Student Number", "text", newStudentNumber, false, ""),
+            new CustomModal.FormField("firstName", "First Name", "text", true),
+            new CustomModal.FormField("lastName", "Last Name", "text", true),
+            new CustomModal.FormField("section", "Section", "text", "", false, "Optional"),
+            new CustomModal.FormField("studentEmail", "Student Email", "email", true),
+            new CustomModal.FormField("guardianName", "Guardian Name", "text", true),
+            new CustomModal.FormField("guardianEmail", "Guardian Email", "email", true)
+        };
+        
+        // Show form modal
+        Map<String, String> result = CustomModal.showForm(stage, "Add New Student", "👤", fields);
+        
+        if (result != null) {
+            // Validate and add student
+            String studentNumber = result.get("studentNumber").trim();
+            String firstName = result.get("firstName").trim();
+            String lastName = result.get("lastName").trim();
+            String section = result.get("section").trim();
+            String studentEmail = result.get("studentEmail").trim();
+            String guardianName = result.get("guardianName").trim();
+            String guardianEmail = result.get("guardianEmail").trim();
+            
+            // Validate email formats
+            if (!studentEmail.contains("@") || !studentEmail.contains(".")) {
+                ToastNotification.show(stage, ToastNotification.ToastType.WARNING, 
+                    "Please enter a valid student email address");
+                return;
+            }
+            
+            if (!guardianEmail.contains("@") || !guardianEmail.contains(".")) {
+                ToastNotification.show(stage, ToastNotification.ToastType.WARNING, 
+                    "Please enter a valid guardian email address");
+                return;
+            }
+            
+            // Save to database
+            try (Connection conn = DatabaseConnectionn.connect()) {
+                if (conn != null) {
+                    String sql = "INSERT INTO students (student_number, first_name, last_name, email, section, guardian_name, guardian_email, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, 1)";
+                    PreparedStatement stmt = conn.prepareStatement(sql);
+                    stmt.setString(1, studentNumber);
+                    stmt.setString(2, firstName);
+                    stmt.setString(3, lastName);
+                    stmt.setString(4, studentEmail);
+                    stmt.setString(5, section);
+                    stmt.setString(6, guardianName);
+                    stmt.setString(7, guardianEmail);
+                    
+                    int rowsInserted = stmt.executeUpdate();
+                    
+                    if (rowsInserted > 0) {
+                        ToastNotification.show(stage, ToastNotification.ToastType.SUCCESS, 
+                            "Student added successfully: " + firstName + " " + lastName);
+                        refreshTable();
+                    } else {
+                        ToastNotification.show(stage, ToastNotification.ToastType.ERROR, 
+                            "Failed to add student");
+                    }
+                } else {
+                    ToastNotification.show(stage, ToastNotification.ToastType.ERROR, 
+                        "Could not connect to database");
+                }
+            } catch (SQLException e) {
+                if (e.getMessage().contains("Duplicate entry")) {
+                    ToastNotification.show(stage, ToastNotification.ToastType.ERROR, 
+                        "This student number already exists!");
+                } else {
+                    ToastNotification.show(stage, ToastNotification.ToastType.ERROR, 
+                        "Database error: " + e.getMessage());
+                }
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    private String generateStudentNumber() {
+        String newStudentNumber = "25-0001"; // Default
+        
+        try (Connection conn = DatabaseConnectionn.connect()) {
+            if (conn != null) {
+                // Get the highest student number starting with "25-"
+                String sql = "SELECT student_number FROM students " +
+                           "WHERE student_number LIKE '25-%' " +
+                           "ORDER BY student_number DESC LIMIT 1";
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery();
+                
+                if (rs.next()) {
+                    String lastNumber = rs.getString("student_number");
+                    // Extract the numeric part after "25-"
+                    String numericPart = lastNumber.substring(3);
+                    int nextNumber = Integer.parseInt(numericPart) + 1;
+                    // Format with leading zeros (4 digits)
+                    newStudentNumber = String.format("25-%04d", nextNumber);
+                } else {
+                    // No existing students, start with 25-0001
+                    newStudentNumber = "25-0001";
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error generating student number: " + e.getMessage());
+            e.printStackTrace();
+            // Keep default value
+        }
+        
+        return newStudentNumber;
     }
     
     @FXML
@@ -244,23 +361,6 @@ public class StudentPageController implements Initializable {
             emailStage.show();
         } catch (IOException e) {
             ToastNotification.showError(stage, "Could not open email prompt");
-            e.printStackTrace();
-        }
-    }
-    
-    private void openFormWindow(String fxmlFile, String title) {
-        Stage stage = (Stage) studentTable.getScene().getWindow();
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("/com/notif1ed/view/" + fxmlFile));
-            Stage formStage = new Stage();
-            formStage.setTitle(title);
-            formStage.setScene(new Scene(root));
-            formStage.show();
-            
-            // Refresh table when form window is closed
-            formStage.setOnHidden(e -> refreshTable());
-        } catch (IOException e) {
-            ToastNotification.showError(stage, "Could not open form: " + fxmlFile);
             e.printStackTrace();
         }
     }

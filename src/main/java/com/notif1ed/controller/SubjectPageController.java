@@ -7,6 +7,7 @@ package com.notif1ed.controller;
 import com.notif1ed.model.SubjectEntry;
 import com.notif1ed.util.DatabaseConnectionn;
 import com.notif1ed.util.ToastNotification;
+import com.notif1ed.util.CustomModal;
 
 import java.io.IOException;
 import java.net.URL;
@@ -15,6 +16,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
+import java.util.Map;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -106,7 +108,59 @@ public class SubjectPageController implements Initializable {
     
     @FXML
     private void handleAddSubjectClick(ActionEvent event) {
-        openFormWindow("SubjectForm.fxml", "Add New Subject");
+        Stage stage = (Stage) subjectTable.getScene().getWindow();
+        
+        // Create form fields
+        CustomModal.FormField[] fields = {
+            new CustomModal.FormField("subjectCode", "Subject Code", "text", true),
+            new CustomModal.FormField("section", "Section", "text", true),
+            new CustomModal.FormField("subjectName", "Subject Name", "text", true),
+            new CustomModal.FormField("yearLevel", "Year Level", "number", true)
+        };
+        
+        // Show form modal
+        Map<String, String> result = CustomModal.showForm(stage, "Add New Subject", "➕", fields);
+        
+        if (result != null) {
+            // Validate and add subject
+            String subjectCode = result.get("subjectCode").trim();
+            String section = result.get("section").trim();
+            String subjectName = result.get("subjectName").trim();
+            String yearLevel = result.get("yearLevel").trim();
+            
+            try (Connection conn = DatabaseConnectionn.connect()) {
+                String sql = "INSERT INTO subjects (subject_code, subject_name, year_level, section) VALUES (?, ?, ?, ?)";
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                pstmt.setString(1, subjectCode);
+                pstmt.setString(2, subjectName);
+                pstmt.setInt(3, Integer.parseInt(yearLevel));
+                pstmt.setString(4, section);
+                
+                int rowsAffected = pstmt.executeUpdate();
+                
+                if (rowsAffected > 0) {
+                    ToastNotification.show(stage, ToastNotification.ToastType.SUCCESS, 
+                        "Subject added successfully: " + subjectCode);
+                    refreshTable();
+                } else {
+                    ToastNotification.show(stage, ToastNotification.ToastType.ERROR, 
+                        "Failed to add subject");
+                }
+                
+            } catch (NumberFormatException e) {
+                ToastNotification.show(stage, ToastNotification.ToastType.WARNING, 
+                    "Year Level must be a valid number");
+            } catch (SQLException e) {
+                if (e.getMessage().contains("Duplicate entry")) {
+                    ToastNotification.show(stage, ToastNotification.ToastType.ERROR, 
+                        "Subject code already exists!");
+                } else {
+                    ToastNotification.show(stage, ToastNotification.ToastType.ERROR, 
+                        "Database error: " + e.getMessage());
+                }
+                e.printStackTrace();
+            }
+        }
     }
     
     @FXML
@@ -140,23 +194,6 @@ public class SubjectPageController implements Initializable {
         } catch (IOException e) {
             Stage stage = (Stage) subjectTable.getScene().getWindow();
             ToastNotification.show(stage, ToastNotification.ToastType.ERROR, "Could not open subject detail view");
-            e.printStackTrace();
-        }
-    }
-    
-    private void openFormWindow(String fxmlFile, String title) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("/com/notif1ed/view/" + fxmlFile));
-            Stage stage = new Stage();
-            stage.setTitle(title);
-            stage.setScene(new Scene(root));
-            stage.show();
-            
-            // Refresh table when form window is closed
-            stage.setOnHidden(e -> refreshTable());
-        } catch (IOException e) {
-            Stage ownerStage = (Stage) homeButton.getScene().getWindow();
-            ToastNotification.show(ownerStage, ToastNotification.ToastType.ERROR, "Could not open form");
             e.printStackTrace();
         }
     }
