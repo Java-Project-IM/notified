@@ -1,13 +1,13 @@
 package com.notif1ed.controller;
 
 import com.notif1ed.util.DatabaseConnectionn;
+import com.notif1ed.util.ToastNotification;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -33,9 +33,12 @@ public class SignUpController {
         String email = emailField.getText().trim();
         String password = passwordField.getText();
 
+        // Get current stage for toast notifications
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
         // Validate inputs
         if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Validation Error", "Please fill in all fields!");
+            ToastNotification.showWarning(stage, "Please fill in all fields!");
             return;
         }
 
@@ -51,31 +54,24 @@ public class SignUpController {
                 int rowsInserted = stmt.executeUpdate();
                 
                 if (rowsInserted > 0) {
-                    showAlert(Alert.AlertType.INFORMATION, "Success", 
-                            "Account created successfully!\nName: " + name + "\nEmail: " + email);
+                    ToastNotification.showSuccess(stage, "Account created successfully for " + name + "!");
                     
-                    // Go to login page
-                    navigateToLogin(event);
+                    // Go to login page after short delay
+                    javafx.animation.PauseTransition delay = new javafx.animation.PauseTransition(javafx.util.Duration.seconds(1.5));
+                    delay.setOnFinished(e -> navigateToLogin(event));
+                    delay.play();
                 }
             } else {
-                showAlert(Alert.AlertType.ERROR, "Database Error", "Could not connect to database!");
+                ToastNotification.showError(stage, "Could not connect to database!");
             }
         } catch (SQLException e) {
             if (e.getMessage().contains("Duplicate entry")) {
-                showAlert(Alert.AlertType.ERROR, "Sign Up Failed", "This email is already registered!");
+                ToastNotification.showError(stage, "This email is already registered!");
             } else {
-                showAlert(Alert.AlertType.ERROR, "Database Error", "Error: " + e.getMessage());
+                ToastNotification.showError(stage, "Database error: " + e.getMessage());
             }
             e.printStackTrace();
         }
-    }
-    
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
     
     private void navigateToLogin(ActionEvent event) {

@@ -6,6 +6,7 @@ package com.notif1ed.controller;
 
 import com.notif1ed.model.RecordEntry;
 import com.notif1ed.util.DatabaseConnectionn;
+import com.notif1ed.util.ToastNotification;
 
 import java.io.IOException;
 import java.net.URL;
@@ -25,7 +26,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -42,17 +42,15 @@ public class RecordsPageController implements Initializable {
     @FXML
     private TableView<RecordEntry> recordsTable;
     @FXML
-    private TableColumn<RecordEntry, String> idCol;
-    @FXML
-    private TableColumn<RecordEntry, String> surnameCol;
+    private TableColumn<RecordEntry, String> studentNumberCol;
     @FXML
     private TableColumn<RecordEntry, String> firstNameCol;
     @FXML
-    private TableColumn<RecordEntry, String> guardianEmailCol;
+    private TableColumn<RecordEntry, String> lastNameCol;
     @FXML
-    private TableColumn<RecordEntry, LocalDate> dateCol;
+    private TableColumn<RecordEntry, String> emailCol;
     @FXML
-    private TableColumn<RecordEntry, LocalTime> timeCol;
+    private TableColumn<RecordEntry, String> dateCol;
     @FXML
     private TableColumn<RecordEntry, String> typeCol;
     @FXML
@@ -63,6 +61,12 @@ public class RecordsPageController implements Initializable {
     private Button studentsButton;
     @FXML
     private Button recordsButton;
+    @FXML
+    private Button logoutButton;
+    @FXML
+    private javafx.scene.control.TextField searchField;
+    @FXML
+    private javafx.scene.control.DatePicker datePicker;
     
     private ObservableList<RecordEntry> recordsList = FXCollections.observableArrayList();
 
@@ -71,27 +75,24 @@ public class RecordsPageController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Set up table columns if they exist
-        if (idCol != null) {
-            idCol.setCellValueFactory(new PropertyValueFactory<>("studentNumber"));
-        }
-        if (surnameCol != null) {
-            surnameCol.setCellValueFactory(new PropertyValueFactory<>("surname"));
+        // Set up table columns to match RecordEntry alias properties
+        if (studentNumberCol != null) {
+            studentNumberCol.setCellValueFactory(new PropertyValueFactory<>("studentNumber"));
         }
         if (firstNameCol != null) {
             firstNameCol.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         }
-        if (guardianEmailCol != null) {
-            guardianEmailCol.setCellValueFactory(new PropertyValueFactory<>("guardianEmail"));
+        if (lastNameCol != null) {
+            lastNameCol.setCellValueFactory(new PropertyValueFactory<>("lastName"));
+        }
+        if (emailCol != null) {
+            emailCol.setCellValueFactory(new PropertyValueFactory<>("email"));
         }
         if (dateCol != null) {
-            dateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
-        }
-        if (timeCol != null) {
-            timeCol.setCellValueFactory(new PropertyValueFactory<>("time"));
+            dateCol.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
         }
         if (typeCol != null) {
-            typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
+            typeCol.setCellValueFactory(new PropertyValueFactory<>("recordType"));
         }
         
         // Load records from database
@@ -119,6 +120,34 @@ public class RecordsPageController implements Initializable {
         refreshTable();
     }
     
+    @FXML
+    private void handleLogoutClick(ActionEvent event) {
+        Stage stage = (Stage) logoutButton.getScene().getWindow();
+        boolean confirmed = com.notif1ed.util.CustomModal.showConfirmation(
+            stage,
+            "Logout Confirmation",
+            "Are you sure you want to logout?",
+            "Logout",
+            "Cancel"
+        );
+        
+        if (confirmed) {
+            try {
+                Parent root = FXMLLoader.load(getClass().getResource("/com/notif1ed/view/LandingPage.fxml"));
+                Scene scene = new Scene(root);
+                stage.setScene(scene);
+                stage.setTitle("Notif1ed - Welcome");
+                stage.show();
+                
+                // Show logout toast
+                ToastNotification.showSuccess(stage, "Logged out successfully");
+            } catch (IOException e) {
+                ToastNotification.showError(stage, "Error during logout");
+                e.printStackTrace();
+            }
+        }
+    }
+    
     private void navigateToPage(ActionEvent event, String fxmlFile) {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/com/notif1ed/view/" + fxmlFile));
@@ -127,7 +156,8 @@ public class RecordsPageController implements Initializable {
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load page: " + fxmlFile);
+            Stage stage = (Stage) homeButton.getScene().getWindow();
+            ToastNotification.show(stage, ToastNotification.ToastType.ERROR, "Could not load page: " + fxmlFile);
             e.printStackTrace();
         }
     }
@@ -171,20 +201,13 @@ public class RecordsPageController implements Initializable {
                 System.out.println("✅ Loaded " + recordsList.size() + " records from database");
             }
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error", "Error loading records: " + e.getMessage());
+            Stage stage = (Stage) homeButton.getScene().getWindow();
+            ToastNotification.show(stage, ToastNotification.ToastType.ERROR, "Error loading records from database");
             e.printStackTrace();
         }
     }
     
     public void refreshTable() {
         loadRecords();
-    }
-    
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }

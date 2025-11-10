@@ -4,107 +4,133 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
 <AnchorPane id="AnchorPane" prefHeight="1080.0" prefWidth="1920.0" style="-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #CAE5DE 0%, #EFF0F2 50%, #C8DAE6 100%);" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.notif1ed.controller.SubjectPageController">
     <stylesheets>
-        <URL value="@subjectpage.css" />
-        <URL value="@table-styles.css" />
+        <URL value="@../css/table-styles.css" />
     </stylesheets>
    <children>
-      <Pane layoutX="1.0" layoutY="1.0" prefHeight="105.0" prefWidth="1920.0" style="-fx-background-color: white;">
+      <!-- Standardized Navbar -->
+      <Pane layoutX="0.0" layoutY="0.0" prefHeight="90.0" prefWidth="1920.0" style="-fx-background-color: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0, 0, 2);">
          <children>
-            <ImageView fitHeight="125.0" fitWidth="222.0" layoutX="39.0" layoutY="-3.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="105.0" fitWidth="185.0" layoutX="39.0" layoutY="-8.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../../../../../../Users/Vincent%20Martin/Downloads/Notifyed/logo.png" />
+                  <Image url="@../../../../Notifyed/logo.png" />
                </image>
             </ImageView>
-            <Button fx:id="homeButton" graphicTextGap="10.0" layoutX="531.0" layoutY="32.0" lineSpacing="100.0" mnemonicParsing="false" onAction="#handleHomeClick" prefHeight="43.0" prefWidth="197.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="HOME" textFill="#616161">
+            <Button fx:id="homeButton" graphicTextGap="10.0" layoutX="531.0" layoutY="24.0" lineSpacing="100.0" mnemonicParsing="false" onAction="#handleHomeClick" prefHeight="43.0" prefWidth="197.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="HOME" textFill="#616161">
                <font>
                   <Font name="Poppins Bold" size="20.0" />
                </font>
             </Button>
-            <Button fx:id="subjectsButton" graphicTextGap="10.0" layoutX="760.0" layoutY="32.0" lineSpacing="100.0" mnemonicParsing="false" onAction="#handleSubjectsClick" prefHeight="43.0" prefWidth="197.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="SUBJECTS" textFill="#8E24AA">
+            <Button fx:id="subjectsButton" graphicTextGap="10.0" layoutX="760.0" layoutY="24.0" lineSpacing="100.0" mnemonicParsing="false" onAction="#handleSubjectsClick" prefHeight="43.0" prefWidth="197.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="SUBJECTS" textFill="#8E24AA">
                <font>
                   <Font name="Poppins Bold" size="20.0" />
                </font>
             </Button>
-            <Button fx:id="studentsButton" graphicTextGap="10.0" layoutX="991.0" layoutY="32.0" lineSpacing="100.0" mnemonicParsing="false" onAction="#handleStudentsClick" prefHeight="43.0" prefWidth="197.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="STUDENTS" textFill="#616161">
+            <Button fx:id="studentsButton" graphicTextGap="10.0" layoutX="991.0" layoutY="24.0" lineSpacing="100.0" mnemonicParsing="false" onAction="#handleStudentsClick" prefHeight="43.0" prefWidth="197.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="STUDENTS" textFill="#616161">
                <font>
                   <Font name="Poppins Bold" size="20.0" />
                </font>
             </Button>
-            <Button fx:id="recordsButton" graphicTextGap="10.0" layoutX="1220.0" layoutY="32.0" lineSpacing="100.0" mnemonicParsing="false" onAction="#handleRecordsClick" prefHeight="43.0" prefWidth="197.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="RECORDS" textFill="#616161">
+            <Button fx:id="recordsButton" graphicTextGap="10.0" layoutX="1220.0" layoutY="24.0" lineSpacing="100.0" mnemonicParsing="false" onAction="#handleRecordsClick" prefHeight="43.0" prefWidth="197.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="RECORDS" textFill="#616161">
                <font>
                   <Font name="Poppins Bold" size="20.0" />
+               </font>
+            </Button>
+            <Button fx:id="logoutButton" graphicTextGap="10.0" layoutX="1685.0" layoutY="24.0" lineSpacing="100.0" mnemonicParsing="false" onAction="#handleLogoutClick" prefHeight="43.0" prefWidth="180.0" style="-fx-background-color: linear-gradient(to bottom, #f44336, #d32f2f); -fx-background-radius: 22; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(244,67,54,0.3), 8, 0, 0, 3);" text="LOGOUT" textFill="WHITE">
+               <font>
+                  <Font name="Poppins Bold" size="18.0" />
                </font>
             </Button>
          </children>
       </Pane>
-      <Text layoutX="34.0" layoutY="211.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Subjects" fill="#8E24AA">
+      
+      <!-- Page Header with Professional Design -->
+      <Text layoutX="50.0" layoutY="165.0" strokeType="OUTSIDE" strokeWidth="0.0" text="SUBJECTS" fill="#8E24AA">
          <font>
-            <Font name="Poppins Bold" size="70.0" />
+            <Font name="Poppins Bold" size="48.0" />
          </font>
       </Text>
-      <Pane layoutX="72.0" layoutY="255.0" prefHeight="678.0" prefWidth="1793.0" style="-fx-background-color: white; -fx-background-radius: 15;">
-         <effect>
-            <DropShadow />
-         </effect>
+      <Text layoutX="50.0" layoutY="192.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Manage courses and student enrollments" fill="#616161" opacity="0.75">
+         <font>
+            <Font name="Poppins Regular" size="16.0" />
+         </font>
+      </Text>
+      
+      <!-- Main Content Card -->
+      <Pane layoutX="50.0" layoutY="220.0" prefHeight="800.0" prefWidth="1820.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 5);">
          <children>
-            <!-- TableView for displaying subject data -->
-            <TableView fx:id="subjectTable" layoutX="45.0" layoutY="96.0" prefHeight="564.0" prefWidth="1702.0" styleClass="subject-table" style="-fx-background-color: white; -fx-background-radius: 0 0 10 10;">
+            <Text layoutX="30.0" layoutY="55.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Subject Information" fill="#424242">
+               <font>
+                  <Font name="Poppins Bold" size="32.0" />
+               </font>
+            </Text>
+            
+            <!-- Search Bar -->
+            <Pane layoutX="30.0" layoutY="70.0" prefHeight="50.0" prefWidth="300.0" style="-fx-background-color: transparent;">
+               <children>
+                  <javafx.scene.control.TextField fx:id="searchField" layoutX="0.0" layoutY="0.0" prefHeight="45.0" prefWidth="300.0" promptText="   Search subjects..." style="-fx-background-color: #F5F5F5; -fx-background-radius: 10; -fx-border-color: #E0E0E0; -fx-border-radius: 10; -fx-border-width: 1;">
+                     <font>
+                        <Font name="Poppins Regular" size="14.0" />
+                     </font>
+                  </javafx.scene.control.TextField>
+                  <javafx.scene.shape.Circle fill="#96a0a800" layoutX="270.0" layoutY="22.5" radius="10.0" stroke="#8E24AA" strokeType="INSIDE" strokeWidth="2.5" />
+                  <javafx.scene.shape.Line endX="7.0" endY="7.0" layoutX="274.0" layoutY="27.0" startX="0.0" startY="0.0" stroke="#8E24AA" strokeLineCap="ROUND" strokeWidth="2.5" />
+               </children>
+            </Pane>
+            
+            <!-- Add Subject Button with emoji -->
+            <Button fx:id="btnAddSubject" layoutX="1575.0" layoutY="70.0" mnemonicParsing="false" onAction="#handleAddSubject" prefHeight="55.0" prefWidth="215.0" style="-fx-background-color: linear-gradient(to right, #8E24AA, #7B1FA2); -fx-background-radius: 12; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(142,36,170,0.3), 10, 0, 0, 3); -fx-font-family: 'Segoe UI Emoji', 'Noto Color Emoji', 'Apple Color Emoji', 'Symbola', sans-serif;" text="➕ Add Subject" textFill="WHITE">
+               <font>
+                  <Font name="Poppins SemiBold" size="17.0" />
+               </font>
+            </Button>
+            
+            <!-- Subject Table -->
+            <TableView fx:id="subjectTable" layoutX="30.0" layoutY="140.0" prefHeight="590.0" prefWidth="1760.0" styleClass="subject-table">
                <columns>
-                  <TableColumn fx:id="subjectCodeCol" prefWidth="440.0" text="SUBJECT CODE" style="-fx-alignment: CENTER-LEFT;">
+                  <TableColumn fx:id="subjectCodeCol" prefWidth="440.0" text="SUBJECT CODE">
                      <cellValueFactory>
                         <javafx.scene.control.cell.PropertyValueFactory property="subjectCode" />
                      </cellValueFactory>
                   </TableColumn>
-                  <TableColumn fx:id="subjectNameCol" prefWidth="460.0" text="SUBJECT NAME" style="-fx-alignment: CENTER-LEFT;">
+                  <TableColumn fx:id="subjectNameCol" prefWidth="500.0" text="SUBJECT NAME">
                      <cellValueFactory>
                         <javafx.scene.control.cell.PropertyValueFactory property="subjectName" />
                      </cellValueFactory>
                   </TableColumn>
-                  <TableColumn fx:id="yearLevelCol" prefWidth="350.0" text="YEAR LEVEL" style="-fx-alignment: CENTER;">
+                  <TableColumn fx:id="yearLevelCol" prefWidth="410.0" text="YEAR LEVEL">
                      <cellValueFactory>
                         <javafx.scene.control.cell.PropertyValueFactory property="yearLevel" />
                      </cellValueFactory>
                   </TableColumn>
-                  <TableColumn fx:id="sectionCol" prefWidth="352.0" text="SECTION" style="-fx-alignment: CENTER;">
+                  <TableColumn fx:id="sectionCol" prefWidth="410.0" text="SECTION">
                      <cellValueFactory>
                         <javafx.scene.control.cell.PropertyValueFactory property="section" />
                      </cellValueFactory>
                   </TableColumn>
                </columns>
             </TableView>
+            
+            <!-- Open Subject Button - Bottom Left -->
+            <Button fx:id="btnOpenSubject" layoutX="30.0" layoutY="735.0" mnemonicParsing="false" onAction="#handleOpenSubjectClick" prefHeight="50.0" prefWidth="220.0" style="-fx-background-color: linear-gradient(to right, #8E24AA, #7B1FA2); -fx-background-radius: 10; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(142,36,170,0.3), 10, 0, 0, 3); -fx-font-family: 'Segoe UI Emoji', 'Noto Color Emoji', 'Apple Color Emoji', 'Symbola', sans-serif;" text="📂 Open Subject" textFill="WHITE">
+               <font>
+                  <Font name="Poppins SemiBold" size="16.0" />
+               </font>
+            </Button>
          </children>
       </Pane>
-      <Button fx:id="btnAddSubject" onAction="#handleAddSubjectClick" layoutX="1413.0" layoutY="137.0" mnemonicParsing="false" prefHeight="95.0" prefWidth="451.0" style="-fx-background-color: linear-gradient(to right, #8E24AA, #7B1FA2); -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 3);" text="  Add New Subject" textFill="WHITE">
-         <font>
-            <Font name="Poppins Bold" size="28.0" />
-         </font>
-         <graphic>
-            <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../../../../../../../Users/Vincent%20Martin/Downloads/Notifyed/Pllus.png" />
-               </image>
-            </ImageView>
-         </graphic>
-      </Button>
-      <Button fx:id="btnOpenSubject" onAction="#handleOpenSubjectClick" layoutX="737.0" layoutY="957.0" mnemonicParsing="false" prefHeight="60.0" prefWidth="480.0" style="-fx-background-color: linear-gradient(to right, #8E24AA, #7B1FA2); -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 2);" text="OPEN SUBJECT" textFill="WHITE">
-         <font>
-            <Font name="Poppins Bold" size="22.0" />
-         </font>
-      </Button>
-      <Text layoutX="104.0" layoutY="321.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Subject Information" fill="#424242">
-         <font>
-            <Font name="Poppins Bold" size="40.0" />
-         </font>
-      </Text>
    </children>
 </AnchorPane>

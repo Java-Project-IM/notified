@@ -19,31 +19,36 @@
             <Image url="@/com/notif1ed/images/silhouette.png" />
          </image>
       </ImageView>
-      <Pane layoutX="1.0" layoutY="1.0" prefHeight="105.0" prefWidth="1920.0" style="-fx-background-color: white;">
+      <Pane layoutX="1.0" layoutY="1.0" prefHeight="90.0" prefWidth="1920.0" style="-fx-background-color: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0, 0, 2);">
          <children>
-            <ImageView fitHeight="125.0" fitWidth="222.0" layoutX="39.0" layoutY="-3.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="105.0" fitWidth="185.0" layoutX="39.0" layoutY="-8.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../../../Notifyed/logo.png" />
                </image>
             </ImageView>
-            <Button fx:id="homeButton" graphicTextGap="10.0" layoutX="531.0" layoutY="32.0" lineSpacing="100.0" mnemonicParsing="false" onAction="#handleHomeClick" prefHeight="43.0" prefWidth="197.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="HOME" textFill="#1976D2">
+            <Button fx:id="homeButton" graphicTextGap="10.0" layoutX="531.0" layoutY="24.0" lineSpacing="100.0" mnemonicParsing="false" onAction="#handleHomeClick" prefHeight="43.0" prefWidth="197.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="HOME" textFill="#1976D2">
                <font>
                   <Font name="Poppins Bold" size="20.0" />
                </font>
             </Button>
-            <Button fx:id="subjectsButton" graphicTextGap="10.0" layoutX="760.0" layoutY="32.0" lineSpacing="100.0" mnemonicParsing="false" onAction="#handleSubjectsClick" prefHeight="43.0" prefWidth="197.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="SUBJECTS" textFill="#616161">
+            <Button fx:id="subjectsButton" graphicTextGap="10.0" layoutX="760.0" layoutY="24.0" lineSpacing="100.0" mnemonicParsing="false" onAction="#handleSubjectsClick" prefHeight="43.0" prefWidth="197.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="SUBJECTS" textFill="#616161">
                <font>
                   <Font name="Poppins Bold" size="20.0" />
                </font>
             </Button>
-            <Button fx:id="studentsButton" graphicTextGap="10.0" layoutX="991.0" layoutY="32.0" lineSpacing="100.0" mnemonicParsing="false" onAction="#handleStudentsClick" prefHeight="43.0" prefWidth="197.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="STUDENTS" textFill="#616161">
+            <Button fx:id="studentsButton" graphicTextGap="10.0" layoutX="991.0" layoutY="24.0" lineSpacing="100.0" mnemonicParsing="false" onAction="#handleStudentsClick" prefHeight="43.0" prefWidth="197.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="STUDENTS" textFill="#616161">
                <font>
                   <Font name="Poppins Bold" size="20.0" />
                </font>
             </Button>
-            <Button fx:id="recordsButton" graphicTextGap="10.0" layoutX="1220.0" layoutY="32.0" lineSpacing="100.0" mnemonicParsing="false" onAction="#handleRecordsClick" prefHeight="43.0" prefWidth="197.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="RECORDS" textFill="#616161">
+            <Button fx:id="recordsButton" graphicTextGap="10.0" layoutX="1220.0" layoutY="24.0" lineSpacing="100.0" mnemonicParsing="false" onAction="#handleRecordsClick" prefHeight="43.0" prefWidth="197.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="RECORDS" textFill="#616161">
                <font>
                   <Font name="Poppins Bold" size="20.0" />
+               </font>
+            </Button>
+            <Button fx:id="logoutButton" graphicTextGap="10.0" layoutX="1685.0" layoutY="24.0" lineSpacing="100.0" mnemonicParsing="false" onAction="#handleLogoutClick" prefHeight="43.0" prefWidth="180.0" style="-fx-background-color: linear-gradient(to bottom, #f44336, #d32f2f); -fx-background-radius: 22; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(244,67,54,0.3), 8, 0, 0, 3);" text="LOGOUT" textFill="WHITE">
+               <font>
+                  <Font name="Poppins Bold" size="18.0" />
                </font>
             </Button>
          </children>

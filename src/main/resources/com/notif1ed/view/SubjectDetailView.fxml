@@ -67,33 +67,26 @@
          </effect>
          <children>
             <!-- Search for enrolled students -->
-            <Pane layoutX="15.0" layoutY="15.0" prefHeight="50.0" prefWidth="350.0" style="-fx-background-color: transparent;">
+            <Pane layoutX="15.0" layoutY="15.0" prefHeight="45.0" prefWidth="300.0" style="-fx-background-color: #F5F5F5; -fx-background-radius: 10; -fx-border-color: #E0E0E0; -fx-border-radius: 10; -fx-border-width: 1;">
                <children>
-                  <TextField fx:id="enrolledSearchField" layoutX="5.0" layoutY="5.0" prefHeight="40.0" prefWidth="340.0" promptText="   Search enrolled students..." style="-fx-background-radius: 10;">
+                  <TextField fx:id="enrolledSearchField" layoutX="5.0" layoutY="2.5" prefHeight="40.0" prefWidth="260.0" promptText="Search enrolled students..." style="-fx-background-color: transparent; -fx-border-width: 0; -fx-background-insets: 0; -fx-padding: 0 0 0 12;">
                      <font>
                         <Font name="Poppins Regular" size="14.0" />
                      </font>
-                     <effect>
-                        <DropShadow>
-                           <color>
-                              <Color opacity="0.15" />
-                           </color>
-                        </DropShadow>
-                     </effect>
                   </TextField>
-                  <Circle fill="#96a0a800" layoutX="310.0" layoutY="25.0" radius="12.0" stroke="#8E24AA" strokeType="INSIDE" strokeWidth="3.0" />
-                  <Line endX="8.0" endY="8.0" layoutX="315.0" layoutY="30.0" startX="0.0" startY="0.0" stroke="#8E24AA" strokeLineCap="ROUND" strokeWidth="3.0" />
+                  <Circle fill="#96a0a800" layoutX="275.0" layoutY="22.5" radius="10.0" stroke="#8E24AA" strokeType="INSIDE" strokeWidth="2.5" />
+                  <Line endX="6.0" endY="6.0" layoutX="279.0" layoutY="26.5" startX="0.0" startY="0.0" stroke="#8E24AA" strokeLineCap="ROUND" strokeWidth="2.5" />
                </children>
             </Pane>
             
-            <Button fx:id="btnRemoveStudent" layoutX="1200.0" layoutY="20.0" mnemonicParsing="false" onAction="#handleRemoveStudent" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #E57373; -fx-background-radius: 10; -fx-cursor: hand;" text="Remove Student" textFill="WHITE">
+            <Button fx:id="btnRemoveStudent" layoutX="1170.0" layoutY="17.5" mnemonicParsing="false" onAction="#handleRemoveStudent" prefHeight="45.0" prefWidth="185.0" style="-fx-background-color: linear-gradient(to right, #f44336, #d32f2f); -fx-background-radius: 10; -fx-cursor: hand;" text="❌ Remove Student" textFill="WHITE">
                <font>
-                  <Font name="Poppins SemiBold" size="14.0" />
+                  <Font name="Poppins SemiBold" size="16.0" />
                </font>
                <effect>
                   <DropShadow>
                      <color>
-                        <Color opacity="0.2" />
+                        <Color opacity="0.25" />
                      </color>
                   </DropShadow>
                </effect>
@@ -125,33 +118,26 @@
          </effect>
          <children>
             <!-- Search for available students -->
-            <Pane layoutX="15.0" layoutY="15.0" prefHeight="50.0" prefWidth="350.0" style="-fx-background-color: transparent;">
+            <Pane layoutX="15.0" layoutY="15.0" prefHeight="45.0" prefWidth="300.0" style="-fx-background-color: #F5F5F5; -fx-background-radius: 10; -fx-border-color: #E0E0E0; -fx-border-radius: 10; -fx-border-width: 1;">
                <children>
-                  <TextField fx:id="availableSearchField" layoutX="5.0" layoutY="5.0" prefHeight="40.0" prefWidth="340.0" promptText="   Search available students..." style="-fx-background-radius: 10;">
+                  <TextField fx:id="availableSearchField" layoutX="5.0" layoutY="2.5" prefHeight="40.0" prefWidth="260.0" promptText="Search available students..." style="-fx-background-color: transparent; -fx-border-width: 0; -fx-background-insets: 0; -fx-padding: 0 0 0 12;">
                      <font>
                         <Font name="Poppins Regular" size="14.0" />
                      </font>
-                     <effect>
-                        <DropShadow>
-                           <color>
-                              <Color opacity="0.15" />
-                           </color>
-                        </DropShadow>
-                     </effect>
                   </TextField>
-                  <Circle fill="#96a0a800" layoutX="310.0" layoutY="25.0" radius="12.0" stroke="#8E24AA" strokeType="INSIDE" strokeWidth="3.0" />
-                  <Line endX="8.0" endY="8.0" layoutX="315.0" layoutY="30.0" startX="0.0" startY="0.0" stroke="#8E24AA" strokeLineCap="ROUND" strokeWidth="3.0" />
+                  <Circle fill="#96a0a800" layoutX="275.0" layoutY="22.5" radius="10.0" stroke="#8E24AA" strokeType="INSIDE" strokeWidth="2.5" />
+                  <Line endX="6.0" endY="6.0" layoutX="279.0" layoutY="26.5" startX="0.0" startY="0.0" stroke="#8E24AA" strokeLineCap="ROUND" strokeWidth="2.5" />
                </children>
             </Pane>
             
-            <Button fx:id="btnAddStudent" layoutX="1200.0" layoutY="20.0" mnemonicParsing="false" onAction="#handleAddStudent" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: linear-gradient(to right, #8E24AA, #7B1FA2); -fx-background-radius: 10; -fx-cursor: hand;" text="Add to Class" textFill="WHITE">
+            <Button fx:id="btnAddStudent" layoutX="1170.0" layoutY="17.5" mnemonicParsing="false" onAction="#handleAddStudent" prefHeight="45.0" prefWidth="185.0" style="-fx-background-color: linear-gradient(to right, #8E24AA, #7B1FA2); -fx-background-radius: 10; -fx-cursor: hand;" text="➕ Add to Class" textFill="WHITE">
                <font>
-                  <Font name="Poppins SemiBold" size="14.0" />
+                  <Font name="Poppins SemiBold" size="16.0" />
                </font>
                <effect>
                   <DropShadow>
                      <color>
-                        <Color opacity="0.2" />
+                        <Color opacity="0.25" />
                      </color>
                   </DropShadow>
                </effect>

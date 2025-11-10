@@ -3,6 +3,8 @@ package com.notif1ed.controller;
 import com.notif1ed.model.StudentEntry;
 import com.notif1ed.model.SubjectEntry;
 import com.notif1ed.util.DatabaseConnectionn;
+import com.notif1ed.util.ToastNotification;
+import com.notif1ed.util.CustomModal;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -180,8 +182,8 @@ public class SubjectDetailController implements Initializable {
             System.out.println("✅ Loaded " + enrolledStudentsList.size() + " enrolled students");
 
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error", 
-                     "Error loading enrolled students: " + e.getMessage());
+            Stage stage = (Stage) enrolledStudentsTable.getScene().getWindow();
+            ToastNotification.showError(stage, "Error loading enrolled students: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -220,8 +222,8 @@ public class SubjectDetailController implements Initializable {
             System.out.println("✅ Loaded " + availableStudentsList.size() + " available students");
 
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error", 
-                     "Error loading available students: " + e.getMessage());
+            Stage stage = (Stage) availableStudentsTable.getScene().getWindow();
+            ToastNotification.showError(stage, "Error loading available students: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -229,10 +231,10 @@ public class SubjectDetailController implements Initializable {
     @FXML
     private void handleAddStudent(ActionEvent event) {
         StudentEntry selectedStudent = availableStudentsTable.getSelectionModel().getSelectedItem();
+        Stage stage = (Stage) availableStudentsTable.getScene().getWindow();
 
         if (selectedStudent == null) {
-            showAlert(Alert.AlertType.WARNING, "No Selection", 
-                     "Please select a student to add to this class.");
+            ToastNotification.showWarning(stage, "Please select a student to add to this class");
             return;
         }
 
@@ -250,9 +252,9 @@ public class SubjectDetailController implements Initializable {
             int rowsAffected = stmt.executeUpdate();
 
             if (rowsAffected > 0) {
-                showAlert(Alert.AlertType.INFORMATION, "Success", 
-                         selectedStudent.getFirstName() + " " + selectedStudent.getLastName() + 
-                         " has been added to " + currentSubject.getSubjectCode());
+                ToastNotification.showSuccess(stage, 
+                    selectedStudent.getFirstName() + " " + selectedStudent.getLastName() + 
+                    " added to " + currentSubject.getSubjectCode());
                 
                 // Refresh both tables
                 loadEnrolledStudents();
@@ -261,11 +263,9 @@ public class SubjectDetailController implements Initializable {
 
         } catch (SQLException e) {
             if (e.getMessage().contains("Duplicate entry")) {
-                showAlert(Alert.AlertType.ERROR, "Already Enrolled", 
-                         "This student is already enrolled in this subject.");
+                ToastNotification.showError(stage, "This student is already enrolled in this subject");
             } else {
-                showAlert(Alert.AlertType.ERROR, "Database Error", 
-                         "Error adding student: " + e.getMessage());
+                ToastNotification.showError(stage, "Error adding student: " + e.getMessage());
             }
             e.printStackTrace();
         }
@@ -274,27 +274,26 @@ public class SubjectDetailController implements Initializable {
     @FXML
     private void handleRemoveStudent(ActionEvent event) {
         StudentEntry selectedStudent = enrolledStudentsTable.getSelectionModel().getSelectedItem();
+        Stage stage = (Stage) enrolledStudentsTable.getScene().getWindow();
 
         if (selectedStudent == null) {
-            showAlert(Alert.AlertType.WARNING, "No Selection", 
-                     "Please select a student to remove from this class.");
+            ToastNotification.showWarning(stage, "Please select a student to remove from this class");
             return;
         }
 
-        // Confirm removal
-        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmAlert.setTitle("Confirm Removal");
-        confirmAlert.setHeaderText("Remove Student from Class");
-        confirmAlert.setContentText("Are you sure you want to remove " + 
-                                   selectedStudent.getFirstName() + " " + 
-                                   selectedStudent.getLastName() + 
-                                   " from " + currentSubject.getSubjectCode() + "?");
-
-        confirmAlert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                removeStudentFromSubject(selectedStudent);
-            }
-        });
+        // Confirm removal using CustomModal (blocking confirmation is appropriate here)
+        boolean confirmed = CustomModal.showConfirmation(
+            stage,
+            "Remove Student from Class",
+            "Are you sure you want to remove " + selectedStudent.getFirstName() + " " + 
+            selectedStudent.getLastName() + " from " + currentSubject.getSubjectCode() + "?",
+            "Remove",
+            "Cancel"
+        );
+        
+        if (confirmed) {
+            removeStudentFromSubject(selectedStudent);
+        }
     }
 
     private void removeStudentFromSubject(StudentEntry student) {
@@ -303,6 +302,8 @@ public class SubjectDetailController implements Initializable {
                     "WHERE subject_id = ? AND student_id = ( " +
                     "    SELECT student_id FROM students WHERE student_number = ? " +
                     ")";
+
+        Stage stage = (Stage) enrolledStudentsTable.getScene().getWindow();
 
         try (Connection conn = DatabaseConnectionn.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -313,9 +314,9 @@ public class SubjectDetailController implements Initializable {
             int rowsAffected = stmt.executeUpdate();
 
             if (rowsAffected > 0) {
-                showAlert(Alert.AlertType.INFORMATION, "Success", 
-                         student.getFirstName() + " " + student.getLastName() + 
-                         " has been removed from " + currentSubject.getSubjectCode());
+                ToastNotification.showSuccess(stage,
+                    student.getFirstName() + " " + student.getLastName() + 
+                    " removed from " + currentSubject.getSubjectCode());
                 
                 // Refresh both tables
                 loadEnrolledStudents();
@@ -323,8 +324,7 @@ public class SubjectDetailController implements Initializable {
             }
 
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error", 
-                     "Error removing student: " + e.getMessage());
+            ToastNotification.showError(stage, "Error removing student: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -338,13 +338,5 @@ public class SubjectDetailController implements Initializable {
     private void updateEnrollmentCount() {
         enrollmentCountLabel.setText(enrolledStudentsList.size() + " Student" + 
                                     (enrolledStudentsList.size() != 1 ? "s" : "") + " Enrolled");
-    }
-
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }

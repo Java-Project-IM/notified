@@ -1,13 +1,15 @@
 package com.notif1ed.controller;
 
 import com.notif1ed.util.DatabaseConnectionn;
+import com.notif1ed.util.ToastNotification;
+import com.notif1ed.util.WelcomeDialog;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -30,9 +32,12 @@ public class LoginController {
         String email = emailField.getText().trim();
         String password = passwordField.getText();
 
+        // Get current stage for toast notifications
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
         // Validate inputs
         if (email.isEmpty() || password.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Validation Error", "Please enter both email and password!");
+            ToastNotification.showWarning(stage, "Please enter both email and password!");
             return;
         }
 
@@ -49,34 +54,23 @@ public class LoginController {
                 if (rs.next()) {
                     // Login successful
                     String userName = rs.getString("name");
-                    showAlert(Alert.AlertType.INFORMATION, "Login Successful", 
-                            "Welcome back, " + userName + "!");
                     
-                    // Navigate to homepage or main application
-                    navigateToHomepage(event);
+                    // Navigate to homepage first
+                    navigateToHomepage(event, userName);
                 } else {
                     // Login failed
-                    showAlert(Alert.AlertType.ERROR, "Login Failed", 
-                            "Invalid email or password!");
+                    ToastNotification.showError(stage, "Invalid email or password!");
                 }
             } else {
-                showAlert(Alert.AlertType.ERROR, "Database Error", "Could not connect to database!");
+                ToastNotification.showError(stage, "Could not connect to database!");
             }
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error", "Error: " + e.getMessage());
+            ToastNotification.showError(stage, "Database error: " + e.getMessage());
             e.printStackTrace();
         }
     }
     
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-    
-    private void navigateToHomepage(ActionEvent event) {
+    private void navigateToHomepage(ActionEvent event, String userName) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/notif1ed/view/Homepage.fxml"));
             Scene scene = new Scene(loader.load());
@@ -84,6 +78,11 @@ public class LoginController {
             stage.setScene(scene);
             stage.setTitle("Notifyed - Home");
             stage.show();
+            
+            // Show welcome dialog after the scene is fully loaded
+            Platform.runLater(() -> {
+                WelcomeDialog.show(stage, userName);
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }

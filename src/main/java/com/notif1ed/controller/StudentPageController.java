@@ -6,6 +6,8 @@ package com.notif1ed.controller;
 
 import com.notif1ed.model.StudentEntry;
 import com.notif1ed.util.DatabaseConnectionn;
+import com.notif1ed.util.ToastNotification;
+import com.notif1ed.util.CustomModal;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,7 +18,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -28,6 +29,16 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ResourceBundle;
+import java.util.Map;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ResourceBundle;
+import java.util.Map;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -142,6 +153,7 @@ public class StudentPageController implements Initializable {
             if (conn != null) {
                 String sql = "SELECT student_number, first_name, " +
                            "COALESCE(last_name, guardian_name, '') as last_name, " +
+                           "COALESCE(section, '') as section, " +
                            "email FROM students ORDER BY student_number";
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 ResultSet rs = stmt.executeQuery();
@@ -153,6 +165,7 @@ public class StudentPageController implements Initializable {
                         rs.getString("last_name"),
                         rs.getString("email")
                     );
+                    student.setSection(rs.getString("section"));
                     studentList.add(student);
                 }
                 
@@ -163,7 +176,8 @@ public class StudentPageController implements Initializable {
                 System.out.println("✅ Loaded " + studentList.size() + " students from database");
             }
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error", "Error loading students: " + e.getMessage());
+            Stage stage = (Stage) studentTable.getScene().getWindow();
+            ToastNotification.showError(stage, "Error loading students: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -195,78 +209,257 @@ public class StudentPageController implements Initializable {
     
     @FXML
     private void handleAddStudentClick(ActionEvent event) {
-        openFormWindow("StudentForm.fxml", "Add New Student");
+        Stage stage = (Stage) studentTable.getScene().getWindow();
+        
+        // Generate student number first
+        String newStudentNumber = generateStudentNumber();
+        
+        // Create form fields
+        CustomModal.FormField[] fields = {
+            new CustomModal.FormField("studentNumber", "Student Number", "text", newStudentNumber, false, ""),
+            new CustomModal.FormField("firstName", "First Name", "text", true),
+            new CustomModal.FormField("lastName", "Last Name", "text", true),
+            new CustomModal.FormField("section", "Section", "text", "", false, "Optional"),
+            new CustomModal.FormField("studentEmail", "Student Email", "email", true),
+            new CustomModal.FormField("guardianName", "Guardian Name", "text", true),
+            new CustomModal.FormField("guardianEmail", "Guardian Email", "email", true)
+        };
+        
+        // Show form modal
+        Map<String, String> result = CustomModal.showForm(stage, "Add New Student", "👤", fields);
+        
+        if (result != null) {
+            // Validate and add student
+            String studentNumber = result.get("studentNumber").trim();
+            String firstName = result.get("firstName").trim();
+            String lastName = result.get("lastName").trim();
+            String section = result.get("section").trim();
+            String studentEmail = result.get("studentEmail").trim();
+            String guardianName = result.get("guardianName").trim();
+            String guardianEmail = result.get("guardianEmail").trim();
+            
+            // Validate email formats
+            if (!studentEmail.contains("@") || !studentEmail.contains(".")) {
+                ToastNotification.show(stage, ToastNotification.ToastType.WARNING, 
+                    "Please enter a valid student email address");
+                return;
+            }
+            
+            if (!guardianEmail.contains("@") || !guardianEmail.contains(".")) {
+                ToastNotification.show(stage, ToastNotification.ToastType.WARNING, 
+                    "Please enter a valid guardian email address");
+                return;
+            }
+            
+            // Save to database
+            try (Connection conn = DatabaseConnectionn.connect()) {
+                if (conn != null) {
+                    String sql = "INSERT INTO students (student_number, first_name, last_name, email, section, guardian_name, guardian_email, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, 1)";
+                    PreparedStatement stmt = conn.prepareStatement(sql);
+                    stmt.setString(1, studentNumber);
+                    stmt.setString(2, firstName);
+                    stmt.setString(3, lastName);
+                    stmt.setString(4, studentEmail);
+                    stmt.setString(5, section);
+                    stmt.setString(6, guardianName);
+                    stmt.setString(7, guardianEmail);
+                    
+                    int rowsInserted = stmt.executeUpdate();
+                    
+                    if (rowsInserted > 0) {
+                        ToastNotification.show(stage, ToastNotification.ToastType.SUCCESS, 
+                            "Student added successfully: " + firstName + " " + lastName);
+                        refreshTable();
+                    } else {
+                        ToastNotification.show(stage, ToastNotification.ToastType.ERROR, 
+                            "Failed to add student");
+                    }
+                } else {
+                    ToastNotification.show(stage, ToastNotification.ToastType.ERROR, 
+                        "Could not connect to database");
+                }
+            } catch (SQLException e) {
+                if (e.getMessage().contains("Duplicate entry")) {
+                    ToastNotification.show(stage, ToastNotification.ToastType.ERROR, 
+                        "This student number already exists!");
+                } else {
+                    ToastNotification.show(stage, ToastNotification.ToastType.ERROR, 
+                        "Database error: " + e.getMessage());
+                }
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    // Alias method for FXML compatibility
+    @FXML
+    public void handleAddStudent(ActionEvent event) {
+        handleAddStudentClick(event);
+    }
+    
+    private String generateStudentNumber() {
+        String newStudentNumber = "25-0001"; // Default
+        
+        try (Connection conn = DatabaseConnectionn.connect()) {
+            if (conn != null) {
+                // Get the highest student number starting with "25-"
+                String sql = "SELECT student_number FROM students " +
+                           "WHERE student_number LIKE '25-%' " +
+                           "ORDER BY student_number DESC LIMIT 1";
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery();
+                
+                if (rs.next()) {
+                    String lastNumber = rs.getString("student_number");
+                    // Extract the numeric part after "25-"
+                    String numericPart = lastNumber.substring(3);
+                    int nextNumber = Integer.parseInt(numericPart) + 1;
+                    // Format with leading zeros (4 digits)
+                    newStudentNumber = String.format("25-%04d", nextNumber);
+                } else {
+                    // No existing students, start with 25-0001
+                    newStudentNumber = "25-0001";
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error generating student number: " + e.getMessage());
+            e.printStackTrace();
+            // Keep default value
+        }
+        
+        return newStudentNumber;
     }
     
     @FXML
     private void handleSendEmailClick(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        
         // Get selected student or all students
         if (studentTable.getSelectionModel().getSelectedItem() != null) {
             StudentEntry selectedStudent = studentTable.getSelectionModel().getSelectedItem();
-            showAlert(Alert.AlertType.INFORMATION, "Send Email", 
+            ToastNotification.showInfo(stage, 
                 "Opening email prompt for: " + selectedStudent.getEmail());
             openEmailPrompt(selectedStudent.getEmail());
         } else if (studentList.size() > 0) {
-            showAlert(Alert.AlertType.INFORMATION, "Send Email", 
+            ToastNotification.showInfo(stage, 
                 "Opening email prompt for all students (" + studentList.size() + " recipients)");
             openEmailPromptForAll();
         } else {
-            showAlert(Alert.AlertType.WARNING, "No Students", 
+            ToastNotification.showWarning(stage, 
                 "No students available to send email to.");
         }
     }
     
     private void openEmailPrompt(String email) {
+        Stage stage = (Stage) studentTable.getScene().getWindow();
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/com/notif1ed/view/EmailPrompt.fxml"));
-            Stage stage = new Stage();
-            stage.setTitle("Send Email - " + email);
-            stage.setScene(new Scene(root));
-            stage.show();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/notif1ed/view/EmailPrompt.fxml"));
+            Parent root = loader.load();
+            
+            // Get controller and set recipient
+            EmailPromptController controller = loader.getController();
+            controller.setRecipient(email);
+            
+            // Create modal dialog with backdrop styling
+            Stage emailStage = new Stage();
+            emailStage.setTitle("Send Email - " + email);
+            emailStage.initOwner(stage);
+            emailStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            emailStage.initStyle(javafx.stage.StageStyle.TRANSPARENT);
+            emailStage.setResizable(false);
+            
+            // Wrap content in backdrop
+            javafx.scene.layout.StackPane backdrop = new javafx.scene.layout.StackPane();
+            backdrop.setStyle("-fx-background-color: rgba(0, 0, 0, 0.65);");
+            backdrop.getChildren().add(root);
+            
+            Scene scene = new Scene(backdrop);
+            scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+            emailStage.setScene(scene);
+            
+            // Match owner window size and position
+            emailStage.setX(stage.getX());
+            emailStage.setY(stage.getY());
+            emailStage.setWidth(stage.getWidth());
+            emailStage.setHeight(stage.getHeight());
+            
+            // Close on backdrop click
+            backdrop.setOnMouseClicked(e -> {
+                if (e.getTarget() == backdrop) {
+                    emailStage.close();
+                }
+            });
+            
+            emailStage.showAndWait();
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Could not open email prompt");
+            ToastNotification.showError(stage, "Could not open email prompt");
             e.printStackTrace();
         }
     }
     
     private void openEmailPromptForAll() {
+        Stage stage = (Stage) studentTable.getScene().getWindow();
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/com/notif1ed/view/EmailPrompt.fxml"));
-            Stage stage = new Stage();
-            stage.setTitle("Send Email to All Students");
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Could not open email prompt");
-            e.printStackTrace();
-        }
-    }
-    
-    private void openFormWindow(String fxmlFile, String title) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("/com/notif1ed/view/" + fxmlFile));
-            Stage stage = new Stage();
-            stage.setTitle(title);
-            stage.setScene(new Scene(root));
-            stage.show();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/notif1ed/view/EmailPrompt.fxml"));
+            Parent root = loader.load();
             
-            // Refresh table when form window is closed
-            stage.setOnHidden(e -> refreshTable());
+            // Get controller and set multiple recipients
+            EmailPromptController controller = loader.getController();
+            StringBuilder emails = new StringBuilder();
+            for (int i = 0; i < studentList.size(); i++) {
+                emails.append(studentList.get(i).getEmail());
+                if (i < studentList.size() - 1) {
+                    emails.append(", ");
+                }
+            }
+            controller.setMultipleRecipients(emails.toString());
+            
+            // Create modal dialog with backdrop styling
+            Stage emailStage = new Stage();
+            emailStage.setTitle("Send Email to All Students (" + studentList.size() + " recipients)");
+            emailStage.initOwner(stage);
+            emailStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            emailStage.initStyle(javafx.stage.StageStyle.TRANSPARENT);
+            emailStage.setResizable(false);
+            
+            // Wrap content in backdrop
+            javafx.scene.layout.StackPane backdrop = new javafx.scene.layout.StackPane();
+            backdrop.setStyle("-fx-background-color: rgba(0, 0, 0, 0.65);");
+            backdrop.getChildren().add(root);
+            
+            Scene scene = new Scene(backdrop);
+            scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+            emailStage.setScene(scene);
+            
+            // Match owner window size and position
+            emailStage.setX(stage.getX());
+            emailStage.setY(stage.getY());
+            emailStage.setWidth(stage.getWidth());
+            emailStage.setHeight(stage.getHeight());
+            
+            // Close on backdrop click
+            backdrop.setOnMouseClicked(e -> {
+                if (e.getTarget() == backdrop) {
+                    emailStage.close();
+                }
+            });
+            
+            emailStage.showAndWait();
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Could not open form: " + fxmlFile);
+            ToastNotification.showError(stage, "Could not open email prompt");
             e.printStackTrace();
         }
     }
     
     private void navigateToPage(ActionEvent event, String fxmlFile) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/com/notif1ed/view/" + fxmlFile));
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/notif1ed/view/" + fxmlFile));
+            Scene scene = new Scene(loader.load());
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load page: " + fxmlFile);
+            ToastNotification.showError(stage, "Could not load page: " + fxmlFile);
             e.printStackTrace();
         }
     }
@@ -274,10 +467,10 @@ public class StudentPageController implements Initializable {
     @FXML
     private void handleEditStudent(ActionEvent event) {
         StudentEntry selectedStudent = studentTable.getSelectionModel().getSelectedItem();
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         
         if (selectedStudent == null) {
-            showAlert(Alert.AlertType.WARNING, "No Selection", 
-                     "Please select a student to edit.");
+            ToastNotification.showWarning(stage, "Please select a student to edit.");
             return;
         }
         
@@ -287,10 +480,10 @@ public class StudentPageController implements Initializable {
     @FXML
     private void handleDeleteStudent(ActionEvent event) {
         StudentEntry selectedStudent = studentTable.getSelectionModel().getSelectedItem();
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         
         if (selectedStudent == null) {
-            showAlert(Alert.AlertType.WARNING, "No Selection", 
-                     "Please select a student to delete.");
+            ToastNotification.showWarning(stage, "Please select a student to delete.");
             return;
         }
         
@@ -298,47 +491,78 @@ public class StudentPageController implements Initializable {
     }
     
     private void confirmAndDeleteStudent(StudentEntry student) {
-        // Confirm deletion
-        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmAlert.setTitle("Confirm Deletion");
-        confirmAlert.setHeaderText("Delete Student");
-        confirmAlert.setContentText("Are you sure you want to delete student:\n" +
-                                   student.getStudentNumber() + " - " +
-                                   student.getFirstName() + " " + 
-                                   student.getLastName() + "?\n\n" +
-                                   "This will also remove all their enrollments and records.");
+        // Get current stage for modal
+        Stage stage = (Stage) studentTable.getScene().getWindow();
         
-        confirmAlert.showAndWait().ifPresent(response -> {
-            if (response == javafx.scene.control.ButtonType.OK) {
-                deleteStudent(student);
-            }
-        });
+        // Confirm deletion with modern modal
+        boolean confirmed = CustomModal.showConfirmation(
+            stage,
+            "Delete Student",
+            "Are you sure you want to delete student:\n" +
+            student.getStudentNumber() + " - " +
+            student.getFirstName() + " " + 
+            student.getLastName() + "?\n\n" +
+            "This will also remove all their enrollments and records.",
+            "Delete",
+            "Cancel"
+        );
+        
+        if (confirmed) {
+            deleteStudent(student);
+        }
     }
     
     private void openEditStudentForm(StudentEntry student) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/notif1ed/view/StudentEditForm.fxml"));
-            Parent root = loader.load();
+        Stage stage = (Stage) studentTable.getScene().getWindow();
+        
+        // Create form fields with current student data
+        CustomModal.FormField[] fields = new CustomModal.FormField[] {
+            new CustomModal.FormField("studentNumber", "Student Number (Cannot be changed)", "text", student.getStudentNumber(), true, ""),
+            new CustomModal.FormField("firstName", "First Name", "text", student.getFirstName(), true, "Enter first name"),
+            new CustomModal.FormField("lastName", "Last Name", "text", student.getLastName(), true, "Enter last name"),
+            new CustomModal.FormField("section", "Section", "text", student.getSection(), false, "Enter section (optional)"),
+            new CustomModal.FormField("email", "Student Email", "email", student.getEmail(), true, "student@example.com"),
+            new CustomModal.FormField("guardianName", "Guardian Name", "text", student.getGuardianName(), true, "Enter guardian name"),
+            new CustomModal.FormField("guardianEmail", "Guardian Email", "email", student.getGuardianEmail(), false, "guardian@example.com")
+        };
+        
+        // Show form modal
+        Map<String, String> result = CustomModal.showForm(stage, "Edit Student - " + student.getStudentNumber(), "✏️", fields);
+        
+        if (result != null) {
+            // User clicked Submit - update student in database
+            String sql = "UPDATE students SET first_name = ?, last_name = ?, section = ?, email = ?, guardian_name = ?, guardian_email = ? WHERE student_number = ?";
             
-            // Get the controller and pass the student data
-            StudentEditFormController controller = loader.getController();
-            controller.setStudent(student);
-            
-            Stage stage = new Stage();
-            stage.setTitle("Edit Student - " + student.getStudentNumber());
-            stage.setScene(new Scene(root));
-            stage.show();
-            
-            // Refresh table when edit window is closed
-            stage.setOnHidden(e -> refreshTable());
-        } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Could not open edit form");
-            e.printStackTrace();
+            try (Connection conn = DatabaseConnectionn.connect();
+                 PreparedStatement stmt = conn.prepareStatement(sql)) {
+                
+                stmt.setString(1, result.get("firstName"));
+                stmt.setString(2, result.get("lastName"));
+                stmt.setString(3, result.get("section"));
+                stmt.setString(4, result.get("email"));
+                stmt.setString(5, result.get("guardianName"));
+                stmt.setString(6, result.get("guardianEmail"));
+                stmt.setString(7, student.getStudentNumber());
+                
+                int rowsAffected = stmt.executeUpdate();
+                
+                if (rowsAffected > 0) {
+                    ToastNotification.showSuccess(stage, "Student updated successfully!");
+                    refreshTable();
+                } else {
+                    ToastNotification.showError(stage, "Could not update student. Student may not exist.");
+                }
+                
+            } catch (SQLException e) {
+                ToastNotification.showError(stage, "Error updating student: " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
     
     private void deleteStudent(StudentEntry student) {
         String sql = "DELETE FROM students WHERE student_number = ?";
+        Stage stage = (Stage) studentTable.getScene().getWindow();
         
         try (Connection conn = DatabaseConnectionn.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -348,26 +572,49 @@ public class StudentPageController implements Initializable {
             int rowsAffected = stmt.executeUpdate();
             
             if (rowsAffected > 0) {
-                showAlert(Alert.AlertType.INFORMATION, "Success", 
+                ToastNotification.showSuccess(stage, 
                          "Student " + student.getStudentNumber() + " has been deleted successfully.");
                 refreshTable();
             } else {
-                showAlert(Alert.AlertType.ERROR, "Error", 
+                ToastNotification.showError(stage, 
                          "Could not delete student. Student may not exist.");
             }
             
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error", 
+            ToastNotification.showError(stage, 
                      "Error deleting student: " + e.getMessage());
             e.printStackTrace();
         }
     }
     
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+    @FXML
+    private void handleLogoutClick(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        
+        // Show confirmation modal
+        boolean confirmed = CustomModal.showConfirmation(
+            stage,
+            "Logout",
+            "Are you sure you want to logout?",
+            "Logout",
+            "Cancel"
+        );
+        
+        if (confirmed) {
+            try {
+                // Navigate to landing page
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/notif1ed/view/LandingPage.fxml"));
+                Scene scene = new Scene(loader.load());
+                stage.setScene(scene);
+                stage.setTitle("Notif1ed - Welcome");
+                stage.show();
+                
+                // Show logout toast
+                ToastNotification.showSuccess(stage, "Logged out successfully");
+            } catch (IOException e) {
+                ToastNotification.showError(stage, "Error during logout");
+                e.printStackTrace();
+            }
+        }
     }
 }

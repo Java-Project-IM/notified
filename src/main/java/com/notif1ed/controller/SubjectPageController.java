@@ -6,6 +6,8 @@ package com.notif1ed.controller;
 
 import com.notif1ed.model.SubjectEntry;
 import com.notif1ed.util.DatabaseConnectionn;
+import com.notif1ed.util.ToastNotification;
+import com.notif1ed.util.CustomModal;
 
 import java.io.IOException;
 import java.net.URL;
@@ -14,6 +16,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
+import java.util.Map;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -23,7 +26,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -55,6 +57,10 @@ public class SubjectPageController implements Initializable {
     private Button studentsButton;
     @FXML
     private Button recordsButton;
+    @FXML
+    private Button logoutButton;
+    @FXML
+    private javafx.scene.control.TextField searchField;
     @FXML
     private Button addSubjectButton;
     
@@ -105,8 +111,93 @@ public class SubjectPageController implements Initializable {
     }
     
     @FXML
+    private void handleLogoutClick(ActionEvent event) {
+        Stage stage = (Stage) logoutButton.getScene().getWindow();
+        boolean confirmed = CustomModal.showConfirmation(
+            stage,
+            "Logout Confirmation",
+            "Are you sure you want to logout?",
+            "Logout",
+            "Cancel"
+        );
+        
+        if (confirmed) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/notif1ed/view/LandingPage.fxml"));
+                Scene scene = new Scene(loader.load());
+                stage.setScene(scene);
+                stage.setTitle("Notif1ed - Welcome");
+                stage.show();
+                
+                // Show logout toast
+                ToastNotification.showSuccess(stage, "Logged out successfully");
+            } catch (IOException e) {
+                ToastNotification.showError(stage, "Error during logout");
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    @FXML
     private void handleAddSubjectClick(ActionEvent event) {
-        openFormWindow("SubjectForm.fxml", "Add New Subject");
+        handleAddSubject(event);
+    }
+    
+    @FXML
+    private void handleAddSubject(ActionEvent event) {
+        Stage stage = (Stage) subjectTable.getScene().getWindow();
+        
+        // Create form fields
+        CustomModal.FormField[] fields = {
+            new CustomModal.FormField("subjectCode", "Subject Code", "text", true),
+            new CustomModal.FormField("section", "Section", "text", true),
+            new CustomModal.FormField("subjectName", "Subject Name", "text", true),
+            new CustomModal.FormField("yearLevel", "Year Level", "number", true)
+        };
+        
+        // Show form modal
+        Map<String, String> result = CustomModal.showForm(stage, "Add New Subject", "📚", fields);
+        
+        if (result != null) {
+            // Validate and add subject
+            String subjectCode = result.get("subjectCode").trim();
+            String section = result.get("section").trim();
+            String subjectName = result.get("subjectName").trim();
+            String yearLevel = result.get("yearLevel").trim();
+            
+            try (Connection conn = DatabaseConnectionn.connect()) {
+                String sql = "INSERT INTO subjects (subject_code, subject_name, year_level, section) VALUES (?, ?, ?, ?)";
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                pstmt.setString(1, subjectCode);
+                pstmt.setString(2, subjectName);
+                pstmt.setInt(3, Integer.parseInt(yearLevel));
+                pstmt.setString(4, section);
+                
+                int rowsAffected = pstmt.executeUpdate();
+                
+                if (rowsAffected > 0) {
+                    ToastNotification.show(stage, ToastNotification.ToastType.SUCCESS, 
+                        "Subject added successfully: " + subjectCode);
+                    refreshTable();
+                } else {
+                    ToastNotification.show(stage, ToastNotification.ToastType.ERROR, 
+                        "Failed to add subject");
+                }
+                
+            } catch (NumberFormatException e) {
+                ToastNotification.show(stage, ToastNotification.ToastType.WARNING, 
+                    "Year Level must be a valid number");
+            } catch (SQLException e) {
+                if (e.getMessage().contains("Duplicate entry")) {
+                    ToastNotification.show(stage, ToastNotification.ToastType.ERROR, 
+                        "Subject code already exists!");
+                } else {
+                    ToastNotification.show(stage, ToastNotification.ToastType.ERROR, 
+                        "Database error: " + e.getMessage());
+                }
+                e.printStackTrace();
+            }
+        }
     }
     
     @FXML
@@ -116,8 +207,8 @@ public class SubjectPageController implements Initializable {
             SubjectEntry selectedSubject = subjectTable.getSelectionModel().getSelectedItem();
             openSubjectDetailView(selectedSubject);
         } else {
-            showAlert(Alert.AlertType.WARNING, "No Selection", 
-                "Please select a subject to open.");
+            Stage stage = (Stage) subjectTable.getScene().getWindow();
+            ToastNotification.show(stage, ToastNotification.ToastType.WARNING, "Please select a subject to open");
         }
     }
     
@@ -138,23 +229,8 @@ public class SubjectPageController implements Initializable {
             // Refresh table when detail window is closed
             stage.setOnHidden(e -> refreshTable());
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Could not open subject detail view");
-            e.printStackTrace();
-        }
-    }
-    
-    private void openFormWindow(String fxmlFile, String title) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("/com/notif1ed/view/" + fxmlFile));
-            Stage stage = new Stage();
-            stage.setTitle(title);
-            stage.setScene(new Scene(root));
-            stage.show();
-            
-            // Refresh table when form window is closed
-            stage.setOnHidden(e -> refreshTable());
-        } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Could not open form: " + fxmlFile);
+            Stage stage = (Stage) subjectTable.getScene().getWindow();
+            ToastNotification.show(stage, ToastNotification.ToastType.ERROR, "Could not open subject detail view");
             e.printStackTrace();
         }
     }
@@ -167,7 +243,8 @@ public class SubjectPageController implements Initializable {
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load page: " + fxmlFile);
+            Stage stage = (Stage) homeButton.getScene().getWindow();
+            ToastNotification.show(stage, ToastNotification.ToastType.ERROR, "Could not load page: " + fxmlFile);
             e.printStackTrace();
         }
     }
@@ -202,20 +279,13 @@ public class SubjectPageController implements Initializable {
                 System.out.println("✅ Loaded " + subjectList.size() + " subjects from database");
             }
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error", "Error loading subjects: " + e.getMessage());
+            Stage stage = (Stage) homeButton.getScene().getWindow();
+            ToastNotification.show(stage, ToastNotification.ToastType.ERROR, "Error loading subjects from database");
             e.printStackTrace();
         }
     }
     
     public void refreshTable() {
         loadSubjects();
-    }
-    
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }

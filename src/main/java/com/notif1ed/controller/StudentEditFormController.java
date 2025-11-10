@@ -2,11 +2,12 @@ package com.notif1ed.controller;
 
 import com.notif1ed.model.StudentEntry;
 import com.notif1ed.util.DatabaseConnectionn;
+import com.notif1ed.util.ToastNotification;
+import com.notif1ed.util.CustomModal;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -72,7 +73,8 @@ public class StudentEditFormController implements Initializable {
     }
     
     private void loadFullStudentData() {
-        String sql = "SELECT section, guardian_name, guardian_email FROM students WHERE student_number = ?";
+        // Try to load guardian info if columns exist
+        String sql = "SELECT section, guardian_name FROM students WHERE student_number = ?";
         
         try (Connection conn = DatabaseConnectionn.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -83,11 +85,11 @@ public class StudentEditFormController implements Initializable {
             if (rs.next()) {
                 String section = rs.getString("section");
                 String guardianName = rs.getString("guardian_name");
-                String guardianEmail = rs.getString("guardian_email");
                 
                 if (section != null) sectionTXT.setText(section);
                 if (guardianName != null) GNameField.setText(guardianName);
-                if (guardianEmail != null) GEmailField.setText(guardianEmail);
+                // GEmailField left empty or can use student email as fallback
+                if (GEmailField != null) GEmailField.setText("");
             }
             
         } catch (SQLException e) {
@@ -114,29 +116,29 @@ public class StudentEditFormController implements Initializable {
         String guardianName = GNameField.getText().trim();
         String guardianEmail = GEmailField.getText().trim();
         
+        Stage stage = (Stage) studentID.getScene().getWindow();
+        
         // Validate inputs
         if (firstName.isEmpty() || lastName.isEmpty() || studentEmail.isEmpty() || guardianEmail.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Validation Error", 
-                    "Please fill in First Name, Last Name, Student Email, and Guardian's Email!");
+            ToastNotification.show(stage, ToastNotification.ToastType.WARNING, "Please fill in all required fields");
             return;
         }
         
         // Validate email formats
         if (!studentEmail.contains("@") || !studentEmail.contains(".")) {
-            showAlert(Alert.AlertType.WARNING, "Validation Error", 
-                    "Please enter a valid student email address!");
+            ToastNotification.show(stage, ToastNotification.ToastType.WARNING, "Please enter a valid student email");
             return;
         }
         
-        if (!guardianEmail.contains("@") || !guardianEmail.contains(".")) {
-            showAlert(Alert.AlertType.WARNING, "Validation Error", 
-                    "Please enter a valid guardian email address!");
+        // Skip guardian email validation if empty
+        if (!guardianEmail.isEmpty() && (!guardianEmail.contains("@") || !guardianEmail.contains("."))) {
+            ToastNotification.show(stage, ToastNotification.ToastType.WARNING, "Please enter a valid guardian email");
             return;
         }
         
-        // Update in database
-        String sql = "UPDATE students SET first_name = ?, last_name = ?, email = ?, section = ?, guardian_name = ?, guardian_email = ?, " +
-                    "updated_at = CURRENT_TIMESTAMP WHERE student_number = ?";
+        // Update in database (without guardian_email if column doesn't exist)
+        String sql = "UPDATE students SET first_name = ?, last_name = ?, email = ?, section = ?, guardian_name = ? " +
+                    "WHERE student_number = ?";
         
         try (Connection conn = DatabaseConnectionn.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -146,26 +148,22 @@ public class StudentEditFormController implements Initializable {
             stmt.setString(3, studentEmail);
             stmt.setString(4, section);
             stmt.setString(5, guardianName);
-            stmt.setString(6, guardianEmail);
-            stmt.setString(7, currentStudent.getStudentNumber());
+            stmt.setString(6, currentStudent.getStudentNumber());
             
             int rowsUpdated = stmt.executeUpdate();
             
             if (rowsUpdated > 0) {
-                showAlert(Alert.AlertType.INFORMATION, "Success", 
-                        "Student updated successfully!\n" +
+                CustomModal.showInfo(stage, "Success", 
+                        "Student updated successfully!\n\n" +
                         "Student Number: " + currentStudent.getStudentNumber() + "\n" +
                         "Name: " + firstName + " " + lastName);
-                
-                // Close the form window after success
-                Stage stage = (Stage) studentID.getScene().getWindow();
                 stage.close();
             } else {
-                showAlert(Alert.AlertType.ERROR, "Error", "Could not update student!");
+                CustomModal.showError(stage, "Error", "Could not update student!");
             }
             
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error", "Error: " + e.getMessage());
+            CustomModal.showError(stage, "Database Error", "Error: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -173,13 +171,5 @@ public class StudentEditFormController implements Initializable {
     private void closeForm() {
         Stage stage = (Stage) CancelButton.getScene().getWindow();
         stage.close();
-    }
-    
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }
