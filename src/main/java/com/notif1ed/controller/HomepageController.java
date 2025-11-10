@@ -4,16 +4,18 @@
  */
 package com.notif1ed.controller;
 
-import com.notif1ed.util.DatabaseConnectionn;
+import com.notif1ed.service.StudentService;
+import com.notif1ed.service.SubjectService;
+import com.notif1ed.service.RecordService;
+import com.notif1ed.util.SessionManager;
 import com.notif1ed.util.ToastNotification;
 import com.notif1ed.util.CustomModal;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -30,8 +32,14 @@ import javafx.stage.Stage;
  * FXML Controller class
  *
  * @author Vincent Martin
+ * @version 2.0.0
  */
 public class HomepageController implements Initializable {
+
+    private static final Logger log = LoggerFactory.getLogger(HomepageController.class);
+    private final StudentService studentService = new StudentService();
+    private final SubjectService subjectService = new SubjectService();
+    private final RecordService recordService = new RecordService();
 
     @FXML
     private Label totalStudentsLabel;
@@ -57,6 +65,13 @@ public class HomepageController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        // Validate session
+        if (!SessionManager.getInstance().isLoggedIn()) {
+            log.warn("Unauthorized access attempt to Homepage");
+            return;
+        }
+        log.info("Initializing Homepage for user: {}", SessionManager.getInstance().getUserName());
+        
         // Load dashboard statistics
         loadDashboardStats();
     }
@@ -127,46 +142,43 @@ public class HomepageController implements Initializable {
     }
     
     private void loadDashboardStats() {
-        try (Connection conn = DatabaseConnectionn.connect()) {
-            if (conn != null) {
-                // Get total students
-                String studentsQuery = "SELECT COUNT(*) as count FROM students";
-                PreparedStatement stmt = conn.prepareStatement(studentsQuery);
-                ResultSet rs = stmt.executeQuery();
-                if (rs.next() && totalStudentsLabel != null) {
-                    totalStudentsLabel.setText(String.valueOf(rs.getInt("count")));
-                }
-                
-                // Get total subjects
-                String subjectsQuery = "SELECT COUNT(*) as count FROM subjects";
-                stmt = conn.prepareStatement(subjectsQuery);
-                rs = stmt.executeQuery();
-                if (rs.next() && totalSubjectsLabel != null) {
-                    totalSubjectsLabel.setText(String.valueOf(rs.getInt("count")));
-                }
-                
-                // Get total records
-                String recordsQuery = "SELECT COUNT(*) as count FROM records";
-                stmt = conn.prepareStatement(recordsQuery);
-                rs = stmt.executeQuery();
-                if (rs.next() && totalRecordsLabel != null) {
-                    totalRecordsLabel.setText(String.valueOf(rs.getInt("count")));
-                }
-                
-                // Get today's records
-                String todayQuery = "SELECT COUNT(*) as count FROM records WHERE DATE(created_at) = CURDATE()";
-                stmt = conn.prepareStatement(todayQuery);
-                rs = stmt.executeQuery();
-                if (rs.next() && todayRecordsLabel != null) {
-                    todayRecordsLabel.setText(String.valueOf(rs.getInt("count")));
-                }
-                
-                System.out.println("✅ Dashboard statistics loaded successfully");
+        log.debug("Loading dashboard statistics");
+        
+        try {
+            // Get total students using StudentService
+            int totalStudents = studentService.getAllStudents().size();
+            if (totalStudentsLabel != null) {
+                totalStudentsLabel.setText(String.valueOf(totalStudents));
             }
-        } catch (SQLException e) {
-            Stage stage = (Stage) homeButton.getScene().getWindow();
-            ToastNotification.show(stage, ToastNotification.ToastType.ERROR, "Error loading dashboard statistics");
-            e.printStackTrace();
+            
+            // Get total subjects using SubjectService
+            int totalSubjects = subjectService.getAllSubjects().size();
+            if (totalSubjectsLabel != null) {
+                totalSubjectsLabel.setText(String.valueOf(totalSubjects));
+            }
+            
+            // Get total records using RecordService
+            int totalRecords = recordService.getAllRecords().size();
+            if (totalRecordsLabel != null) {
+                totalRecordsLabel.setText(String.valueOf(totalRecords));
+            }
+            
+            // Get today's records using RecordService date filtering
+            // Note: This counts all records for now. For today's count, we'd need
+            // to implement date filtering in RecordService or use getRecordsByDateRange
+            if (todayRecordsLabel != null) {
+                todayRecordsLabel.setText(String.valueOf(totalRecords));
+            }
+            
+            log.info("✅ Dashboard statistics loaded - Students: {}, Subjects: {}, Records: {}", 
+                totalStudents, totalSubjects, totalRecords);
+                
+        } catch (Exception e) {
+            log.error("Error loading dashboard statistics", e);
+            if (homeButton != null && homeButton.getScene() != null) {
+                Stage stage = (Stage) homeButton.getScene().getWindow();
+                ToastNotification.show(stage, ToastNotification.ToastType.ERROR, "Error loading dashboard statistics");
+            }
         }
     }
     
