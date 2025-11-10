@@ -69,8 +69,6 @@ public class RecordsPageController implements Initializable {
     private javafx.scene.control.DatePicker datePicker;
     @FXML
     private javafx.scene.control.ChoiceBox<String> typeFilter;
-    @FXML
-    private Button filterButton;
     
     private ObservableList<RecordEntry> recordsList = FXCollections.observableArrayList();
 
