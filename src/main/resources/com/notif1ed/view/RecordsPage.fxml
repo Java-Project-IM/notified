@@ -93,8 +93,8 @@
                </children>
             </Pane>
             
-            <!-- Date Picker -->
-            <DatePicker fx:id="datePicker" layoutX="1250.0" layoutY="75.0" prefHeight="45.0" prefWidth="180.0" promptText="Filter by date" style="-fx-background-radius: 10; -fx-background-color: #F5F5F5;">
+            <!-- Date Picker - right aligned for better visual balance -->
+            <DatePicker fx:id="datePicker" layoutX="1610.0" layoutY="75.0" prefHeight="45.0" prefWidth="180.0" promptText="Filter by date" style="-fx-background-radius: 10; -fx-background-color: #F5F5F5;">
                <effect>
                   <DropShadow>
                      <color>
@@ -104,7 +104,7 @@
                </effect>
             </DatePicker>
             
-            <!-- Note: Filter action is now driven by DatePicker and Type filter directly; removed explicit filter button to simplify UI -->
+            <!-- Note: Date picker positioned at far right for optimal visual hierarchy -->
             
             <!-- TableView for displaying records -->
             <TableView fx:id="recordsTable" layoutX="30.0" layoutY="140.0" prefHeight="655.0" prefWidth="1760.0" styleClass="records-table" style="-fx-background-color: white;">
