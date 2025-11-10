@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 10, 2025 at 08:35 AM
+-- Generation Time: Nov 10, 2025 at 08:58 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -169,7 +169,8 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`user_id`, `name`, `email`, `password`, `created_at`, `updated_at`) VALUES
 (1, 'Admin User', 'admin@notified.com', 'admin123', '2025-11-08 11:03:55', '2025-11-08 11:03:55'),
 (2, 'Josh', 'ljcabunoc@gmail.com', '123', '2025-11-08 11:23:50', '2025-11-08 11:23:50'),
-(3, 'Test1', 'test1@gmail.com', 'test1', '2025-11-10 03:23:36', '2025-11-10 03:23:36');
+(3, 'Test1', 'test1@gmail.com', 'test1', '2025-11-10 03:23:36', '2025-11-10 03:23:36'),
+(4, 'test1111', 'test2@admin.com', '$2a$12$30xSEIZScZ.lNu.mRl1Ki.N888xAPGSabMU0yi3wxxhsgA.gJ8oK.', '2025-11-10 07:52:57', '2025-11-10 07:52:57');
 
 --
 -- Indexes for dumped tables
@@ -271,7 +272,7 @@ ALTER TABLE `subjects`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables

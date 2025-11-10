@@ -84,14 +84,15 @@ public class RecordService {
     /**
      * Adds a new record.
      * 
-     * @param recordType the record type (e.g., "email_sent", "student_added")
-     * @param description brief description of the record
-     * @param details detailed information about the record
+     * @param studentId the student ID
+     * @param subjectId the subject ID (can be null)
+     * @param recordType the record type (e.g., "EMAIL_SENT", "STUDENT_ADDED", "ENROLLMENT")
+     * @param recordData additional data about the record
      * @return true if added successfully
      */
-    public boolean addRecord(String recordType, String description, String details) {
-        log.info("Adding new record: {} - {}", recordType, description);
-        return repository.save(recordType, description, details);
+    public boolean addRecord(int studentId, Integer subjectId, String recordType, String recordData) {
+        log.info("Adding new record: {} for student ID: {}", recordType, studentId);
+        return repository.save(studentId, subjectId, recordType, recordData);
     }
     
     /**
@@ -120,41 +121,42 @@ public class RecordService {
      * Records an email sent event.
      * Convenience method for common record type.
      * 
+     * @param studentId the student ID
      * @param recipient the email recipient
      * @param subject the email subject
      * @return true if recorded successfully
      */
-    public boolean recordEmailSent(String recipient, String subject) {
-        String description = "Email sent to " + recipient;
-        String details = "Subject: " + subject;
-        return addRecord("email_sent", description, details);
+    public boolean recordEmailSent(int studentId, String recipient, String subject) {
+        String recordData = "Email sent to " + recipient + " - Subject: " + subject;
+        return addRecord(studentId, null, "EMAIL_SENT", recordData);
     }
     
     /**
      * Records a student added event.
      * Convenience method for common record type.
      * 
+     * @param studentId the student ID
      * @param studentNumber the student number
      * @param studentName the student name
      * @return true if recorded successfully
      */
-    public boolean recordStudentAdded(String studentNumber, String studentName) {
-        String description = "Student added: " + studentName;
-        String details = "Student Number: " + studentNumber;
-        return addRecord("student_added", description, details);
+    public boolean recordStudentAdded(int studentId, String studentNumber, String studentName) {
+        String recordData = "Student added: " + studentName + " (" + studentNumber + ")";
+        return addRecord(studentId, null, "STUDENT_ADDED", recordData);
     }
     
     /**
      * Records a subject enrollment event.
      * Convenience method for common record type.
      * 
+     * @param studentId the student ID
+     * @param subjectId the subject ID
      * @param studentNumber the student number
      * @param subjectCode the subject code
      * @return true if recorded successfully
      */
-    public boolean recordEnrollment(String studentNumber, String subjectCode) {
-        String description = "Student enrolled in subject";
-        String details = "Student: " + studentNumber + ", Subject: " + subjectCode;
-        return addRecord("enrollment", description, details);
+    public boolean recordEnrollment(int studentId, int subjectId, String studentNumber, String subjectCode) {
+        String recordData = "Student " + studentNumber + " enrolled in subject " + subjectCode;
+        return addRecord(studentId, subjectId, "ENROLLMENT", recordData);
     }
 }

@@ -145,25 +145,31 @@ public class RecordRepository {
     /**
      * Saves a new record to the database.
      * 
+     * @param studentId the student ID
+     * @param subjectId the subject ID (can be null)
      * @param recordType the record type
-     * @param description the record description
-     * @param details the record details
+     * @param recordData the record data
      * @return true if saved successfully
      */
-    public boolean save(String recordType, String description, String details) {
-        String sql = "INSERT INTO records (record_type, description, details, created_at) VALUES (?, ?, ?, NOW())";
+    public boolean save(int studentId, Integer subjectId, String recordType, String recordData) {
+        String sql = "INSERT INTO records (student_id, subject_id, record_type, record_data, created_at) VALUES (?, ?, ?, ?, NOW())";
         
         try (Connection conn = DatabaseConnection.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
-            stmt.setString(1, recordType);
-            stmt.setString(2, description);
-            stmt.setString(3, details);
+            stmt.setInt(1, studentId);
+            if (subjectId != null) {
+                stmt.setInt(2, subjectId);
+            } else {
+                stmt.setNull(2, java.sql.Types.INTEGER);
+            }
+            stmt.setString(3, recordType);
+            stmt.setString(4, recordData);
             
             int rowsAffected = stmt.executeUpdate();
             
             if (rowsAffected > 0) {
-                log.info("Record saved: {} - {}", recordType, description);
+                log.info("Record saved: {} for student ID: {}", recordType, studentId);
                 return true;
             }
             
@@ -239,9 +245,10 @@ public class RecordRepository {
     private Record mapResultSetToRecord(ResultSet rs) throws SQLException {
         Record record = new Record();
         record.setRecordId(rs.getInt("record_id"));
+        record.setStudentId(rs.getInt("student_id"));
+        record.setSubjectId(rs.getInt("subject_id"));
         record.setRecordType(rs.getString("record_type"));
-        record.setDescription(rs.getString("description"));
-        record.setDetails(rs.getString("details"));
+        record.setRecordData(rs.getString("record_data"));
         
         Timestamp timestamp = rs.getTimestamp("created_at");
         if (timestamp != null) {
@@ -253,25 +260,30 @@ public class RecordRepository {
     
     /**
      * Simple Record class for repository operations.
+     * Matches the actual database schema: record_id, student_id, subject_id, record_type, record_data, created_at
      */
     public static class Record {
         private int recordId;
+        private int studentId;
+        private int subjectId;
         private String recordType;
-        private String description;
-        private String details;
+        private String recordData;
         private LocalDateTime createdAt;
         
         public int getRecordId() { return recordId; }
         public void setRecordId(int recordId) { this.recordId = recordId; }
         
+        public int getStudentId() { return studentId; }
+        public void setStudentId(int studentId) { this.studentId = studentId; }
+        
+        public int getSubjectId() { return subjectId; }
+        public void setSubjectId(int subjectId) { this.subjectId = subjectId; }
+        
         public String getRecordType() { return recordType; }
         public void setRecordType(String recordType) { this.recordType = recordType; }
         
-        public String getDescription() { return description; }
-        public void setDescription(String description) { this.description = description; }
-        
-        public String getDetails() { return details; }
-        public void setDetails(String details) { this.details = details; }
+        public String getRecordData() { return recordData; }
+        public void setRecordData(String recordData) { this.recordData = recordData; }
         
         public LocalDateTime getCreatedAt() { return createdAt; }
         public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
