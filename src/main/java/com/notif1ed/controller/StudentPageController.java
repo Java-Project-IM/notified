@@ -6,6 +6,8 @@ package com.notif1ed.controller;
 
 import com.notif1ed.model.StudentEntry;
 import com.notif1ed.util.DatabaseConnectionn;
+import com.notif1ed.util.ToastNotification;
+import com.notif1ed.util.CustomModal;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,7 +18,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -163,7 +164,8 @@ public class StudentPageController implements Initializable {
                 System.out.println("✅ Loaded " + studentList.size() + " students from database");
             }
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error", "Error loading students: " + e.getMessage());
+            Stage stage = (Stage) studentTable.getScene().getWindow();
+            ToastNotification.showError(stage, "Error loading students: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -200,73 +202,78 @@ public class StudentPageController implements Initializable {
     
     @FXML
     private void handleSendEmailClick(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        
         // Get selected student or all students
         if (studentTable.getSelectionModel().getSelectedItem() != null) {
             StudentEntry selectedStudent = studentTable.getSelectionModel().getSelectedItem();
-            showAlert(Alert.AlertType.INFORMATION, "Send Email", 
+            ToastNotification.showInfo(stage, 
                 "Opening email prompt for: " + selectedStudent.getEmail());
             openEmailPrompt(selectedStudent.getEmail());
         } else if (studentList.size() > 0) {
-            showAlert(Alert.AlertType.INFORMATION, "Send Email", 
+            ToastNotification.showInfo(stage, 
                 "Opening email prompt for all students (" + studentList.size() + " recipients)");
             openEmailPromptForAll();
         } else {
-            showAlert(Alert.AlertType.WARNING, "No Students", 
+            ToastNotification.showWarning(stage, 
                 "No students available to send email to.");
         }
     }
     
     private void openEmailPrompt(String email) {
+        Stage stage = (Stage) studentTable.getScene().getWindow();
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/com/notif1ed/view/EmailPrompt.fxml"));
-            Stage stage = new Stage();
-            stage.setTitle("Send Email - " + email);
-            stage.setScene(new Scene(root));
-            stage.show();
+            Stage emailStage = new Stage();
+            emailStage.setTitle("Send Email - " + email);
+            emailStage.setScene(new Scene(root));
+            emailStage.show();
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Could not open email prompt");
+            ToastNotification.showError(stage, "Could not open email prompt");
             e.printStackTrace();
         }
     }
     
     private void openEmailPromptForAll() {
+        Stage stage = (Stage) studentTable.getScene().getWindow();
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/com/notif1ed/view/EmailPrompt.fxml"));
-            Stage stage = new Stage();
-            stage.setTitle("Send Email to All Students");
-            stage.setScene(new Scene(root));
-            stage.show();
+            Stage emailStage = new Stage();
+            emailStage.setTitle("Send Email to All Students");
+            emailStage.setScene(new Scene(root));
+            emailStage.show();
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Could not open email prompt");
+            ToastNotification.showError(stage, "Could not open email prompt");
             e.printStackTrace();
         }
     }
     
     private void openFormWindow(String fxmlFile, String title) {
+        Stage stage = (Stage) studentTable.getScene().getWindow();
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/com/notif1ed/view/" + fxmlFile));
-            Stage stage = new Stage();
-            stage.setTitle(title);
-            stage.setScene(new Scene(root));
-            stage.show();
+            Stage formStage = new Stage();
+            formStage.setTitle(title);
+            formStage.setScene(new Scene(root));
+            formStage.show();
             
             // Refresh table when form window is closed
-            stage.setOnHidden(e -> refreshTable());
+            formStage.setOnHidden(e -> refreshTable());
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Could not open form: " + fxmlFile);
+            ToastNotification.showError(stage, "Could not open form: " + fxmlFile);
             e.printStackTrace();
         }
     }
     
     private void navigateToPage(ActionEvent event, String fxmlFile) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/com/notif1ed/view/" + fxmlFile));
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/notif1ed/view/" + fxmlFile));
+            Scene scene = new Scene(loader.load());
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load page: " + fxmlFile);
+            ToastNotification.showError(stage, "Could not load page: " + fxmlFile);
             e.printStackTrace();
         }
     }
@@ -274,10 +281,10 @@ public class StudentPageController implements Initializable {
     @FXML
     private void handleEditStudent(ActionEvent event) {
         StudentEntry selectedStudent = studentTable.getSelectionModel().getSelectedItem();
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         
         if (selectedStudent == null) {
-            showAlert(Alert.AlertType.WARNING, "No Selection", 
-                     "Please select a student to edit.");
+            ToastNotification.showWarning(stage, "Please select a student to edit.");
             return;
         }
         
@@ -287,10 +294,10 @@ public class StudentPageController implements Initializable {
     @FXML
     private void handleDeleteStudent(ActionEvent event) {
         StudentEntry selectedStudent = studentTable.getSelectionModel().getSelectedItem();
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         
         if (selectedStudent == null) {
-            showAlert(Alert.AlertType.WARNING, "No Selection", 
-                     "Please select a student to delete.");
+            ToastNotification.showWarning(stage, "Please select a student to delete.");
             return;
         }
         
@@ -298,21 +305,25 @@ public class StudentPageController implements Initializable {
     }
     
     private void confirmAndDeleteStudent(StudentEntry student) {
-        // Confirm deletion
-        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmAlert.setTitle("Confirm Deletion");
-        confirmAlert.setHeaderText("Delete Student");
-        confirmAlert.setContentText("Are you sure you want to delete student:\n" +
-                                   student.getStudentNumber() + " - " +
-                                   student.getFirstName() + " " + 
-                                   student.getLastName() + "?\n\n" +
-                                   "This will also remove all their enrollments and records.");
+        // Get current stage for modal
+        Stage stage = (Stage) studentTable.getScene().getWindow();
         
-        confirmAlert.showAndWait().ifPresent(response -> {
-            if (response == javafx.scene.control.ButtonType.OK) {
-                deleteStudent(student);
-            }
-        });
+        // Confirm deletion with modern modal
+        boolean confirmed = CustomModal.showConfirmation(
+            stage,
+            "Delete Student",
+            "Are you sure you want to delete student:\n" +
+            student.getStudentNumber() + " - " +
+            student.getFirstName() + " " + 
+            student.getLastName() + "?\n\n" +
+            "This will also remove all their enrollments and records.",
+            "Delete",
+            "Cancel"
+        );
+        
+        if (confirmed) {
+            deleteStudent(student);
+        }
     }
     
     private void openEditStudentForm(StudentEntry student) {
@@ -332,13 +343,14 @@ public class StudentPageController implements Initializable {
             // Refresh table when edit window is closed
             stage.setOnHidden(e -> refreshTable());
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Could not open edit form");
+            ToastNotification.showError((Stage) studentTable.getScene().getWindow(), "Could not open edit form");
             e.printStackTrace();
         }
     }
     
     private void deleteStudent(StudentEntry student) {
         String sql = "DELETE FROM students WHERE student_number = ?";
+        Stage stage = (Stage) studentTable.getScene().getWindow();
         
         try (Connection conn = DatabaseConnectionn.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -348,26 +360,18 @@ public class StudentPageController implements Initializable {
             int rowsAffected = stmt.executeUpdate();
             
             if (rowsAffected > 0) {
-                showAlert(Alert.AlertType.INFORMATION, "Success", 
+                ToastNotification.showSuccess(stage, 
                          "Student " + student.getStudentNumber() + " has been deleted successfully.");
                 refreshTable();
             } else {
-                showAlert(Alert.AlertType.ERROR, "Error", 
+                ToastNotification.showError(stage, 
                          "Could not delete student. Student may not exist.");
             }
             
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error", 
+            ToastNotification.showError(stage, 
                      "Error deleting student: " + e.getMessage());
             e.printStackTrace();
         }
-    }
-    
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }
