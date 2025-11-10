@@ -11,6 +11,7 @@ public class StudentEntry {
     private final StringProperty surname = new SimpleStringProperty();
     private final StringProperty firstName = new SimpleStringProperty();
     private final StringProperty lastName = new SimpleStringProperty();
+    private final StringProperty section = new SimpleStringProperty();
     private final StringProperty email = new SimpleStringProperty();
     private final StringProperty guardianName = new SimpleStringProperty();
     private final StringProperty guardianEmail = new SimpleStringProperty();
@@ -73,4 +74,8 @@ public class StudentEntry {
     public String getGuardianEmail() { return guardianEmail.get(); }
     public void setGuardianEmail(String v) { guardianEmail.set(v); }
     public StringProperty guardianEmailProperty() { return guardianEmail; }
+    
+    public String getSection() { return section.get(); }
+    public void setSection(String v) { section.set(v); }
+    public StringProperty sectionProperty() { return section; }
 }

@@ -156,7 +156,7 @@ public class SubjectPageController implements Initializable {
         };
         
         // Show form modal
-        Map<String, String> result = CustomModal.showForm(stage, "Add New Subject", "➕", fields);
+        Map<String, String> result = CustomModal.showForm(stage, "Add New Subject", "📚", fields);
         
         if (result != null) {
             // Validate and add subject

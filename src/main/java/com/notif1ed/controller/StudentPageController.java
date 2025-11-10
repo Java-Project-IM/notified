@@ -38,6 +38,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
+import java.util.Map;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ResourceBundle;
 
 /**
  * FXML Controller class for Student Page
@@ -148,6 +153,7 @@ public class StudentPageController implements Initializable {
             if (conn != null) {
                 String sql = "SELECT student_number, first_name, " +
                            "COALESCE(last_name, guardian_name, '') as last_name, " +
+                           "COALESCE(section, '') as section, " +
                            "email FROM students ORDER BY student_number";
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 ResultSet rs = stmt.executeQuery();
@@ -159,6 +165,7 @@ public class StudentPageController implements Initializable {
                         rs.getString("last_name"),
                         rs.getString("email")
                     );
+                    student.setSection(rs.getString("section"));
                     studentList.add(student);
                 }
                 
@@ -353,12 +360,37 @@ public class StudentPageController implements Initializable {
             EmailPromptController controller = loader.getController();
             controller.setRecipient(email);
             
+            // Create modal dialog with backdrop styling
             Stage emailStage = new Stage();
             emailStage.setTitle("Send Email - " + email);
             emailStage.initOwner(stage);
             emailStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
-            emailStage.setScene(new Scene(root));
-            emailStage.show();
+            emailStage.initStyle(javafx.stage.StageStyle.TRANSPARENT);
+            emailStage.setResizable(false);
+            
+            // Wrap content in backdrop
+            javafx.scene.layout.StackPane backdrop = new javafx.scene.layout.StackPane();
+            backdrop.setStyle("-fx-background-color: rgba(0, 0, 0, 0.65);");
+            backdrop.getChildren().add(root);
+            
+            Scene scene = new Scene(backdrop);
+            scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+            emailStage.setScene(scene);
+            
+            // Match owner window size and position
+            emailStage.setX(stage.getX());
+            emailStage.setY(stage.getY());
+            emailStage.setWidth(stage.getWidth());
+            emailStage.setHeight(stage.getHeight());
+            
+            // Close on backdrop click
+            backdrop.setOnMouseClicked(e -> {
+                if (e.getTarget() == backdrop) {
+                    emailStage.close();
+                }
+            });
+            
+            emailStage.showAndWait();
         } catch (IOException e) {
             ToastNotification.showError(stage, "Could not open email prompt");
             e.printStackTrace();
@@ -382,12 +414,37 @@ public class StudentPageController implements Initializable {
             }
             controller.setMultipleRecipients(emails.toString());
             
+            // Create modal dialog with backdrop styling
             Stage emailStage = new Stage();
             emailStage.setTitle("Send Email to All Students (" + studentList.size() + " recipients)");
             emailStage.initOwner(stage);
             emailStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
-            emailStage.setScene(new Scene(root));
-            emailStage.show();
+            emailStage.initStyle(javafx.stage.StageStyle.TRANSPARENT);
+            emailStage.setResizable(false);
+            
+            // Wrap content in backdrop
+            javafx.scene.layout.StackPane backdrop = new javafx.scene.layout.StackPane();
+            backdrop.setStyle("-fx-background-color: rgba(0, 0, 0, 0.65);");
+            backdrop.getChildren().add(root);
+            
+            Scene scene = new Scene(backdrop);
+            scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+            emailStage.setScene(scene);
+            
+            // Match owner window size and position
+            emailStage.setX(stage.getX());
+            emailStage.setY(stage.getY());
+            emailStage.setWidth(stage.getWidth());
+            emailStage.setHeight(stage.getHeight());
+            
+            // Close on backdrop click
+            backdrop.setOnMouseClicked(e -> {
+                if (e.getTarget() == backdrop) {
+                    emailStage.close();
+                }
+            });
+            
+            emailStage.showAndWait();
         } catch (IOException e) {
             ToastNotification.showError(stage, "Could not open email prompt");
             e.printStackTrace();
@@ -456,24 +513,50 @@ public class StudentPageController implements Initializable {
     }
     
     private void openEditStudentForm(StudentEntry student) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/notif1ed/view/StudentEditForm.fxml"));
-            Parent root = loader.load();
+        Stage stage = (Stage) studentTable.getScene().getWindow();
+        
+        // Create form fields with current student data
+        CustomModal.FormField[] fields = new CustomModal.FormField[] {
+            new CustomModal.FormField("studentNumber", "Student Number (Cannot be changed)", "text", student.getStudentNumber(), true, ""),
+            new CustomModal.FormField("firstName", "First Name", "text", student.getFirstName(), true, "Enter first name"),
+            new CustomModal.FormField("lastName", "Last Name", "text", student.getLastName(), true, "Enter last name"),
+            new CustomModal.FormField("section", "Section", "text", student.getSection(), false, "Enter section (optional)"),
+            new CustomModal.FormField("email", "Student Email", "email", student.getEmail(), true, "student@example.com"),
+            new CustomModal.FormField("guardianName", "Guardian Name", "text", student.getGuardianName(), true, "Enter guardian name"),
+            new CustomModal.FormField("guardianEmail", "Guardian Email", "email", student.getGuardianEmail(), false, "guardian@example.com")
+        };
+        
+        // Show form modal
+        Map<String, String> result = CustomModal.showForm(stage, "Edit Student - " + student.getStudentNumber(), "✏️", fields);
+        
+        if (result != null) {
+            // User clicked Submit - update student in database
+            String sql = "UPDATE students SET first_name = ?, last_name = ?, section = ?, email = ?, guardian_name = ?, guardian_email = ? WHERE student_number = ?";
             
-            // Get the controller and pass the student data
-            StudentEditFormController controller = loader.getController();
-            controller.setStudent(student);
-            
-            Stage stage = new Stage();
-            stage.setTitle("Edit Student - " + student.getStudentNumber());
-            stage.setScene(new Scene(root));
-            stage.show();
-            
-            // Refresh table when edit window is closed
-            stage.setOnHidden(e -> refreshTable());
-        } catch (IOException e) {
-            ToastNotification.showError((Stage) studentTable.getScene().getWindow(), "Could not open edit form");
-            e.printStackTrace();
+            try (Connection conn = DatabaseConnectionn.connect();
+                 PreparedStatement stmt = conn.prepareStatement(sql)) {
+                
+                stmt.setString(1, result.get("firstName"));
+                stmt.setString(2, result.get("lastName"));
+                stmt.setString(3, result.get("section"));
+                stmt.setString(4, result.get("email"));
+                stmt.setString(5, result.get("guardianName"));
+                stmt.setString(6, result.get("guardianEmail"));
+                stmt.setString(7, student.getStudentNumber());
+                
+                int rowsAffected = stmt.executeUpdate();
+                
+                if (rowsAffected > 0) {
+                    ToastNotification.showSuccess(stage, "Student updated successfully!");
+                    refreshTable();
+                } else {
+                    ToastNotification.showError(stage, "Could not update student. Student may not exist.");
+                }
+                
+            } catch (SQLException e) {
+                ToastNotification.showError(stage, "Error updating student: " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
     

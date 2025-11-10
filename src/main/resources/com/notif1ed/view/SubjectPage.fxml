@@ -5,10 +5,12 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.paint.Color?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
@@ -55,15 +57,20 @@
          </children>
       </Pane>
       
-      <!-- Page Title -->
-      <Text layoutX="50.0" layoutY="175.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Subjects" fill="#8E24AA">
+      <!-- Page Header with Professional Design -->
+      <Text layoutX="50.0" layoutY="165.0" strokeType="OUTSIDE" strokeWidth="0.0" text="SUBJECTS" fill="#8E24AA">
          <font>
-            <Font name="Poppins Bold" size="60.0" />
+            <Font name="Poppins Bold" size="48.0" />
+         </font>
+      </Text>
+      <Text layoutX="50.0" layoutY="192.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Manage courses and student enrollments" fill="#616161" opacity="0.75">
+         <font>
+            <Font name="Poppins Regular" size="16.0" />
          </font>
       </Text>
       
       <!-- Main Content Card -->
-      <Pane layoutX="50.0" layoutY="200.0" prefHeight="820.0" prefWidth="1820.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 5);">
+      <Pane layoutX="50.0" layoutY="220.0" prefHeight="800.0" prefWidth="1820.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 5);">
          <children>
             <Text layoutX="30.0" layoutY="55.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Subject Information" fill="#424242">
                <font>
