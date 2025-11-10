@@ -6,7 +6,11 @@ package com.notif1ed.controller;
 
 import com.notif1ed.model.RecordEntry;
 import com.notif1ed.util.DatabaseConnectionn;
+import com.notif1ed.util.SessionManager;
 import com.notif1ed.util.ToastNotification;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
@@ -36,8 +40,11 @@ import javafx.stage.Stage;
  * FXML Controller class
  *
  * @author Vincent Martin
+ * @version 2.0.0
  */
 public class RecordsPageController implements Initializable {
+
+    private static final Logger log = LoggerFactory.getLogger(RecordsPageController.class);
 
     @FXML
     private TableView<RecordEntry> recordsTable;
@@ -75,6 +82,13 @@ public class RecordsPageController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        // Validate session
+        if (!SessionManager.getInstance().isLoggedIn()) {
+            log.warn("Unauthorized access attempt to Records page");
+            return;
+        }
+        log.info("Initializing Records page for user: {}", SessionManager.getInstance().getUserName());
+        
         // Set up table columns to match RecordEntry alias properties
         if (studentNumberCol != null) {
             studentNumberCol.setCellValueFactory(new PropertyValueFactory<>("studentNumber"));
@@ -163,6 +177,7 @@ public class RecordsPageController implements Initializable {
     }
     
     private void loadRecords() {
+        log.debug("Loading records from database");
         recordsList.clear();
         
         try (Connection conn = DatabaseConnectionn.connect()) {
@@ -198,12 +213,14 @@ public class RecordsPageController implements Initializable {
                     recordsTable.setItems(recordsList);
                 }
                 
-                System.out.println("✅ Loaded " + recordsList.size() + " records from database");
+                log.info("✅ Loaded {} records from database", recordsList.size());
             }
         } catch (SQLException e) {
-            Stage stage = (Stage) homeButton.getScene().getWindow();
-            ToastNotification.show(stage, ToastNotification.ToastType.ERROR, "Error loading records from database");
-            e.printStackTrace();
+            log.error("Error loading records", e);
+            if (homeButton != null && homeButton.getScene() != null) {
+                Stage stage = (Stage) homeButton.getScene().getWindow();
+                ToastNotification.show(stage, ToastNotification.ToastType.ERROR, "Error loading records from database");
+            }
         }
     }
     

@@ -1,8 +1,14 @@
 package com.notif1ed.controller;
 
-import com.notif1ed.util.DatabaseConnectionn;
+import com.notif1ed.util.DatabaseConnection;
 import com.notif1ed.util.ToastNotification;
 import com.notif1ed.util.WelcomeDialog;
+import com.notif1ed.util.PasswordUtils;
+import com.notif1ed.util.SessionManager;
+import com.notif1ed.util.Constants;
+import com.notif1ed.util.ErrorHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -19,7 +25,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * Controller for the login page.
+ * Handles user authentication with secure password verification.
+ * 
+ * @author Notif1ed Development Team
+ * @version 2.0.0
+ */
 public class LoginController {
+    
+    private static final Logger log = LoggerFactory.getLogger(LoginController.class);
 
     @FXML
     private TextField emailField;
@@ -37,36 +52,45 @@ public class LoginController {
 
         // Validate inputs
         if (email.isEmpty() || password.isEmpty()) {
-            ToastNotification.showWarning(stage, "Please enter both email and password!");
+            ToastNotification.showWarning(stage, Constants.WARN_EMPTY_EMAIL_PASSWORD);
+            log.warn("Login attempt with empty credentials");
             return;
         }
 
         // Check credentials in database
-        try (Connection conn = DatabaseConnectionn.connect()) {
-            if (conn != null) {
-                String sql = "SELECT user_id, name, email FROM users WHERE email = ? AND password = ?";
-                PreparedStatement stmt = conn.prepareStatement(sql);
-                stmt.setString(1, email);
-                stmt.setString(2, password);
+        try (Connection conn = DatabaseConnection.connect()) {
+            String sql = Constants.SELECT_USER_BY_EMAIL;
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, email);
+            
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                int userId = rs.getInt("user_id");
+                String userName = rs.getString("name");
+                String storedHash = rs.getString("password");
                 
-                ResultSet rs = stmt.executeQuery();
-                
-                if (rs.next()) {
-                    // Login successful
-                    String userName = rs.getString("name");
+                // Verify password using BCrypt
+                if (PasswordUtils.checkPassword(password, storedHash)) {
+                    // Login successful - create session
+                    SessionManager.getInstance().login(userId, userName, email);
+                    log.info("User logged in successfully: {}", email);
                     
-                    // Navigate to homepage first
+                    // Navigate to homepage
                     navigateToHomepage(event, userName);
                 } else {
-                    // Login failed
-                    ToastNotification.showError(stage, "Invalid email or password!");
+                    // Invalid password
+                    ToastNotification.showError(stage, Constants.ERR_INVALID_CREDENTIALS);
+                    log.warn("Failed login attempt for: {}", email);
                 }
             } else {
-                ToastNotification.showError(stage, "Could not connect to database!");
+                // User not found
+                ToastNotification.showError(stage, Constants.ERR_INVALID_CREDENTIALS);
+                log.warn("Login attempt for non-existent user: {}", email);
             }
+            
         } catch (SQLException e) {
-            ToastNotification.showError(stage, "Database error: " + e.getMessage());
-            e.printStackTrace();
+            ErrorHandler.handleDatabaseError(stage, e, "authenticate user");
         }
     }
     

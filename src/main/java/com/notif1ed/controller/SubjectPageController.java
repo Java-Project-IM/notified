@@ -5,16 +5,18 @@
 package com.notif1ed.controller;
 
 import com.notif1ed.model.SubjectEntry;
-import com.notif1ed.util.DatabaseConnectionn;
+import com.notif1ed.repository.SubjectRepository;
+import com.notif1ed.service.SubjectService;
+import com.notif1ed.util.SessionManager;
 import com.notif1ed.util.ToastNotification;
 import com.notif1ed.util.CustomModal;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Map;
 import javafx.collections.FXCollections;
@@ -36,8 +38,12 @@ import javafx.stage.Stage;
  * FXML Controller class
  *
  * @author Vincent Martin
+ * @version 2.0.0
  */
 public class SubjectPageController implements Initializable {
+
+    private static final Logger log = LoggerFactory.getLogger(SubjectPageController.class);
+    private final SubjectService subjectService = new SubjectService();
 
     @FXML
     private TableView<SubjectEntry> subjectTable;
@@ -71,6 +77,13 @@ public class SubjectPageController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        // Validate session
+        if (!SessionManager.getInstance().isLoggedIn()) {
+            log.warn("Unauthorized access attempt to Subjects page");
+            return;
+        }
+        log.info("Initializing Subjects page for user: {}", SessionManager.getInstance().getUserName());
+        
         // Set up table columns if they exist
         if (subjectCodeCol != null) {
             subjectCodeCol.setCellValueFactory(new PropertyValueFactory<>("subjectCode"));
@@ -152,7 +165,8 @@ public class SubjectPageController implements Initializable {
             new CustomModal.FormField("subjectCode", "Subject Code", "text", true),
             new CustomModal.FormField("section", "Section", "text", true),
             new CustomModal.FormField("subjectName", "Subject Name", "text", true),
-            new CustomModal.FormField("yearLevel", "Year Level", "number", true)
+            new CustomModal.FormField("yearLevel", "Year Level", "number", true),
+            new CustomModal.FormField("description", "Description", "text", false)
         };
         
         // Show form modal
@@ -164,38 +178,33 @@ public class SubjectPageController implements Initializable {
             String section = result.get("section").trim();
             String subjectName = result.get("subjectName").trim();
             String yearLevel = result.get("yearLevel").trim();
+            String description = result.getOrDefault("description", "").trim();
             
-            try (Connection conn = DatabaseConnectionn.connect()) {
-                String sql = "INSERT INTO subjects (subject_code, subject_name, year_level, section) VALUES (?, ?, ?, ?)";
-                PreparedStatement pstmt = conn.prepareStatement(sql);
-                pstmt.setString(1, subjectCode);
-                pstmt.setString(2, subjectName);
-                pstmt.setInt(3, Integer.parseInt(yearLevel));
-                pstmt.setString(4, section);
+            try {
+                int yearLevelInt = Integer.parseInt(yearLevel);
                 
-                int rowsAffected = pstmt.executeUpdate();
+                // Add subject using service
+                boolean success = subjectService.addSubject(subjectCode, subjectName, yearLevelInt, section, description);
                 
-                if (rowsAffected > 0) {
+                if (success) {
+                    log.info("Subject added successfully: {}", subjectCode);
                     ToastNotification.show(stage, ToastNotification.ToastType.SUCCESS, 
                         "Subject added successfully: " + subjectCode);
                     refreshTable();
                 } else {
+                    log.warn("Failed to add subject - duplicate code: {}", subjectCode);
                     ToastNotification.show(stage, ToastNotification.ToastType.ERROR, 
-                        "Failed to add subject");
+                        "Subject code already exists!");
                 }
                 
             } catch (NumberFormatException e) {
+                log.warn("Invalid year level format: {}", yearLevel);
                 ToastNotification.show(stage, ToastNotification.ToastType.WARNING, 
                     "Year Level must be a valid number");
-            } catch (SQLException e) {
-                if (e.getMessage().contains("Duplicate entry")) {
-                    ToastNotification.show(stage, ToastNotification.ToastType.ERROR, 
-                        "Subject code already exists!");
-                } else {
-                    ToastNotification.show(stage, ToastNotification.ToastType.ERROR, 
-                        "Database error: " + e.getMessage());
-                }
-                e.printStackTrace();
+            } catch (Exception e) {
+                log.error("Error adding subject", e);
+                ToastNotification.show(stage, ToastNotification.ToastType.ERROR, 
+                    "Error adding subject: " + e.getMessage());
             }
         }
     }
@@ -250,38 +259,35 @@ public class SubjectPageController implements Initializable {
     }
     
     private void loadSubjects() {
+        log.debug("Loading subjects from database");
         subjectList.clear();
         
-        try (Connection conn = DatabaseConnectionn.connect()) {
-            if (conn != null) {
-                String sql = "SELECT subject_id, subject_code, subject_name, " +
-                           "COALESCE(year_level, 0) as year_level, " +
-                           "COALESCE(section, '') as section " +
-                           "FROM subjects ORDER BY subject_code";
-                PreparedStatement stmt = conn.prepareStatement(sql);
-                ResultSet rs = stmt.executeQuery();
-                
-                while (rs.next()) {
-                    SubjectEntry subject = new SubjectEntry(
-                        rs.getInt("subject_id"),
-                        rs.getString("subject_code"),
-                        rs.getString("subject_name"),
-                        rs.getInt("year_level"),
-                        rs.getString("section")
-                    );
-                    subjectList.add(subject);
-                }
-                
-                if (subjectTable != null) {
-                    subjectTable.setItems(subjectList);
-                }
-                
-                System.out.println("✅ Loaded " + subjectList.size() + " subjects from database");
+        try {
+            // Get subjects from service and convert to SubjectEntry
+            List<SubjectRepository.Subject> serviceSubjects = subjectService.getAllSubjects();
+            
+            for (SubjectRepository.Subject serviceSubject : serviceSubjects) {
+                SubjectEntry entry = new SubjectEntry(
+                    serviceSubject.getSubjectId(),
+                    serviceSubject.getSubjectCode(),
+                    serviceSubject.getSubjectName(),
+                    serviceSubject.getYearLevel(),
+                    serviceSubject.getSection()
+                );
+                subjectList.add(entry);
             }
-        } catch (SQLException e) {
-            Stage stage = (Stage) homeButton.getScene().getWindow();
-            ToastNotification.show(stage, ToastNotification.ToastType.ERROR, "Error loading subjects from database");
-            e.printStackTrace();
+            
+            if (subjectTable != null) {
+                subjectTable.setItems(subjectList);
+            }
+            
+            log.info("✅ Loaded {} subjects from database", subjectList.size());
+        } catch (Exception e) {
+            log.error("Error loading subjects", e);
+            if (homeButton != null && homeButton.getScene() != null) {
+                Stage stage = (Stage) homeButton.getScene().getWindow();
+                ToastNotification.show(stage, ToastNotification.ToastType.ERROR, "Error loading subjects from database");
+            }
         }
     }
     
