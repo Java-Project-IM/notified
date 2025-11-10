@@ -5,9 +5,12 @@
 package com.notif1ed.controller;
 
 import com.notif1ed.model.StudentEntry;
-import com.notif1ed.util.DatabaseConnectionn;
+import com.notif1ed.service.StudentService;
 import com.notif1ed.util.ToastNotification;
 import com.notif1ed.util.CustomModal;
+import com.notif1ed.util.SessionManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -28,17 +31,19 @@ import javafx.geometry.Pos;
 import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
  * FXML Controller class for Student Page
+ * Uses StudentService for all data operations.
+ * 
+ * @version 2.0.0
  */
 public class StudentPageController implements Initializable {
+    
+    private static final Logger log = LoggerFactory.getLogger(StudentPageController.class);
+    private final StudentService studentService = new StudentService();
 
     @FXML
     private TableView<StudentEntry> studentTable;
@@ -73,6 +78,15 @@ public class StudentPageController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        // Session validation - redirect to login if not logged in
+        if (!SessionManager.getInstance().isLoggedIn()) {
+            log.warn("Unauthorized access attempt to Students page");
+            // TODO: Redirect to login page
+            return;
+        }
+        
+        log.info("Initializing Students page for user: {}", SessionManager.getInstance().getUserName());
+        
         // Setup table columns if they exist
         if (studentNumberCol != null) {
             studentNumberCol.setCellValueFactory(new PropertyValueFactory<>("studentNumber"));
@@ -140,36 +154,21 @@ public class StudentPageController implements Initializable {
     private void loadStudents() {
         studentList.clear();
         
-        try (Connection conn = DatabaseConnectionn.connect()) {
-            if (conn != null) {
-                String sql = "SELECT student_number, first_name, " +
-                           "COALESCE(last_name, guardian_name, '') as last_name, " +
-                           "COALESCE(section, '') as section, " +
-                           "email FROM students ORDER BY student_number";
-                PreparedStatement stmt = conn.prepareStatement(sql);
-                ResultSet rs = stmt.executeQuery();
-                
-                while (rs.next()) {
-                    StudentEntry student = new StudentEntry(
-                        rs.getString("student_number"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
-                        rs.getString("email")
-                    );
-                    student.setSection(rs.getString("section"));
-                    studentList.add(student);
-                }
-                
-                if (studentTable != null) {
-                    studentTable.setItems(studentList);
-                }
-                
-                System.out.println("✅ Loaded " + studentList.size() + " students from database");
+        try {
+            // Use StudentService instead of direct database access
+            log.debug("Loading students from database");
+            studentList.addAll(studentService.getAllStudents());
+            
+            if (studentTable != null) {
+                studentTable.setItems(studentList);
             }
-        } catch (SQLException e) {
+            
+            log.info("✅ Loaded {} students from database", studentList.size());
+            
+        } catch (Exception e) {
+            log.error("Error loading students", e);
             Stage stage = (Stage) studentTable.getScene().getWindow();
             ToastNotification.showError(stage, "Error loading students: " + e.getMessage());
-            e.printStackTrace();
         }
     }
     
@@ -242,42 +241,32 @@ public class StudentPageController implements Initializable {
                 return;
             }
             
-            // Save to database
-            try (Connection conn = DatabaseConnectionn.connect()) {
-                if (conn != null) {
-                    String sql = "INSERT INTO students (student_number, first_name, last_name, email, section, guardian_name, guardian_email, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, 1)";
-                    PreparedStatement stmt = conn.prepareStatement(sql);
-                    stmt.setString(1, studentNumber);
-                    stmt.setString(2, firstName);
-                    stmt.setString(3, lastName);
-                    stmt.setString(4, studentEmail);
-                    stmt.setString(5, section);
-                    stmt.setString(6, guardianName);
-                    stmt.setString(7, guardianEmail);
-                    
-                    int rowsInserted = stmt.executeUpdate();
-                    
-                    if (rowsInserted > 0) {
-                        ToastNotification.show(stage, ToastNotification.ToastType.SUCCESS, 
-                            "Student added successfully: " + firstName + " " + lastName);
-                        refreshTable();
-                    } else {
-                        ToastNotification.show(stage, ToastNotification.ToastType.ERROR, 
-                            "Failed to add student");
-                    }
+            // Save to database using StudentService
+            try {
+                StudentEntry newStudent = new StudentEntry(studentNumber, firstName, lastName, studentEmail);
+                newStudent.setSection(section);
+                
+                boolean success = studentService.addStudent(newStudent, guardianName, guardianEmail, section);
+                
+                if (success) {
+                    log.info("Student added successfully: {}", studentNumber);
+                    ToastNotification.show(stage, ToastNotification.ToastType.SUCCESS, 
+                        "Student added successfully: " + firstName + " " + lastName);
+                    refreshTable();
                 } else {
                     ToastNotification.show(stage, ToastNotification.ToastType.ERROR, 
-                        "Could not connect to database");
+                        "Failed to add student");
                 }
-            } catch (SQLException e) {
-                if (e.getMessage().contains("Duplicate entry")) {
+                
+            } catch (Exception e) {
+                log.error("Error adding student", e);
+                if (e.getMessage() != null && e.getMessage().contains("Duplicate entry")) {
                     ToastNotification.show(stage, ToastNotification.ToastType.ERROR, 
                         "This student number already exists!");
                 } else {
                     ToastNotification.show(stage, ToastNotification.ToastType.ERROR, 
                         "Database error: " + e.getMessage());
                 }
-                e.printStackTrace();
             }
         }
     }
@@ -289,36 +278,19 @@ public class StudentPageController implements Initializable {
     }
     
     private String generateStudentNumber() {
-        String newStudentNumber = "25-0001"; // Default
+        String yearPrefix = "25"; // Current year prefix
         
-        try (Connection conn = DatabaseConnectionn.connect()) {
-            if (conn != null) {
-                // Get the highest student number starting with "25-"
-                String sql = "SELECT student_number FROM students " +
-                           "WHERE student_number LIKE '25-%' " +
-                           "ORDER BY student_number DESC LIMIT 1";
-                PreparedStatement stmt = conn.prepareStatement(sql);
-                ResultSet rs = stmt.executeQuery();
-                
-                if (rs.next()) {
-                    String lastNumber = rs.getString("student_number");
-                    // Extract the numeric part after "25-"
-                    String numericPart = lastNumber.substring(3);
-                    int nextNumber = Integer.parseInt(numericPart) + 1;
-                    // Format with leading zeros (4 digits)
-                    newStudentNumber = String.format("25-%04d", nextNumber);
-                } else {
-                    // No existing students, start with 25-0001
-                    newStudentNumber = "25-0001";
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("Error generating student number: " + e.getMessage());
-            e.printStackTrace();
-            // Keep default value
+        try {
+            // Use StudentService to generate next student number
+            String newNumber = studentService.generateNextStudentNumber(yearPrefix);
+            log.debug("Generated new student number: {}", newNumber);
+            return newNumber;
+            
+        } catch (Exception e) {
+            log.error("Error generating student number", e);
+            // Return default as fallback
+            return yearPrefix + "-0001";
         }
-        
-        return newStudentNumber;
     }
     
     @FXML
@@ -521,48 +493,47 @@ public class StudentPageController implements Initializable {
         Map<String, String> result = CustomModal.showForm(stage, "Edit Student - " + student.getStudentNumber(), "✏️", fields);
         
         if (result != null) {
-            // User clicked Submit - update student in database
-            String sql = "UPDATE students SET first_name = ?, last_name = ?, section = ?, email = ?, guardian_name = ?, guardian_email = ? WHERE student_number = ?";
-            
-            try (Connection conn = DatabaseConnectionn.connect();
-                 PreparedStatement stmt = conn.prepareStatement(sql)) {
+            // User clicked Submit - update student using StudentService
+            try {
+                StudentEntry updatedStudent = new StudentEntry(
+                    student.getStudentNumber(),
+                    result.get("firstName"),
+                    result.get("lastName"),
+                    result.get("email")
+                );
+                updatedStudent.setSection(result.get("section"));
                 
-                stmt.setString(1, result.get("firstName"));
-                stmt.setString(2, result.get("lastName"));
-                stmt.setString(3, result.get("section"));
-                stmt.setString(4, result.get("email"));
-                stmt.setString(5, result.get("guardianName"));
-                stmt.setString(6, result.get("guardianEmail"));
-                stmt.setString(7, student.getStudentNumber());
+                boolean success = studentService.updateStudent(
+                    updatedStudent,
+                    result.get("guardianName"),
+                    result.get("guardianEmail"),
+                    result.get("section")
+                );
                 
-                int rowsAffected = stmt.executeUpdate();
-                
-                if (rowsAffected > 0) {
+                if (success) {
+                    log.info("Student updated: {}", student.getStudentNumber());
                     ToastNotification.showSuccess(stage, "Student updated successfully!");
                     refreshTable();
                 } else {
                     ToastNotification.showError(stage, "Could not update student. Student may not exist.");
                 }
                 
-            } catch (SQLException e) {
+            } catch (Exception e) {
+                log.error("Error updating student: {}", student.getStudentNumber(), e);
                 ToastNotification.showError(stage, "Error updating student: " + e.getMessage());
-                e.printStackTrace();
             }
         }
     }
     
     private void deleteStudent(StudentEntry student) {
-        String sql = "DELETE FROM students WHERE student_number = ?";
         Stage stage = (Stage) studentTable.getScene().getWindow();
         
-        try (Connection conn = DatabaseConnectionn.connect();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try {
+            // Use StudentService for deletion
+            boolean success = studentService.deleteStudent(student.getStudentNumber());
             
-            stmt.setString(1, student.getStudentNumber());
-            
-            int rowsAffected = stmt.executeUpdate();
-            
-            if (rowsAffected > 0) {
+            if (success) {
+                log.info("Student deleted: {}", student.getStudentNumber());
                 ToastNotification.showSuccess(stage, 
                          "Student " + student.getStudentNumber() + " has been deleted successfully.");
                 refreshTable();
@@ -571,10 +542,10 @@ public class StudentPageController implements Initializable {
                          "Could not delete student. Student may not exist.");
             }
             
-        } catch (SQLException e) {
+        } catch (Exception e) {
+            log.error("Error deleting student: {}", student.getStudentNumber(), e);
             ToastNotification.showError(stage, 
                      "Error deleting student: " + e.getMessage());
-            e.printStackTrace();
         }
     }
     

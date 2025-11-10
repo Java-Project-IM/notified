@@ -79,20 +79,8 @@ ON records(record_type);
 CREATE INDEX IF NOT EXISTS idx_record_created 
 ON records(created_at);
 
--- Index on student_number for student-specific record lookups
--- Used in: Viewing all records for a specific student
-CREATE INDEX IF NOT EXISTS idx_record_student 
-ON records(student_number);
-
--- Composite index for common queries (record_type + created_at)
--- Used in: Filtered records with date sorting
-CREATE INDEX IF NOT EXISTS idx_record_type_date 
-ON records(record_type, created_at DESC);
-
--- Composite index for student records with date sorting
--- Used in: Student detail view with record history
-CREATE INDEX IF NOT EXISTS idx_student_record_date 
-ON records(student_number, created_at DESC);
+-- Note: Removed student_number indexes as column doesn't exist in records table
+-- If you need to link records to students, consider adding a student_id foreign key column
 
 
 -- =============================================
