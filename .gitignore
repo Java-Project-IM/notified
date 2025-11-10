@@ -42,5 +42,14 @@ nbdist/
 .DS_Store
 Thumbs.db
 
+# Application logs
+logs/
+*.log
+
+# Configuration files with sensitive data
+application.properties
+*-local.properties
+*.env
+
 # Other
 maven-wrapper.zip
