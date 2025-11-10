@@ -54,7 +54,7 @@
       </Pane>
       <Text layoutX="34.0" layoutY="211.0" strokeType="OUTSIDE" strokeWidth="0.0" text="STUDENTS" fill="#1976D2">
          <font>
-            <Font name="Poppins Bold" size="70.0" />
+            <Font name="Poppins Bold" size="60.0" />
          </font>
       </Text>
       <Pane layoutX="50.0" layoutY="255.0" prefHeight="678.0" prefWidth="1829.0" style="-fx-background-color: white; -fx-background-radius: 15;">
@@ -66,7 +66,7 @@
                <children>
                   <TextField layoutX="15.0" layoutY="12.0" prefHeight="53.0" prefWidth="323.0" promptText="   Search" style="-fx-background-radius: 10;">
                      <font>
-                        <Font name="Poppins Regular" size="21.0" />
+                        <Font name="Poppins Regular" size="18.0" />
                      </font>
                      <effect>
                         <DropShadow>
@@ -84,27 +84,27 @@
             <!-- TableView for displaying student data -->
             <TableView fx:id="studentTable" layoutX="45.0" layoutY="96.0" prefHeight="564.0" prefWidth="1736.0" style="-fx-background-color: white; -fx-background-radius: 0 0 10 10; -fx-border-color: transparent;">
                <columns>
-                  <TableColumn fx:id="studentNumberCol" prefWidth="200.0" text="STUDENT NUMBER" style="-fx-alignment: CENTER-LEFT; -fx-font-family: 'Poppins SemiBold'; -fx-font-size: 14px;">
+                  <TableColumn fx:id="studentNumberCol" prefWidth="200.0" text="STUDENT NUMBER" style="-fx-alignment: CENTER-LEFT; -fx-font-family: 'Poppins SemiBold'; -fx-font-size: 13px;">
                      <cellValueFactory>
                         <javafx.scene.control.cell.PropertyValueFactory property="studentNumber" />
                      </cellValueFactory>
                   </TableColumn>
-                  <TableColumn fx:id="firstNameCol" prefWidth="350.0" text="FIRST NAME" style="-fx-alignment: CENTER-LEFT; -fx-font-family: 'Poppins SemiBold'; -fx-font-size: 14px;">
+                  <TableColumn fx:id="firstNameCol" prefWidth="350.0" text="FIRST NAME" style="-fx-alignment: CENTER-LEFT; -fx-font-family: 'Poppins SemiBold'; -fx-font-size: 13px;">
                      <cellValueFactory>
                         <javafx.scene.control.cell.PropertyValueFactory property="firstName" />
                      </cellValueFactory>
                   </TableColumn>
-                  <TableColumn fx:id="lastNameCol" prefWidth="350.0" text="LAST NAME / GUARDIAN" style="-fx-alignment: CENTER-LEFT; -fx-font-family: 'Poppins SemiBold'; -fx-font-size: 14px;">
+                  <TableColumn fx:id="lastNameCol" prefWidth="350.0" text="LAST NAME / GUARDIAN" style="-fx-alignment: CENTER-LEFT; -fx-font-family: 'Poppins SemiBold'; -fx-font-size: 13px;">
                      <cellValueFactory>
                         <javafx.scene.control.cell.PropertyValueFactory property="lastName" />
                      </cellValueFactory>
                   </TableColumn>
-                  <TableColumn fx:id="emailCol" prefWidth="450.0" text="EMAIL" style="-fx-alignment: CENTER-LEFT; -fx-font-family: 'Poppins SemiBold'; -fx-font-size: 14px;">
+                  <TableColumn fx:id="emailCol" prefWidth="450.0" text="EMAIL" style="-fx-alignment: CENTER-LEFT; -fx-font-family: 'Poppins SemiBold'; -fx-font-size: 13px;">
                      <cellValueFactory>
                         <javafx.scene.control.cell.PropertyValueFactory property="email" />
                      </cellValueFactory>
                   </TableColumn>
-                  <TableColumn fx:id="actionsCol" prefWidth="386.0" text="ACTIONS" style="-fx-alignment: CENTER; -fx-font-family: 'Poppins SemiBold'; -fx-font-size: 14px;" />
+                  <TableColumn fx:id="actionsCol" prefWidth="386.0" text="ACTIONS" style="-fx-alignment: CENTER; -fx-font-family: 'Poppins SemiBold'; -fx-font-size: 13px;" />
                </columns>
             </TableView>
             
@@ -133,24 +133,24 @@
       </Pane>
       <Text layoutX="104.0" layoutY="321.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Student's Information" fill="#424242">
          <font>
-            <Font name="Poppins Bold" size="40.0" />
+            <Font name="Poppins Bold" size="32.0" />
          </font>
       </Text>
-      <Button fx:id="btnAddStudent" onAction="#handleAddStudentClick" layoutX="1399.0" layoutY="133.0" mnemonicParsing="false" prefHeight="95.0" prefWidth="480.0" style="-fx-background-color: linear-gradient(to right, #1976D2, #1565C0); -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 3);" text="  Add New Student" textFill="WHITE">
+      <Button fx:id="btnAddStudent" onAction="#handleAddStudentClick" layoutX="1480.0" layoutY="140.0" mnemonicParsing="false" prefHeight="70.0" prefWidth="390.0" style="-fx-background-color: linear-gradient(to right, #1976D2, #1565C0); -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(25,118,210,0.3), 12, 0, 0, 4); -fx-cursor: hand;" text="  Add New Student" textFill="WHITE">
          <font>
-            <Font name="Poppins Bold" size="28.0" />
+            <Font name="Poppins Bold" size="20.0" />
          </font>
          <graphic>
-            <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="28.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../../../../../../Users/Vincent%20Martin/Downloads/Notifyed/Pllus.png" />
                </image>
             </ImageView>
          </graphic>
       </Button>
-      <Button fx:id="btnSendEmail" onAction="#handleSendEmailClick" layoutX="747.0" layoutY="967.0" mnemonicParsing="false" prefHeight="60.0" prefWidth="480.0" style="-fx-background-color: linear-gradient(to right, #1976D2, #1565C0); -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 2);" text="SEND EMAIL" textFill="WHITE">
+      <Button fx:id="btnSendEmail" onAction="#handleSendEmailClick" layoutX="720.0" layoutY="967.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="480.0" style="-fx-background-color: linear-gradient(to right, #1976D2, #1565C0); -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(25,118,210,0.3), 10, 0, 0, 3); -fx-cursor: hand;" text="SEND EMAIL" textFill="WHITE">
          <font>
-            <Font name="Poppins Bold" size="22.0" />
+            <Font name="Poppins Bold" size="18.0" />
          </font>
       </Button>
    </children>

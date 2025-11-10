@@ -14,66 +14,74 @@
 
 <AnchorPane prefHeight="1080.0" prefWidth="1920.0" style="-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #CAE5DE 0%, #EFF0F2 50%, #C8DAE6 100%);" stylesheets="@/com/notif1ed/css/signup.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.notif1ed.controller.SignUpController">
    <children>
-      <Pane layoutX="530.0" layoutY="68.0" prefHeight="944.0" prefWidth="874.0" style="-fx-background-color: white; -fx-background-radius: 15;">
+      <Pane layoutX="530.0" layoutY="80.0" prefHeight="920.0" prefWidth="860.0" style="-fx-background-color: white; -fx-background-radius: 20;">
          <effect>
-            <DropShadow />
+            <DropShadow color="#00000040" radius="25" offsetY="5" />
          </effect>
          <children>
-            <ImageView fitHeight="285.0" fitWidth="505.0" layoutX="184.0" layoutY="-5.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="240.0" fitWidth="440.0" layoutX="210.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@/com/notif1ed/images/logo.png" />
                </image>
             </ImageView>
-            <Text layoutX="264.0" layoutY="266.0" text="Create Account">
+            <Text layoutX="285.0" layoutY="290.0" text="Create Account" fill="#1a1a1a">
                <font>
-                  <Font name="Arial Black" size="41.0" />
+                  <Font name="Poppins Bold" size="42.0" />
+               </font>
+            </Text>
+            <Text layoutX="275.0" layoutY="330.0" text="Sign up to start using Notif1ed" fill="#616161">
+               <font>
+                  <Font name="Poppins Regular" size="16.0" />
                </font>
             </Text>
             
-            <Label layoutX="85.0" layoutY="312.0" text="Full Name:">
+            <Label layoutX="100.0" layoutY="370.0" text="Full Name" textFill="#424242">
                <font>
-                  <Font name="Arial Rounded MT Bold" size="20.0" />
+                  <Font name="Poppins SemiBold" size="15.0" />
                </font>
             </Label>
-            <TextField fx:id="nameField" layoutX="69.0" layoutY="342.0" prefHeight="75.0" prefWidth="732.0">
+            <TextField fx:id="nameField" layoutX="100.0" layoutY="400.0" prefHeight="55.0" prefWidth="660.0" promptText="Enter your full name" style="-fx-background-color: #F5F5F5; -fx-background-radius: 10; -fx-border-color: #E0E0E0; -fx-border-width: 2; -fx-border-radius: 10; -fx-padding: 15;">
                <font>
-                  <Font name="Arial" size="20.0" />
-               </font></TextField>
+                  <Font name="Poppins Regular" size="15.0" />
+               </font>
+            </TextField>
             
-            <Label layoutX="85.0" layoutY="432.0" text="Email:">
+            <Label layoutX="100.0" layoutY="480.0" text="Email Address" textFill="#424242">
                <font>
-                  <Font name="Arial Rounded MT Bold" size="20.0" />
+                  <Font name="Poppins SemiBold" size="15.0" />
                </font>
             </Label>
-            <TextField fx:id="emailField" layoutX="69.0" layoutY="463.0" prefHeight="75.0" prefWidth="732.0">
+            <TextField fx:id="emailField" layoutX="100.0" layoutY="510.0" prefHeight="55.0" prefWidth="660.0" promptText="Enter your email" style="-fx-background-color: #F5F5F5; -fx-background-radius: 10; -fx-border-color: #E0E0E0; -fx-border-width: 2; -fx-border-radius: 10; -fx-padding: 15;">
                <font>
-                  <Font name="Arial" size="20.0" />
-               </font></TextField>
+                  <Font name="Poppins Regular" size="15.0" />
+               </font>
+            </TextField>
             
-            <Label layoutX="85.0" layoutY="562.0" text="Password:">
+            <Label layoutX="100.0" layoutY="590.0" text="Password" textFill="#424242">
                <font>
-                  <Font name="Arial Rounded MT Bold" size="20.0" />
+                  <Font name="Poppins SemiBold" size="15.0" />
                </font>
             </Label>
-            <PasswordField fx:id="passwordField" layoutX="69.0" layoutY="597.0" prefHeight="75.0" prefWidth="732.0">
+            <PasswordField fx:id="passwordField" layoutX="100.0" layoutY="620.0" prefHeight="55.0" prefWidth="660.0" promptText="Create a password" style="-fx-background-color: #F5F5F5; -fx-background-radius: 10; -fx-border-color: #E0E0E0; -fx-border-width: 2; -fx-border-radius: 10; -fx-padding: 15;">
                <font>
-                  <Font name="Arial" size="20.0" />
-               </font></PasswordField>
+                  <Font name="Poppins Regular" size="15.0" />
+               </font>
+            </PasswordField>
             
-            <Button fx:id="signupButton" layoutX="207.0" layoutY="718.0" onAction="#handleSignUpClick" prefHeight="60.0" prefWidth="480.0" style="-fx-background-color: #011E37; -fx-border-color: white; -fx-border-width: 3;" styleClass="action-button" text="SIGN UP" textFill="WHITE">
+            <Button fx:id="signupButton" layoutX="100.0" layoutY="710.0" onAction="#handleSignUpClick" prefHeight="55.0" prefWidth="660.0" style="-fx-background-color: linear-gradient(to right, #1976D2, #1565C0); -fx-background-radius: 10; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(25, 118, 210, 0.4), 15, 0, 0, 5);" text="SIGN UP" textFill="WHITE">
                <font>
-                  <Font name="Arial Black" size="20.0" />
+                  <Font name="Poppins Bold" size="18.0" />
                </font>
             </Button>
             
-            <Text layoutX="298.0" layoutY="808.0" text="Already have an account?">
+            <Text layoutX="300.0" layoutY="815.0" text="Already have an account?" fill="#616161">
                <font>
-                  <Font name="Arial Rounded MT Bold" size="18.0" />
+                  <Font name="Poppins Regular" size="15.0" />
                </font>
             </Text>
-            <Button layoutX="530.0" layoutY="784.0" onAction="#handleLoginRedirect" style="-fx-background-color: transparent;" styleClass="link-button" text="Log in" textFill="#2f92dc">
+            <Button layoutX="500.0" layoutY="790.0" onAction="#handleLoginRedirect" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Log in" textFill="#1976D2">
                <font>
-                  <Font name="Arial Rounded MT Bold" size="18.0" />
+                  <Font name="Poppins Bold" size="15.0" />
                </font>
             </Button>
          </children>

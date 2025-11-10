@@ -49,7 +49,7 @@
       </Pane>
       <Text layoutX="34.0" layoutY="211.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Subjects" fill="#8E24AA">
          <font>
-            <Font name="Poppins Bold" size="70.0" />
+            <Font name="Poppins Bold" size="60.0" />
          </font>
       </Text>
       <Pane layoutX="72.0" layoutY="255.0" prefHeight="678.0" prefWidth="1793.0" style="-fx-background-color: white; -fx-background-radius: 15;">
@@ -60,22 +60,22 @@
             <!-- TableView for displaying subject data -->
             <TableView fx:id="subjectTable" layoutX="45.0" layoutY="96.0" prefHeight="564.0" prefWidth="1702.0" styleClass="subject-table" style="-fx-background-color: white; -fx-background-radius: 0 0 10 10;">
                <columns>
-                  <TableColumn fx:id="subjectCodeCol" prefWidth="440.0" text="SUBJECT CODE" style="-fx-alignment: CENTER-LEFT;">
+                  <TableColumn fx:id="subjectCodeCol" prefWidth="440.0" text="SUBJECT CODE" style="-fx-alignment: CENTER-LEFT; -fx-font-family: 'Poppins SemiBold'; -fx-font-size: 13px;">
                      <cellValueFactory>
                         <javafx.scene.control.cell.PropertyValueFactory property="subjectCode" />
                      </cellValueFactory>
                   </TableColumn>
-                  <TableColumn fx:id="subjectNameCol" prefWidth="460.0" text="SUBJECT NAME" style="-fx-alignment: CENTER-LEFT;">
+                  <TableColumn fx:id="subjectNameCol" prefWidth="460.0" text="SUBJECT NAME" style="-fx-alignment: CENTER-LEFT; -fx-font-family: 'Poppins SemiBold'; -fx-font-size: 13px;">
                      <cellValueFactory>
                         <javafx.scene.control.cell.PropertyValueFactory property="subjectName" />
                      </cellValueFactory>
                   </TableColumn>
-                  <TableColumn fx:id="yearLevelCol" prefWidth="350.0" text="YEAR LEVEL" style="-fx-alignment: CENTER;">
+                  <TableColumn fx:id="yearLevelCol" prefWidth="350.0" text="YEAR LEVEL" style="-fx-alignment: CENTER; -fx-font-family: 'Poppins SemiBold'; -fx-font-size: 13px;">
                      <cellValueFactory>
                         <javafx.scene.control.cell.PropertyValueFactory property="yearLevel" />
                      </cellValueFactory>
                   </TableColumn>
-                  <TableColumn fx:id="sectionCol" prefWidth="352.0" text="SECTION" style="-fx-alignment: CENTER;">
+                  <TableColumn fx:id="sectionCol" prefWidth="352.0" text="SECTION" style="-fx-alignment: CENTER; -fx-font-family: 'Poppins SemiBold'; -fx-font-size: 13px;">
                      <cellValueFactory>
                         <javafx.scene.control.cell.PropertyValueFactory property="section" />
                      </cellValueFactory>
@@ -84,26 +84,26 @@
             </TableView>
          </children>
       </Pane>
-      <Button fx:id="btnAddSubject" onAction="#handleAddSubjectClick" layoutX="1413.0" layoutY="137.0" mnemonicParsing="false" prefHeight="95.0" prefWidth="451.0" style="-fx-background-color: linear-gradient(to right, #8E24AA, #7B1FA2); -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 3);" text="  Add New Subject" textFill="WHITE">
+      <Button fx:id="btnAddSubject" onAction="#handleAddSubjectClick" layoutX="1475.0" layoutY="140.0" mnemonicParsing="false" prefHeight="70.0" prefWidth="390.0" style="-fx-background-color: linear-gradient(to right, #8E24AA, #7B1FA2); -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(142,36,170,0.3), 12, 0, 0, 4); -fx-cursor: hand;" text="  Add New Subject" textFill="WHITE">
          <font>
-            <Font name="Poppins Bold" size="28.0" />
+            <Font name="Poppins Bold" size="20.0" />
          </font>
          <graphic>
-            <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="28.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../../../../../../Users/Vincent%20Martin/Downloads/Notifyed/Pllus.png" />
                </image>
             </ImageView>
          </graphic>
       </Button>
-      <Button fx:id="btnOpenSubject" onAction="#handleOpenSubjectClick" layoutX="737.0" layoutY="957.0" mnemonicParsing="false" prefHeight="60.0" prefWidth="480.0" style="-fx-background-color: linear-gradient(to right, #8E24AA, #7B1FA2); -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 2);" text="OPEN SUBJECT" textFill="WHITE">
+      <Button fx:id="btnOpenSubject" onAction="#handleOpenSubjectClick" layoutX="720.0" layoutY="967.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="480.0" style="-fx-background-color: linear-gradient(to right, #8E24AA, #7B1FA2); -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(142,36,170,0.3), 10, 0, 0, 3); -fx-cursor: hand;" text="OPEN SUBJECT" textFill="WHITE">
          <font>
-            <Font name="Poppins Bold" size="22.0" />
+            <Font name="Poppins Bold" size="18.0" />
          </font>
       </Button>
       <Text layoutX="104.0" layoutY="321.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Subject Information" fill="#424242">
          <font>
-            <Font name="Poppins Bold" size="40.0" />
+            <Font name="Poppins Bold" size="32.0" />
          </font>
       </Text>
    </children>

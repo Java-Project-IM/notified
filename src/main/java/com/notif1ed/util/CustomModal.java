@@ -81,22 +81,22 @@ public class CustomModal {
         // Icon with circular background
         StackPane iconContainer = new StackPane();
         VBox iconBg = new VBox();
-        iconBg.setPrefSize(70, 70);
-        iconBg.setMinSize(70, 70);
-        iconBg.setMaxSize(70, 70);
+        iconBg.setPrefSize(75, 75);
+        iconBg.setMinSize(75, 75);
+        iconBg.setMaxSize(75, 75);
         iconBg.setStyle(
-            "-fx-background-color: #FFF3E0;" +
-            "-fx-background-radius: 35;"
+            "-fx-background-color: linear-gradient(to bottom right, #FF9800, #F57C00);" +
+            "-fx-background-radius: 38;" +
+            "-fx-effect: dropshadow(gaussian, rgba(255,152,0,0.4), 15, 0, 0, 5);"
         );
         
         Label icon = new Label("⚠");
         icon.setStyle(
-            "-fx-font-size: 42px;" +
-            "-fx-text-fill: #FF9800;"
+            "-fx-font-size: 42px;"
         );
         
         iconContainer.getChildren().addAll(iconBg, icon);
-        iconContainer.setMaxHeight(70);
+        iconContainer.setMaxHeight(75);
         
         // Title with better typography
         Label titleLabel = new Label(title);
@@ -190,34 +190,46 @@ public class CustomModal {
         // CRITICAL FIX: Prevent vertical stretching in StackPane
         content.setMaxHeight(Region.USE_PREF_SIZE);
         
-        Label icon = new Label("ℹ");
-        icon.setStyle(
-            "-fx-font-size: 50px;" +
-            "-fx-text-fill: #2196F3;" +
-            "-fx-effect: dropshadow(gaussian, rgba(33,150,243,0.3), 8, 0, 0, 3);"
+        // Info icon with circular gradient background
+        StackPane iconContainer = new StackPane();
+        VBox iconBg = new VBox();
+        iconBg.setPrefSize(75, 75);
+        iconBg.setMinSize(75, 75);
+        iconBg.setMaxSize(75, 75);
+        iconBg.setStyle(
+            "-fx-background-color: linear-gradient(to bottom right, #2196F3, #1976D2);" +
+            "-fx-background-radius: 38;" +
+            "-fx-effect: dropshadow(gaussian, rgba(33,150,243,0.4), 15, 0, 0, 5);"
         );
+        
+        Label icon = new Label("ℹ️");
+        icon.setStyle("-fx-font-size: 42px;");
+        
+        iconContainer.getChildren().addAll(iconBg, icon);
+        iconContainer.setMaxHeight(75);
         
         Label titleLabel = new Label(title);
         titleLabel.setStyle(
-            "-fx-font-size: 20px;" +
+            "-fx-font-size: 22px;" +
             "-fx-font-weight: bold;" +
             "-fx-text-fill: #1a1a1a;"
         );
         
         Label messageLabel = new Label(message);
         messageLabel.setStyle(
-            "-fx-font-size: 14px;" +
-            "-fx-text-fill: #424242;" +
+            "-fx-font-size: 15px;" +
+            "-fx-text-fill: #616161;" +
             "-fx-wrap-text: true;" +
-            "-fx-text-alignment: center;"
+            "-fx-text-alignment: center;" +
+            "-fx-line-spacing: 2;"
         );
         messageLabel.setWrapText(true);
-        messageLabel.setMaxWidth(330);
+        messageLabel.setMaxWidth(350);
         
         Button okBtn = createButton("OK", "#2196F3", 150);
         okBtn.setOnAction(e -> dialog.close());
         
-        content.getChildren().addAll(icon, titleLabel, messageLabel, okBtn);
+        content.getChildren().addAll(iconContainer, titleLabel, messageLabel, okBtn);
         backdrop.getChildren().add(content);
         StackPane.setAlignment(content, Pos.CENTER);
         
@@ -268,34 +280,46 @@ public class CustomModal {
         // CRITICAL FIX: Prevent vertical stretching in StackPane
         content.setMaxHeight(Region.USE_PREF_SIZE);
         
-        Label icon = new Label("✕");
-        icon.setStyle(
-            "-fx-font-size: 50px;" +
-            "-fx-text-fill: #F44336;" +
-            "-fx-effect: dropshadow(gaussian, rgba(244,67,54,0.3), 8, 0, 0, 3);"
+        // Error icon with circular gradient background
+        StackPane iconContainer = new StackPane();
+        VBox iconBg = new VBox();
+        iconBg.setPrefSize(75, 75);
+        iconBg.setMinSize(75, 75);
+        iconBg.setMaxSize(75, 75);
+        iconBg.setStyle(
+            "-fx-background-color: linear-gradient(to bottom right, #F44336, #D32F2F);" +
+            "-fx-background-radius: 38;" +
+            "-fx-effect: dropshadow(gaussian, rgba(244,67,54,0.4), 15, 0, 0, 5);"
         );
+        
+        Label icon = new Label("❌");
+        icon.setStyle("-fx-font-size: 42px;");
+        
+        iconContainer.getChildren().addAll(iconBg, icon);
+        iconContainer.setMaxHeight(75);
         
         Label titleLabel = new Label(title);
         titleLabel.setStyle(
-            "-fx-font-size: 20px;" +
+            "-fx-font-size: 22px;" +
             "-fx-font-weight: bold;" +
             "-fx-text-fill: #1a1a1a;"
         );
         
         Label messageLabel = new Label(message);
         messageLabel.setStyle(
-            "-fx-font-size: 14px;" +
-            "-fx-text-fill: #424242;" +
+            "-fx-font-size: 15px;" +
+            "-fx-text-fill: #616161;" +
             "-fx-wrap-text: true;" +
-            "-fx-text-alignment: center;"
+            "-fx-text-alignment: center;" +
+            "-fx-line-spacing: 2;"
         );
         messageLabel.setWrapText(true);
-        messageLabel.setMaxWidth(330);
+        messageLabel.setMaxWidth(350);
         
         Button okBtn = createButton("OK", "#F44336", 150);
         okBtn.setOnAction(e -> dialog.close());
         
-        content.getChildren().addAll(icon, titleLabel, messageLabel, okBtn);
+        content.getChildren().addAll(iconContainer, titleLabel, messageLabel, okBtn);
         backdrop.getChildren().add(content);
         StackPane.setAlignment(content, Pos.CENTER);
         
@@ -346,34 +370,46 @@ public class CustomModal {
         // CRITICAL FIX: Prevent vertical stretching in StackPane
         content.setMaxHeight(Region.USE_PREF_SIZE);
         
-        Label icon = new Label("⚠");
-        icon.setStyle(
-            "-fx-font-size: 50px;" +
-            "-fx-text-fill: #FF9800;" +
-            "-fx-effect: dropshadow(gaussian, rgba(255,152,0,0.3), 8, 0, 0, 3);"
+        // Warning icon with circular gradient background
+        StackPane iconContainer = new StackPane();
+        VBox iconBg = new VBox();
+        iconBg.setPrefSize(75, 75);
+        iconBg.setMinSize(75, 75);
+        iconBg.setMaxSize(75, 75);
+        iconBg.setStyle(
+            "-fx-background-color: linear-gradient(to bottom right, #FF9800, #F57C00);" +
+            "-fx-background-radius: 38;" +
+            "-fx-effect: dropshadow(gaussian, rgba(255,152,0,0.4), 15, 0, 0, 5);"
         );
+        
+        Label icon = new Label("⚠️");
+        icon.setStyle("-fx-font-size: 42px;");
+        
+        iconContainer.getChildren().addAll(iconBg, icon);
+        iconContainer.setMaxHeight(75);
         
         Label titleLabel = new Label(title);
         titleLabel.setStyle(
-            "-fx-font-size: 20px;" +
+            "-fx-font-size: 22px;" +
             "-fx-font-weight: bold;" +
             "-fx-text-fill: #1a1a1a;"
         );
         
         Label messageLabel = new Label(message);
         messageLabel.setStyle(
-            "-fx-font-size: 14px;" +
-            "-fx-text-fill: #424242;" +
+            "-fx-font-size: 15px;" +
+            "-fx-text-fill: #616161;" +
             "-fx-wrap-text: true;" +
-            "-fx-text-alignment: center;"
+            "-fx-text-alignment: center;" +
+            "-fx-line-spacing: 2;"
         );
         messageLabel.setWrapText(true);
-        messageLabel.setMaxWidth(330);
+        messageLabel.setMaxWidth(350);
         
         Button okBtn = createButton("OK", "#FF9800", 150);
         okBtn.setOnAction(e -> dialog.close());
         
-        content.getChildren().addAll(icon, titleLabel, messageLabel, okBtn);
+        content.getChildren().addAll(iconContainer, titleLabel, messageLabel, okBtn);
         backdrop.getChildren().add(content);
         StackPane.setAlignment(content, Pos.CENTER);
         
@@ -646,23 +682,23 @@ public class CustomModal {
             Label iconLabel = new Label(icon);
             StackPane iconContainer = new StackPane(iconLabel);
             iconContainer.setStyle(
-                "-fx-background-color: #E3F2FD;" +
+                "-fx-background-color: linear-gradient(to bottom right, #2196F3, #1976D2);" +
                 "-fx-background-radius: 50%;" +
-                "-fx-min-width: 70px;" +
-                "-fx-min-height: 70px;" +
-                "-fx-max-width: 70px;" +
-                "-fx-max-height: 70px;"
+                "-fx-min-width: 80px;" +
+                "-fx-min-height: 80px;" +
+                "-fx-max-width: 80px;" +
+                "-fx-max-height: 80px;" +
+                "-fx-effect: dropshadow(gaussian, rgba(33,150,243,0.4), 15, 0, 0, 5);"
             );
             iconLabel.setStyle(
-                "-fx-font-size: 40px;" +
-                "-fx-text-fill: #2196F3;"
+                "-fx-font-size: 42px;"
             );
             header.getChildren().add(iconContainer);
         }
         
         Label titleLabel = new Label(title);
         titleLabel.setStyle(
-            "-fx-font-size: 22px;" +
+            "-fx-font-size: 24px;" +
             "-fx-font-weight: bold;" +
             "-fx-text-fill: #1a1a1a;"
         );
@@ -757,7 +793,7 @@ public class CustomModal {
                 "-fx-border-color: transparent;"
             );
             scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-            scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+            scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // Hide scrollbar but keep scrolling
             formNode = scrollPane;
         } else {
             formNode = formContainer;

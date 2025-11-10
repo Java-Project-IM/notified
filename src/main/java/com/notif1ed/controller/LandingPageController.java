@@ -13,11 +13,11 @@ public class LandingPageController {
     @FXML
     private void handleStartClick(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/notif1ed/view/SignUp.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/notif1ed/view/LogIn.fxml"));
             Scene scene = new Scene(loader.load());
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(scene);
-            stage.setTitle("Notifyed - Sign Up");
+            stage.setTitle("Notifyed - Log In");
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
