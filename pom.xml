@@ -13,9 +13,11 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-        <javafx.version>21.0.5</javafx.version>
+        <!-- Upgrade to Java 23 -->
+        <maven.compiler.source>23</maven.compiler.source>
+        <maven.compiler.target>23</maven.compiler.target>
+        <!-- Or use <maven.compiler.release>23</maven.compiler.release> instead of source/target -->
+        <javafx.version>23.0.1</javafx.version>
     </properties>
 
     <dependencies>
@@ -80,8 +82,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
                 <configuration>
-                    <source>21</source>
-                    <target>21</target>
+                    <release>23</release>
                 </configuration>
             </plugin>
             <plugin>
