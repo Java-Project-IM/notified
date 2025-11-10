@@ -340,9 +340,17 @@ public class StudentPageController implements Initializable {
     private void openEmailPrompt(String email) {
         Stage stage = (Stage) studentTable.getScene().getWindow();
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/com/notif1ed/view/EmailPrompt.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/notif1ed/view/EmailPrompt.fxml"));
+            Parent root = loader.load();
+            
+            // Get controller and set recipient
+            EmailPromptController controller = loader.getController();
+            controller.setRecipient(email);
+            
             Stage emailStage = new Stage();
             emailStage.setTitle("Send Email - " + email);
+            emailStage.initOwner(stage);
+            emailStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
             emailStage.setScene(new Scene(root));
             emailStage.show();
         } catch (IOException e) {
@@ -354,9 +362,24 @@ public class StudentPageController implements Initializable {
     private void openEmailPromptForAll() {
         Stage stage = (Stage) studentTable.getScene().getWindow();
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/com/notif1ed/view/EmailPrompt.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/notif1ed/view/EmailPrompt.fxml"));
+            Parent root = loader.load();
+            
+            // Get controller and set multiple recipients
+            EmailPromptController controller = loader.getController();
+            StringBuilder emails = new StringBuilder();
+            for (int i = 0; i < studentList.size(); i++) {
+                emails.append(studentList.get(i).getEmail());
+                if (i < studentList.size() - 1) {
+                    emails.append(", ");
+                }
+            }
+            controller.setMultipleRecipients(emails.toString());
+            
             Stage emailStage = new Stage();
-            emailStage.setTitle("Send Email to All Students");
+            emailStage.setTitle("Send Email to All Students (" + studentList.size() + " recipients)");
+            emailStage.initOwner(stage);
+            emailStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
             emailStage.setScene(new Scene(root));
             emailStage.show();
         } catch (IOException e) {

@@ -58,6 +58,10 @@ public class SubjectPageController implements Initializable {
     @FXML
     private Button recordsButton;
     @FXML
+    private Button logoutButton;
+    @FXML
+    private javafx.scene.control.TextField searchField;
+    @FXML
     private Button addSubjectButton;
     
     private ObservableList<SubjectEntry> subjectList = FXCollections.observableArrayList();
@@ -107,7 +111,28 @@ public class SubjectPageController implements Initializable {
     }
     
     @FXML
+    private void handleLogoutClick(ActionEvent event) {
+        Stage stage = (Stage) logoutButton.getScene().getWindow();
+        boolean confirmed = CustomModal.showConfirmation(
+            stage,
+            "Logout Confirmation",
+            "Are you sure you want to logout?",
+            "Logout",
+            "Cancel"
+        );
+        
+        if (confirmed) {
+            navigateToPage(event, "LandingPage.fxml");
+        }
+    }
+    
+    @FXML
     private void handleAddSubjectClick(ActionEvent event) {
+        handleAddSubject(event);
+    }
+    
+    @FXML
+    private void handleAddSubject(ActionEvent event) {
         Stage stage = (Stage) subjectTable.getScene().getWindow();
         
         // Create form fields

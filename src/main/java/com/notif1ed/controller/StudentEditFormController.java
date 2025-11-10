@@ -73,7 +73,8 @@ public class StudentEditFormController implements Initializable {
     }
     
     private void loadFullStudentData() {
-        String sql = "SELECT section, guardian_name, guardian_email FROM students WHERE student_number = ?";
+        // Try to load guardian info if columns exist
+        String sql = "SELECT section, guardian_name FROM students WHERE student_number = ?";
         
         try (Connection conn = DatabaseConnectionn.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -84,11 +85,11 @@ public class StudentEditFormController implements Initializable {
             if (rs.next()) {
                 String section = rs.getString("section");
                 String guardianName = rs.getString("guardian_name");
-                String guardianEmail = rs.getString("guardian_email");
                 
                 if (section != null) sectionTXT.setText(section);
                 if (guardianName != null) GNameField.setText(guardianName);
-                if (guardianEmail != null) GEmailField.setText(guardianEmail);
+                // GEmailField left empty or can use student email as fallback
+                if (GEmailField != null) GEmailField.setText("");
             }
             
         } catch (SQLException e) {
@@ -129,14 +130,15 @@ public class StudentEditFormController implements Initializable {
             return;
         }
         
-        if (!guardianEmail.contains("@") || !guardianEmail.contains(".")) {
+        // Skip guardian email validation if empty
+        if (!guardianEmail.isEmpty() && (!guardianEmail.contains("@") || !guardianEmail.contains("."))) {
             ToastNotification.show(stage, ToastNotification.ToastType.WARNING, "Please enter a valid guardian email");
             return;
         }
         
-        // Update in database
-        String sql = "UPDATE students SET first_name = ?, last_name = ?, email = ?, section = ?, guardian_name = ?, guardian_email = ?, " +
-                    "updated_at = CURRENT_TIMESTAMP WHERE student_number = ?";
+        // Update in database (without guardian_email if column doesn't exist)
+        String sql = "UPDATE students SET first_name = ?, last_name = ?, email = ?, section = ?, guardian_name = ? " +
+                    "WHERE student_number = ?";
         
         try (Connection conn = DatabaseConnectionn.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -146,8 +148,7 @@ public class StudentEditFormController implements Initializable {
             stmt.setString(3, studentEmail);
             stmt.setString(4, section);
             stmt.setString(5, guardianName);
-            stmt.setString(6, guardianEmail);
-            stmt.setString(7, currentStudent.getStudentNumber());
+            stmt.setString(6, currentStudent.getStudentNumber());
             
             int rowsUpdated = stmt.executeUpdate();
             

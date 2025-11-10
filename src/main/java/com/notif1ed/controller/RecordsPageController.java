@@ -63,6 +63,16 @@ public class RecordsPageController implements Initializable {
     private Button studentsButton;
     @FXML
     private Button recordsButton;
+    @FXML
+    private Button logoutButton;
+    @FXML
+    private javafx.scene.control.TextField searchField;
+    @FXML
+    private javafx.scene.control.DatePicker datePicker;
+    @FXML
+    private javafx.scene.control.ChoiceBox<String> typeFilter;
+    @FXML
+    private Button filterButton;
     
     private ObservableList<RecordEntry> recordsList = FXCollections.observableArrayList();
 
@@ -117,6 +127,22 @@ public class RecordsPageController implements Initializable {
     private void handleRecordsClick(ActionEvent event) {
         // Already on records page, just refresh
         refreshTable();
+    }
+    
+    @FXML
+    private void handleLogoutClick(ActionEvent event) {
+        Stage stage = (Stage) logoutButton.getScene().getWindow();
+        boolean confirmed = com.notif1ed.util.CustomModal.showConfirmation(
+            stage,
+            "Logout Confirmation",
+            "Are you sure you want to logout?",
+            "Logout",
+            "Cancel"
+        );
+        
+        if (confirmed) {
+            navigateToPage(event, "LandingPage.fxml");
+        }
     }
     
     private void navigateToPage(ActionEvent event, String fxmlFile) {
