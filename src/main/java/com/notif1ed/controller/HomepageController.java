@@ -5,6 +5,8 @@
 package com.notif1ed.controller;
 
 import com.notif1ed.util.DatabaseConnectionn;
+import com.notif1ed.util.ToastNotification;
+import com.notif1ed.util.CustomModal;
 
 import java.io.IOException;
 import java.net.URL;
@@ -48,6 +50,8 @@ public class HomepageController implements Initializable {
     private Button studentsButton;
     @FXML
     private Button recordsButton;
+    @FXML
+    private Button logoutButton;
 
     /**
      * Initializes the controller class.
@@ -79,6 +83,36 @@ public class HomepageController implements Initializable {
         navigateToPage(event, "RecordsPage.fxml");
     }
     
+    @FXML
+    private void handleLogoutClick(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        
+        // Show confirmation modal
+        boolean confirmed = CustomModal.showConfirmation(
+            stage,
+            "Logout",
+            "Are you sure you want to logout?",
+            "Logout",
+            "Cancel"
+        );
+        
+        if (confirmed) {
+            try {
+                // Navigate to login page
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/notif1ed/view/LogIn.fxml"));
+                Scene scene = new Scene(loader.load());
+                stage.setScene(scene);
+                stage.setTitle("Notifyed - Login");
+                stage.show();
+                
+                ToastNotification.showInfo(stage, "Logged out successfully");
+            } catch (IOException e) {
+                ToastNotification.showError(stage, "Error during logout");
+                e.printStackTrace();
+            }
+        }
+    }
+    
     private void navigateToPage(ActionEvent event, String fxmlFile) {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/com/notif1ed/view/" + fxmlFile));
@@ -87,7 +121,8 @@ public class HomepageController implements Initializable {
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load page: " + fxmlFile);
+            Stage stage = (Stage) homeButton.getScene().getWindow();
+            ToastNotification.show(stage, ToastNotification.ToastType.ERROR, "Could not load page: " + fxmlFile);
             e.printStackTrace();
         }
     }
@@ -130,20 +165,13 @@ public class HomepageController implements Initializable {
                 System.out.println("✅ Dashboard statistics loaded successfully");
             }
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error", "Error loading dashboard statistics: " + e.getMessage());
+            Stage stage = (Stage) homeButton.getScene().getWindow();
+            ToastNotification.show(stage, ToastNotification.ToastType.ERROR, "Error loading dashboard statistics");
             e.printStackTrace();
         }
     }
     
     public void refreshStats() {
         loadDashboardStats();
-    }
-    
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }

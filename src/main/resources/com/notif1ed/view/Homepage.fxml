@@ -46,6 +46,11 @@
                   <Font name="Poppins Bold" size="20.0" />
                </font>
             </Button>
+            <Button fx:id="logoutButton" graphicTextGap="10.0" layoutX="1680.0" layoutY="32.0" lineSpacing="100.0" mnemonicParsing="false" onAction="#handleLogoutClick" prefHeight="43.0" prefWidth="180.0" style="-fx-background-color: linear-gradient(to bottom, #f44336, #d32f2f); -fx-background-radius: 22; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(244,67,54,0.3), 8, 0, 0, 3);" text="LOGOUT" textFill="WHITE">
+               <font>
+                  <Font name="Poppins Bold" size="18.0" />
+               </font>
+            </Button>
          </children>
       </Pane>
       <Text fill="#2f92dc" layoutX="198.0" layoutY="322.0" strokeType="OUTSIDE" strokeWidth="0.0" text="GOALS">

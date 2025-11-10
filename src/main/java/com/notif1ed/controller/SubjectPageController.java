@@ -6,6 +6,7 @@ package com.notif1ed.controller;
 
 import com.notif1ed.model.SubjectEntry;
 import com.notif1ed.util.DatabaseConnectionn;
+import com.notif1ed.util.ToastNotification;
 
 import java.io.IOException;
 import java.net.URL;
@@ -23,7 +24,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -116,8 +116,8 @@ public class SubjectPageController implements Initializable {
             SubjectEntry selectedSubject = subjectTable.getSelectionModel().getSelectedItem();
             openSubjectDetailView(selectedSubject);
         } else {
-            showAlert(Alert.AlertType.WARNING, "No Selection", 
-                "Please select a subject to open.");
+            Stage stage = (Stage) subjectTable.getScene().getWindow();
+            ToastNotification.show(stage, ToastNotification.ToastType.WARNING, "Please select a subject to open");
         }
     }
     
@@ -138,7 +138,8 @@ public class SubjectPageController implements Initializable {
             // Refresh table when detail window is closed
             stage.setOnHidden(e -> refreshTable());
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Could not open subject detail view");
+            Stage stage = (Stage) subjectTable.getScene().getWindow();
+            ToastNotification.show(stage, ToastNotification.ToastType.ERROR, "Could not open subject detail view");
             e.printStackTrace();
         }
     }
@@ -154,7 +155,8 @@ public class SubjectPageController implements Initializable {
             // Refresh table when form window is closed
             stage.setOnHidden(e -> refreshTable());
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Could not open form: " + fxmlFile);
+            Stage ownerStage = (Stage) homeButton.getScene().getWindow();
+            ToastNotification.show(ownerStage, ToastNotification.ToastType.ERROR, "Could not open form");
             e.printStackTrace();
         }
     }
@@ -167,7 +169,8 @@ public class SubjectPageController implements Initializable {
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load page: " + fxmlFile);
+            Stage stage = (Stage) homeButton.getScene().getWindow();
+            ToastNotification.show(stage, ToastNotification.ToastType.ERROR, "Could not load page: " + fxmlFile);
             e.printStackTrace();
         }
     }
@@ -202,20 +205,13 @@ public class SubjectPageController implements Initializable {
                 System.out.println("✅ Loaded " + subjectList.size() + " subjects from database");
             }
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error", "Error loading subjects: " + e.getMessage());
+            Stage stage = (Stage) homeButton.getScene().getWindow();
+            ToastNotification.show(stage, ToastNotification.ToastType.ERROR, "Error loading subjects from database");
             e.printStackTrace();
         }
     }
     
     public void refreshTable() {
         loadSubjects();
-    }
-    
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }

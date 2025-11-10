@@ -1,12 +1,16 @@
 package com.notif1ed.util;
 
 import javafx.animation.FadeTransition;
+import javafx.animation.ScaleTransition;
+import javafx.animation.ParallelTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.effect.BoxBlur;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
@@ -34,141 +38,229 @@ public class WelcomeDialog {
         dialog.initStyle(StageStyle.TRANSPARENT);
         dialog.setResizable(false);
         
-        VBox content = new VBox(20);
-        content.setAlignment(Pos.CENTER);
-        content.setPadding(new Insets(40));
-        content.setStyle(
-            "-fx-background-color: white;" +
-            "-fx-background-radius: 15;" +
-            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 20, 0, 0, 10);"
-        );
-        content.setMaxWidth(450);
+        // Create backdrop with semi-transparent dark overlay
+        StackPane backdrop = new StackPane();
+        backdrop.setStyle("-fx-background-color: rgba(0, 0, 0, 0.65);");
+        backdrop.setPrefSize(ownerStage.getWidth(), ownerStage.getHeight());
         
-        // Welcome icon
+        // Create the main content card - FIXED WIDTH, NATURAL HEIGHT
+        VBox content = new VBox(18);
+        content.setAlignment(Pos.CENTER);
+        content.setPadding(new Insets(35, 45, 35, 45));
+        content.setStyle(
+            "-fx-background-color: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%);" +
+            "-fx-background-radius: 20;" +
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 30, 0, 0, 10);"
+        );
+        // Set fixed width only - let height be determined by content
+        content.setPrefWidth(480);
+        content.setMaxWidth(480);
+        content.setMinWidth(480);
+        // DO NOT set any height constraints - this was causing the stretching
+        
+        // Decorative top accent bar
+        VBox accentBar = new VBox();
+        accentBar.setPrefHeight(5);
+        accentBar.setPrefWidth(480);
+        accentBar.setStyle(
+            "-fx-background-color: linear-gradient(to right, #2196F3, #21CBF3);" +
+            "-fx-background-radius: 20 20 0 0;"
+        );
+        
+        // Welcome icon with gradient background circle
+        StackPane iconContainer = new StackPane();
+        VBox iconCircle = new VBox();
+        iconCircle.setPrefSize(80, 80);
+        iconCircle.setMinSize(80, 80);
+        iconCircle.setMaxSize(80, 80);
+        iconCircle.setStyle(
+            "-fx-background-color: linear-gradient(to bottom right, #2196F3, #21CBF3);" +
+            "-fx-background-radius: 40;" +
+            "-fx-effect: dropshadow(gaussian, rgba(33,150,243,0.4), 15, 0, 0, 5);"
+        );
+        
         Label icon = new Label("👋");
         icon.setStyle(
-            "-fx-font-size: 64px;"
+            "-fx-font-size: 42px;" +
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);"
         );
+        
+        iconContainer.getChildren().addAll(iconCircle, icon);
+        // Remove fixed height to allow natural sizing
+        iconContainer.setMaxHeight(80);
         
         // Greeting based on time of day
         String greeting = getTimeBasedGreeting();
         Label greetingLabel = new Label(greeting);
         greetingLabel.setStyle(
-            "-fx-font-size: 24px;" +
-            "-fx-font-weight: bold;" +
-            "-fx-text-fill: #2196F3;"
+            "-fx-font-size: 18px;" +
+            "-fx-font-weight: 600;" +
+            "-fx-text-fill: #2196F3;" +
+            "-fx-font-family: 'System';"
         );
         
-        // User name
+        // User name with larger, bolder style
         Label nameLabel = new Label(userName + "!");
         nameLabel.setStyle(
             "-fx-font-size: 28px;" +
             "-fx-font-weight: bold;" +
-            "-fx-text-fill: #333;"
+            "-fx-text-fill: #1a1a1a;" +
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0, 0, 1);"
         );
         
         // Welcome message
         Label messageLabel = new Label("Welcome back to Notif1ed");
         messageLabel.setStyle(
             "-fx-font-size: 16px;" +
-            "-fx-text-fill: #666;"
+            "-fx-font-weight: 500;" +
+            "-fx-text-fill: #424242;"
         );
         
         // Subtitle
         Label subtitleLabel = new Label("Your student notification system is ready");
         subtitleLabel.setStyle(
-            "-fx-font-size: 14px;" +
-            "-fx-text-fill: #999;"
-        );
-        
-        // Quick stats or info (optional enhancement)
-        VBox statsBox = new VBox(5);
-        statsBox.setAlignment(Pos.CENTER);
-        statsBox.setStyle(
-            "-fx-background-color: #f5f5f5;" +
-            "-fx-background-radius: 8;" +
-            "-fx-padding: 15;"
-        );
-        
-        Label statsLabel = new Label("Ready to manage students and subjects");
-        statsLabel.setStyle(
             "-fx-font-size: 13px;" +
-            "-fx-text-fill: #666;" +
+            "-fx-text-fill: #757575;" +
             "-fx-font-style: italic;"
         );
         
-        statsBox.getChildren().add(statsLabel);
+        // Quick stats box with modern card design
+        VBox statsBox = new VBox(5);
+        statsBox.setAlignment(Pos.CENTER);
+        statsBox.setStyle(
+            "-fx-background-color: linear-gradient(to bottom right, #E3F2FD, #F1F8FE);" +
+            "-fx-background-radius: 12;" +
+            "-fx-padding: 12 20;" +
+            "-fx-border-color: #2196F3;" +
+            "-fx-border-width: 2;" +
+            "-fx-border-radius: 12;"
+        );
+        statsBox.setPrefWidth(360);
+        statsBox.setMaxWidth(360);
         
-        // Continue button
+        Label statsIcon = new Label("✨");
+        statsIcon.setStyle("-fx-font-size: 20px;");
+        
+        Label statsLabel = new Label("Ready to manage students and subjects");
+        statsLabel.setStyle(
+            "-fx-font-size: 12px;" +
+            "-fx-text-fill: #1976D2;" +
+            "-fx-font-weight: 500;"
+        );
+        
+        statsBox.getChildren().addAll(statsIcon, statsLabel);
+        
+        // Continue button with gradient and hover effect
         Button continueBtn = new Button("Get Started");
+        continueBtn.setPrefWidth(200);
         continueBtn.setStyle(
-            "-fx-background-color: #2196F3;" +
+            "-fx-background-color: linear-gradient(to bottom, #2196F3, #1976D2);" +
             "-fx-text-fill: white;" +
             "-fx-font-size: 15px;" +
             "-fx-font-weight: bold;" +
             "-fx-padding: 12 40;" +
             "-fx-background-radius: 25;" +
-            "-fx-cursor: hand;"
+            "-fx-cursor: hand;" +
+            "-fx-effect: dropshadow(gaussian, rgba(33,150,243,0.4), 10, 0, 0, 4);"
         );
         
         continueBtn.setOnMouseEntered(e -> {
             continueBtn.setStyle(
-                "-fx-background-color: #1976D2;" +
+                "-fx-background-color: linear-gradient(to bottom, #1E88E5, #1565C0);" +
                 "-fx-text-fill: white;" +
                 "-fx-font-size: 15px;" +
                 "-fx-font-weight: bold;" +
                 "-fx-padding: 12 40;" +
                 "-fx-background-radius: 25;" +
                 "-fx-cursor: hand;" +
-                "-fx-effect: dropshadow(gaussian, rgba(33,150,243,0.4), 10, 0, 0, 3);"
+                "-fx-effect: dropshadow(gaussian, rgba(33,150,243,0.6), 15, 0, 0, 6);" +
+                "-fx-scale-y: 1.05;" +
+                "-fx-scale-x: 1.05;"
             );
         });
         
         continueBtn.setOnMouseExited(e -> {
             continueBtn.setStyle(
-                "-fx-background-color: #2196F3;" +
+                "-fx-background-color: linear-gradient(to bottom, #2196F3, #1976D2);" +
                 "-fx-text-fill: white;" +
                 "-fx-font-size: 15px;" +
                 "-fx-font-weight: bold;" +
                 "-fx-padding: 12 40;" +
                 "-fx-background-radius: 25;" +
-                "-fx-cursor: hand;"
+                "-fx-cursor: hand;" +
+                "-fx-effect: dropshadow(gaussian, rgba(33,150,243,0.4), 10, 0, 0, 4);"
             );
         });
         
         continueBtn.setOnAction(e -> dialog.close());
         
+        // Add spacing between elements
+        VBox nameSection = new VBox(5);
+        nameSection.setAlignment(Pos.CENTER);
+        nameSection.getChildren().addAll(greetingLabel, nameLabel);
+        
+        VBox messageSection = new VBox(5);
+        messageSection.setAlignment(Pos.CENTER);
+        messageSection.getChildren().addAll(messageLabel, subtitleLabel);
+        
+        // Assemble the content - note the reduced spacing
         content.getChildren().addAll(
-            icon,
-            greetingLabel,
-            nameLabel,
-            messageLabel,
-            subtitleLabel,
+            iconContainer,
+            nameSection,
+            messageSection,
             statsBox,
             continueBtn
         );
         
-        Scene scene = new Scene(content);
+        // Add content to backdrop
+        backdrop.getChildren().add(content);
+        StackPane.setAlignment(content, Pos.CENTER);
+        
+        Scene scene = new Scene(backdrop);
         scene.setFill(Color.TRANSPARENT);
         dialog.setScene(scene);
         
-        // Center on owner
-        dialog.setX(ownerStage.getX() + ownerStage.getWidth() / 2 - 225);
-        dialog.setY(ownerStage.getY() + ownerStage.getHeight() / 2 - 250);
+        // Position dialog to cover the entire owner stage
+        dialog.setX(ownerStage.getX());
+        dialog.setY(ownerStage.getY());
+        dialog.setWidth(ownerStage.getWidth());
+        dialog.setHeight(ownerStage.getHeight());
         
-        // Fade-in animation
+        // Animations - fade in backdrop and scale in content
+        backdrop.setOpacity(0);
+        content.setScaleX(0.85);
+        content.setScaleY(0.85);
         content.setOpacity(0);
-        FadeTransition fadeIn = new FadeTransition(Duration.millis(400), content);
-        fadeIn.setFromValue(0);
-        fadeIn.setToValue(1);
+        
+        FadeTransition backdropFade = new FadeTransition(Duration.millis(250), backdrop);
+        backdropFade.setFromValue(0);
+        backdropFade.setToValue(1);
+        
+        FadeTransition contentFade = new FadeTransition(Duration.millis(350), content);
+        contentFade.setFromValue(0);
+        contentFade.setToValue(1);
+        
+        ScaleTransition contentScale = new ScaleTransition(Duration.millis(350), content);
+        contentScale.setFromX(0.85);
+        contentScale.setFromY(0.85);
+        contentScale.setToX(1.0);
+        contentScale.setToY(1.0);
+        
+        ParallelTransition showAnimation = new ParallelTransition(
+            backdropFade,
+            contentFade,
+            contentScale
+        );
         
         dialog.show();
-        fadeIn.play();
+        showAnimation.play();
         
-        // Auto-close after 3 seconds (optional - can be removed if user should click)
-        // PauseTransition delay = new PauseTransition(Duration.seconds(3));
-        // delay.setOnFinished(e -> dialog.close());
-        // delay.play();
+        // Close on backdrop click
+        backdrop.setOnMouseClicked(e -> {
+            if (e.getTarget() == backdrop) {
+                dialog.close();
+            }
+        });
     }
     
     /**

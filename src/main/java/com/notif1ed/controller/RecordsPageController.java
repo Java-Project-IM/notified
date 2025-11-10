@@ -6,6 +6,7 @@ package com.notif1ed.controller;
 
 import com.notif1ed.model.RecordEntry;
 import com.notif1ed.util.DatabaseConnectionn;
+import com.notif1ed.util.ToastNotification;
 
 import java.io.IOException;
 import java.net.URL;
@@ -25,7 +26,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -127,7 +127,8 @@ public class RecordsPageController implements Initializable {
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load page: " + fxmlFile);
+            Stage stage = (Stage) homeButton.getScene().getWindow();
+            ToastNotification.show(stage, ToastNotification.ToastType.ERROR, "Could not load page: " + fxmlFile);
             e.printStackTrace();
         }
     }
@@ -171,20 +172,13 @@ public class RecordsPageController implements Initializable {
                 System.out.println("✅ Loaded " + recordsList.size() + " records from database");
             }
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error", "Error loading records: " + e.getMessage());
+            Stage stage = (Stage) homeButton.getScene().getWindow();
+            ToastNotification.show(stage, ToastNotification.ToastType.ERROR, "Error loading records from database");
             e.printStackTrace();
         }
     }
     
     public void refreshTable() {
         loadRecords();
-    }
-    
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }

@@ -5,6 +5,8 @@
 package com.notif1ed.controller;
 
 import com.notif1ed.util.DatabaseConnectionn;
+import com.notif1ed.util.ToastNotification;
+import com.notif1ed.util.CustomModal;
 
 import java.net.URL;
 import java.sql.Connection;
@@ -14,7 +16,6 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.Node;
@@ -67,9 +68,11 @@ public class SubjectFormController implements Initializable {
         String subjectName = emailField.getText().trim();
         String yearLevel = passwordField.getText().trim();
         
+        Stage stage = (Stage) nameField.getScene().getWindow();
+        
         // Validate inputs
         if (subjectCode.isEmpty() || section.isEmpty() || subjectName.isEmpty() || yearLevel.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Validation Error", "Please fill in all fields.");
+            ToastNotification.show(stage, ToastNotification.ToastType.WARNING, "Please fill in all fields");
             return;
         }
         
@@ -85,19 +88,18 @@ public class SubjectFormController implements Initializable {
             int rowsAffected = pstmt.executeUpdate();
             
             if (rowsAffected > 0) {
-                showAlert(Alert.AlertType.INFORMATION, "Success", "Subject added successfully!");
-                
-                // Close the form window after success
-                Stage stage = (Stage) nameField.getScene().getWindow();
+                CustomModal.showInfo(stage, "Success", "Subject added successfully!\n\n" +
+                    "Subject Code: " + subjectCode + "\n" +
+                    "Subject Name: " + subjectName);
                 stage.close();
             } else {
-                showAlert(Alert.AlertType.ERROR, "Error", "Failed to add subject.");
+                CustomModal.showError(stage, "Error", "Failed to add subject");
             }
             
         } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.ERROR, "Validation Error", "Year Level must be a number.");
+            ToastNotification.show(stage, ToastNotification.ToastType.WARNING, "Year Level must be a number");
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error", "Error adding subject: " + e.getMessage());
+            CustomModal.showError(stage, "Database Error", "Error adding subject: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -113,13 +115,5 @@ public class SubjectFormController implements Initializable {
         nameField1.clear();
         emailField.clear();
         passwordField.clear();
-    }
-    
-    private void showAlert(Alert.AlertType alertType, String title, String content) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
     }
 }

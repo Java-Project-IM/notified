@@ -2,11 +2,12 @@ package com.notif1ed.controller;
 
 import com.notif1ed.model.StudentEntry;
 import com.notif1ed.util.DatabaseConnectionn;
+import com.notif1ed.util.ToastNotification;
+import com.notif1ed.util.CustomModal;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -114,23 +115,22 @@ public class StudentEditFormController implements Initializable {
         String guardianName = GNameField.getText().trim();
         String guardianEmail = GEmailField.getText().trim();
         
+        Stage stage = (Stage) studentID.getScene().getWindow();
+        
         // Validate inputs
         if (firstName.isEmpty() || lastName.isEmpty() || studentEmail.isEmpty() || guardianEmail.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Validation Error", 
-                    "Please fill in First Name, Last Name, Student Email, and Guardian's Email!");
+            ToastNotification.show(stage, ToastNotification.ToastType.WARNING, "Please fill in all required fields");
             return;
         }
         
         // Validate email formats
         if (!studentEmail.contains("@") || !studentEmail.contains(".")) {
-            showAlert(Alert.AlertType.WARNING, "Validation Error", 
-                    "Please enter a valid student email address!");
+            ToastNotification.show(stage, ToastNotification.ToastType.WARNING, "Please enter a valid student email");
             return;
         }
         
         if (!guardianEmail.contains("@") || !guardianEmail.contains(".")) {
-            showAlert(Alert.AlertType.WARNING, "Validation Error", 
-                    "Please enter a valid guardian email address!");
+            ToastNotification.show(stage, ToastNotification.ToastType.WARNING, "Please enter a valid guardian email");
             return;
         }
         
@@ -152,20 +152,17 @@ public class StudentEditFormController implements Initializable {
             int rowsUpdated = stmt.executeUpdate();
             
             if (rowsUpdated > 0) {
-                showAlert(Alert.AlertType.INFORMATION, "Success", 
-                        "Student updated successfully!\n" +
+                CustomModal.showInfo(stage, "Success", 
+                        "Student updated successfully!\n\n" +
                         "Student Number: " + currentStudent.getStudentNumber() + "\n" +
                         "Name: " + firstName + " " + lastName);
-                
-                // Close the form window after success
-                Stage stage = (Stage) studentID.getScene().getWindow();
                 stage.close();
             } else {
-                showAlert(Alert.AlertType.ERROR, "Error", "Could not update student!");
+                CustomModal.showError(stage, "Error", "Could not update student!");
             }
             
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error", "Error: " + e.getMessage());
+            CustomModal.showError(stage, "Database Error", "Error: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -173,13 +170,5 @@ public class StudentEditFormController implements Initializable {
     private void closeForm() {
         Stage stage = (Stage) CancelButton.getScene().getWindow();
         stage.close();
-    }
-    
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }
