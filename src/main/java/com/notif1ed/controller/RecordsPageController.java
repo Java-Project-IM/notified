@@ -42,17 +42,15 @@ public class RecordsPageController implements Initializable {
     @FXML
     private TableView<RecordEntry> recordsTable;
     @FXML
-    private TableColumn<RecordEntry, String> idCol;
-    @FXML
-    private TableColumn<RecordEntry, String> surnameCol;
+    private TableColumn<RecordEntry, String> studentNumberCol;
     @FXML
     private TableColumn<RecordEntry, String> firstNameCol;
     @FXML
-    private TableColumn<RecordEntry, String> guardianEmailCol;
+    private TableColumn<RecordEntry, String> lastNameCol;
     @FXML
-    private TableColumn<RecordEntry, LocalDate> dateCol;
+    private TableColumn<RecordEntry, String> emailCol;
     @FXML
-    private TableColumn<RecordEntry, LocalTime> timeCol;
+    private TableColumn<RecordEntry, String> dateCol;
     @FXML
     private TableColumn<RecordEntry, String> typeCol;
     @FXML
@@ -81,27 +79,24 @@ public class RecordsPageController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Set up table columns if they exist
-        if (idCol != null) {
-            idCol.setCellValueFactory(new PropertyValueFactory<>("studentNumber"));
-        }
-        if (surnameCol != null) {
-            surnameCol.setCellValueFactory(new PropertyValueFactory<>("surname"));
+        // Set up table columns to match RecordEntry alias properties
+        if (studentNumberCol != null) {
+            studentNumberCol.setCellValueFactory(new PropertyValueFactory<>("studentNumber"));
         }
         if (firstNameCol != null) {
             firstNameCol.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         }
-        if (guardianEmailCol != null) {
-            guardianEmailCol.setCellValueFactory(new PropertyValueFactory<>("guardianEmail"));
+        if (lastNameCol != null) {
+            lastNameCol.setCellValueFactory(new PropertyValueFactory<>("lastName"));
+        }
+        if (emailCol != null) {
+            emailCol.setCellValueFactory(new PropertyValueFactory<>("email"));
         }
         if (dateCol != null) {
-            dateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
-        }
-        if (timeCol != null) {
-            timeCol.setCellValueFactory(new PropertyValueFactory<>("time"));
+            dateCol.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
         }
         if (typeCol != null) {
-            typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
+            typeCol.setCellValueFactory(new PropertyValueFactory<>("recordType"));
         }
         
         // Load records from database
@@ -141,7 +136,19 @@ public class RecordsPageController implements Initializable {
         );
         
         if (confirmed) {
-            navigateToPage(event, "LandingPage.fxml");
+            try {
+                Parent root = FXMLLoader.load(getClass().getResource("/com/notif1ed/view/LandingPage.fxml"));
+                Scene scene = new Scene(root);
+                stage.setScene(scene);
+                stage.setTitle("Notif1ed - Welcome");
+                stage.show();
+                
+                // Show logout toast
+                ToastNotification.showSuccess(stage, "Logged out successfully");
+            } catch (IOException e) {
+                ToastNotification.showError(stage, "Error during logout");
+                e.printStackTrace();
+            }
         }
     }
     

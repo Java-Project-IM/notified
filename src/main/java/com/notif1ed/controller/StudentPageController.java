@@ -284,6 +284,12 @@ public class StudentPageController implements Initializable {
         }
     }
     
+    // Alias method for FXML compatibility
+    @FXML
+    public void handleAddStudent(ActionEvent event) {
+        handleAddStudentClick(event);
+    }
+    
     private String generateStudentNumber() {
         String newStudentNumber = "25-0001"; // Default
         
@@ -495,6 +501,37 @@ public class StudentPageController implements Initializable {
             ToastNotification.showError(stage, 
                      "Error deleting student: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+    
+    @FXML
+    private void handleLogoutClick(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        
+        // Show confirmation modal
+        boolean confirmed = CustomModal.showConfirmation(
+            stage,
+            "Logout",
+            "Are you sure you want to logout?",
+            "Logout",
+            "Cancel"
+        );
+        
+        if (confirmed) {
+            try {
+                // Navigate to landing page
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/notif1ed/view/LandingPage.fxml"));
+                Scene scene = new Scene(loader.load());
+                stage.setScene(scene);
+                stage.setTitle("Notif1ed - Welcome");
+                stage.show();
+                
+                // Show logout toast
+                ToastNotification.showSuccess(stage, "Logged out successfully");
+            } catch (IOException e) {
+                ToastNotification.showError(stage, "Error during logout");
+                e.printStackTrace();
+            }
         }
     }
 }

@@ -111,9 +111,9 @@
             </ChoiceBox>
             
             <!-- Filter Button -->
-            <Button fx:id="filterButton" layoutX="1620.0" layoutY="75.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="170.0" style="-fx-background-color: linear-gradient(to right, #00897B, #00796B); -fx-background-radius: 10; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(0,137,123,0.3), 10, 0, 0, 3);" text="🔍 Filter" textFill="WHITE">
+            <Button fx:id="filterButton" layoutX="1620.0" layoutY="75.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="170.0" style="-fx-background-color: linear-gradient(to right, #00897B, #00796B); -fx-background-radius: 10; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(0,137,123,0.3), 10, 0, 0, 3); -fx-font-family: 'Segoe UI Emoji', 'Noto Color Emoji', 'Apple Color Emoji', 'Symbola', sans-serif;" text="🔍 Filter" textFill="WHITE">
                <font>
-                  <Font name="Poppins SemiBold" size="16.0" />
+                  <Font name="Poppins SemiBold" size="17.0" />
                </font>
             </Button>
             

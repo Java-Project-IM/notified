@@ -122,7 +122,19 @@ public class SubjectPageController implements Initializable {
         );
         
         if (confirmed) {
-            navigateToPage(event, "LandingPage.fxml");
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/notif1ed/view/LandingPage.fxml"));
+                Scene scene = new Scene(loader.load());
+                stage.setScene(scene);
+                stage.setTitle("Notif1ed - Welcome");
+                stage.show();
+                
+                // Show logout toast
+                ToastNotification.showSuccess(stage, "Logged out successfully");
+            } catch (IOException e) {
+                ToastNotification.showError(stage, "Error during logout");
+                e.printStackTrace();
+            }
         }
     }
     
