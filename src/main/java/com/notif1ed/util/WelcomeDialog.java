@@ -12,6 +12,7 @@ import javafx.scene.effect.BoxBlur;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -41,7 +42,8 @@ public class WelcomeDialog {
         // Create backdrop with semi-transparent dark overlay
         StackPane backdrop = new StackPane();
         backdrop.setStyle("-fx-background-color: rgba(0, 0, 0, 0.65);");
-        backdrop.setPrefSize(ownerStage.getWidth(), ownerStage.getHeight());
+        // CRITICAL FIX: Do NOT set backdrop preferred size - this causes children to stretch
+        // The backdrop will automatically fill the dialog stage
         
         // Create the main content card - FIXED WIDTH, NATURAL HEIGHT
         VBox content = new VBox(18);
@@ -52,11 +54,15 @@ public class WelcomeDialog {
             "-fx-background-radius: 20;" +
             "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 30, 0, 0, 10);"
         );
-        // Set fixed width only - let height be determined by content
+        // Set fixed width only
         content.setPrefWidth(480);
         content.setMaxWidth(480);
         content.setMinWidth(480);
-        // DO NOT set any height constraints - this was causing the stretching
+        
+        // CRITICAL FIX: Prevent VBox from stretching vertically
+        // This tells the VBox to use only its preferred height (calculated from children)
+        // instead of growing to fill the parent StackPane
+        content.setMaxHeight(javafx.scene.layout.Region.USE_PREF_SIZE);
         
         // Decorative top accent bar
         VBox accentBar = new VBox();
