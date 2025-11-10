@@ -67,8 +67,6 @@ public class RecordsPageController implements Initializable {
     private javafx.scene.control.TextField searchField;
     @FXML
     private javafx.scene.control.DatePicker datePicker;
-    @FXML
-    private javafx.scene.control.ChoiceBox<String> typeFilter;
     
     private ObservableList<RecordEntry> recordsList = FXCollections.observableArrayList();
 

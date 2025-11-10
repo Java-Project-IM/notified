@@ -16,8 +16,8 @@
 
 <AnchorPane id="AnchorPane" prefHeight="700.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.notif1ed.controller.EmailPromptController">
    <children>
-      <!-- Modern Card Container - Centered -->
-      <Pane layoutX="100.0" layoutY="80.0" prefHeight="540.0" prefWidth="500.0" style="-fx-background-color: white; -fx-background-radius: 18;">
+      <!-- Modern Card Container - Perfectly Centered -->
+      <Pane layoutX="100.0" layoutY="70.0" prefHeight="560.0" prefWidth="500.0" style="-fx-background-color: white; -fx-background-radius: 18;">
          <effect>
             <DropShadow height="30.0" radius="14.5" width="30.0">
                <color>
@@ -26,8 +26,8 @@
             </DropShadow>
          </effect>
          <children>
-                  <!-- Header with Icon (clean circle + emoji) -->
-                  <VBox alignment="CENTER" layoutX="0.0" layoutY="24.0" prefHeight="100.0" prefWidth="500.0" spacing="8.0">
+            <!-- Header with Icon (clean circle + emoji) -->
+            <VBox alignment="CENTER" layoutX="0.0" layoutY="30.0" prefHeight="110.0" prefWidth="500.0" spacing="8.0">
                      <children>
                         <StackPane prefHeight="64.0" prefWidth="64.0">
                            <children>
@@ -49,7 +49,7 @@
                   </VBox>
             
             <!-- Form Fields -->
-            <VBox layoutX="50.0" layoutY="150.0" prefHeight="300.0" prefWidth="400.0" spacing="20.0">
+            <VBox layoutX="50.0" layoutY="160.0" prefHeight="320.0" prefWidth="400.0" spacing="18.0">
                <children>
                   <!-- To Field -->
                   <VBox spacing="8.0">
@@ -91,7 +91,7 @@
                               <Font name="Poppins SemiBold" size="13.0" />
                            </font>
                         </Label>
-                        <TextArea fx:id="messageArea" prefHeight="200.0" promptText="Type your message here..." style="-fx-font-size: 14px; -fx-padding: 12; -fx-border-color: #E0E0E0; -fx-border-width: 1.5; -fx-border-radius: 10; -fx-background-radius: 10;" wrapText="true">
+                        <TextArea fx:id="messageArea" prefHeight="180.0" promptText="Type your message here..." style="-fx-font-size: 14px; -fx-padding: 12; -fx-border-color: #E0E0E0; -fx-border-width: 1.5; -fx-border-radius: 10; -fx-background-radius: 10;" wrapText="true">
                            <font>
                               <Font name="Poppins Regular" size="14.0" />
                            </font>
@@ -102,14 +102,14 @@
             </VBox>
             
             <!-- Error Label -->
-            <Label fx:id="errorLabel" layoutX="50.0" layoutY="460.0" prefWidth="400.0" style="-fx-text-fill: #F44336; -fx-font-weight: 600;" visible="false">
+            <Label fx:id="errorLabel" layoutX="50.0" layoutY="490.0" prefWidth="400.0" style="-fx-text-fill: #F44336; -fx-font-weight: 600;" visible="false">
                <font>
                   <Font name="Poppins SemiBold" size="13.0" />
                </font>
             </Label>
             
             <!-- Buttons - aligned to the right, primary/secondary styling -->
-            <Pane layoutX="0.0" layoutY="470.0" prefWidth="500.0">
+            <Pane layoutX="0.0" layoutY="505.0" prefWidth="500.0">
                <children>
                   <Button fx:id="cancelButton" layoutX="300.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="42.0" prefWidth="100.0" style="-fx-background-color: #F5F5F5; -fx-background-radius: 8; -fx-cursor: hand; -fx-border-color: #E0E0E0;" text="Cancel" textFill="#424242">
                      <font>

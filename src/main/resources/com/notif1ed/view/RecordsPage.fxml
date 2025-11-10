@@ -104,17 +104,6 @@
                </effect>
             </DatePicker>
             
-            <!-- Type Filter -->
-            <ChoiceBox fx:id="typeFilter" layoutX="1450.0" layoutY="75.0" prefHeight="45.0" prefWidth="150.0" style="-fx-background-color: #F5F5F5; -fx-border-color: #E0E0E0; -fx-background-radius: 10; -fx-border-radius: 10;">
-               <effect>
-                  <DropShadow>
-                     <color>
-                        <Color opacity="0.1" />
-                     </color>
-                  </DropShadow>
-               </effect>
-            </ChoiceBox>
-            
             <!-- Note: Filter action is now driven by DatePicker and Type filter directly; removed explicit filter button to simplify UI -->
             
             <!-- TableView for displaying records -->

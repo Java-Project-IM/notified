@@ -74,14 +74,15 @@
                </font>
             </Button>
             
-            <Text layoutX="300.0" layoutY="815.0" text="Already have an account?" fill="#616161">
+            <!-- Login link - properly aligned -->
+            <Text layoutX="260.0" layoutY="815.0" text="Already have an account?  " fill="#616161">
                <font>
                   <Font name="Poppins Regular" size="15.0" />
                </font>
             </Text>
-            <Button layoutX="500.0" layoutY="790.0" onAction="#handleLoginRedirect" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Log in" textFill="#1976D2">
+            <Button layoutX="470.0" layoutY="795.0" onAction="#handleLoginRedirect" style="-fx-background-color: transparent; -fx-cursor: hand; -fx-padding: 0;" text="Log in" textFill="#1976D2" underline="false">
                <font>
-                  <Font name="Poppins Bold" size="15.0" />
+                  <Font name="Poppins SemiBold" size="15.0" />
                </font>
             </Button>
          </children>
