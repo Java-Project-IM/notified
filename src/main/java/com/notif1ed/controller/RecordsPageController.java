@@ -8,6 +8,7 @@ import com.notif1ed.model.RecordEntry;
 import com.notif1ed.util.DatabaseConnectionn;
 import com.notif1ed.util.SessionManager;
 import com.notif1ed.util.ToastNotification;
+import com.notif1ed.util.CustomModal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.ResourceBundle;
+import java.time.format.DateTimeFormatter;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -74,6 +81,12 @@ public class RecordsPageController implements Initializable {
     private javafx.scene.control.TextField searchField;
     @FXML
     private javafx.scene.control.DatePicker datePicker;
+    @FXML
+    private javafx.scene.text.Text timeLabel;
+    @FXML
+    private javafx.scene.text.Text dateLabel;
+    
+    private Timeline clock;
     
     private ObservableList<RecordEntry> recordsList = FXCollections.observableArrayList();
 
@@ -111,6 +124,26 @@ public class RecordsPageController implements Initializable {
         
         // Load records from database
         loadRecords();
+        
+        // Start the clock
+        startClock();
+    }
+    
+    /**
+     * Start the real-time clock display
+     */
+    private void startClock() {
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm:ss a");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy");
+        
+        clock = new Timeline(new KeyFrame(Duration.ZERO, e -> {
+            LocalDateTime now = LocalDateTime.now();
+            timeLabel.setText(now.format(timeFormatter));
+            dateLabel.setText(now.format(dateFormatter));
+        }), new KeyFrame(Duration.seconds(1)));
+        
+        clock.setCycleCount(Animation.INDEFINITE);
+        clock.play();
     }
     
     @FXML
@@ -226,5 +259,137 @@ public class RecordsPageController implements Initializable {
     
     public void refreshTable() {
         loadRecords();
+    }
+    
+    /**
+     * Shows attendance summary statistics
+     */
+    @FXML
+    private void handleShowSummary(ActionEvent event) {
+        Stage stage = (Stage) recordsTable.getScene().getWindow();
+        
+        try (Connection conn = DatabaseConnectionn.connect()) {
+            if (conn != null) {
+                // Get today's date
+                LocalDate today = LocalDate.now();
+                
+                // Count arrivals today
+                String arrivalSql = "SELECT COUNT(*) as count FROM records WHERE DATE(created_at) = ? AND record_type = 'Arrival'";
+                PreparedStatement arrivalStmt = conn.prepareStatement(arrivalSql);
+                arrivalStmt.setDate(1, java.sql.Date.valueOf(today));
+                ResultSet arrivalRs = arrivalStmt.executeQuery();
+                int arrivals = arrivalRs.next() ? arrivalRs.getInt("count") : 0;
+                
+                // Count departures today
+                String departureSql = "SELECT COUNT(*) as count FROM records WHERE DATE(created_at) = ? AND record_type = 'Departure'";
+                PreparedStatement departureStmt = conn.prepareStatement(departureSql);
+                departureStmt.setDate(1, java.sql.Date.valueOf(today));
+                ResultSet departureRs = departureStmt.executeQuery();
+                int departures = departureRs.next() ? departureRs.getInt("count") : 0;
+                
+                // Total students
+                String totalSql = "SELECT COUNT(*) as count FROM students";
+                PreparedStatement totalStmt = conn.prepareStatement(totalSql);
+                ResultSet totalRs = totalStmt.executeQuery();
+                int totalStudents = totalRs.next() ? totalRs.getInt("count") : 0;
+                
+                // Calculate attendance rate
+                double attendanceRate = totalStudents > 0 ? (arrivals * 100.0 / totalStudents) : 0;
+                
+                // Build summary message
+                String summary = String.format(
+                    "📊 Attendance Summary for %s\n\n" +
+                    "✅ Arrivals: %d\n" +
+                    "🚪 Departures: %d\n" +
+                    "👥 Total Students: %d\n" +
+                    "📈 Attendance Rate: %.1f%%",
+                    today.format(java.time.format.DateTimeFormatter.ofPattern("MMMM dd, yyyy")),
+                    arrivals,
+                    departures,
+                    totalStudents,
+                    attendanceRate
+                );
+                
+                CustomModal.showInfo(stage, "Attendance Summary", summary);
+                
+                log.info("Attendance summary displayed: {} arrivals, {} departures", arrivals, departures);
+            }
+        } catch (SQLException e) {
+            log.error("Error generating attendance summary", e);
+            ToastNotification.showError(stage, "Error generating attendance summary");
+        }
+    }
+    
+    /**
+     * Gets the predefined message for arrival
+     */
+    public static String getArrivalMessage(String studentName, String guardianName) {
+        LocalDateTime now = LocalDateTime.now();
+        String formattedTime = now.format(java.time.format.DateTimeFormatter.ofPattern("h:mm a"));
+        String formattedDate = now.format(java.time.format.DateTimeFormatter.ofPattern("MMMM dd, yyyy"));
+        
+        return String.format(
+            "Dear Mr/Ms %s,\n\n" +
+            "We would like to inform you that your child, %s, attended their class in CC103 at %s on %s.\n\n" +
+            "To confirm this update, you may contact your child directly or coordinate with their course professor.\n\n" +
+            "Thank you and have a great day.\n\n" +
+            "— Quezon City University",
+            guardianName, studentName, formattedTime, formattedDate
+        );
+    }
+    
+    /**
+     * Gets the predefined message for departure/dismissal
+     */
+    public static String getDepartureMessage(String studentName, String guardianName) {
+        LocalDateTime now = LocalDateTime.now();
+        String formattedTime = now.format(java.time.format.DateTimeFormatter.ofPattern("h:mm a"));
+        String formattedDate = now.format(java.time.format.DateTimeFormatter.ofPattern("MMMM dd, yyyy"));
+        
+        return String.format(
+            "Dear Mr/Ms %s,\n\n" +
+            "We would like to inform you that your child, %s, was dismissed from their CC103 class at %s on %s.\n\n" +
+            "For any questions or further confirmation, you may contact your child directly or coordinate with their course professor.\n\n" +
+            "Thank you, and have a great day.\n\n" +
+            "— Quezon City University",
+            guardianName, studentName, formattedTime, formattedDate
+        );
+    }
+    
+    /**
+     * Gets the email subject and message based on record type
+     * Returns a String array: [0] = subject, [1] = message
+     */
+    public static String[] getNotificationContent(String recordType, String studentFullName, String guardianName) {
+        LocalDateTime now = LocalDateTime.now();
+        String formattedTime = now.format(java.time.format.DateTimeFormatter.ofPattern("h:mm a"));
+        String formattedDate = now.format(java.time.format.DateTimeFormatter.ofPattern("MMMM dd, yyyy"));
+        
+        String subject;
+        String message;
+        
+        if ("Arrival".equalsIgnoreCase(recordType)) {
+            subject = "Attendance Notification";
+            message = String.format(
+                "Dear Mr/Ms %s,\n\n" +
+                "We would like to inform you that your child, %s, attended their class in CC103 at %s on %s.\n\n" +
+                "To confirm this update, you may contact your child directly or coordinate with their course professor.\n\n" +
+                "Thank you and have a great day.\n\n" +
+                "— Quezon City University",
+                guardianName, studentFullName, formattedTime, formattedDate
+            );
+        } else {
+            subject = "Dismissal Notification";
+            message = String.format(
+                "Dear Mr/Ms %s,\n\n" +
+                "We would like to inform you that your child, %s, was dismissed from their CC103 class at %s on %s.\n\n" +
+                "For any questions or further confirmation, you may contact your child directly or coordinate with their course professor.\n\n" +
+                "Thank you, and have a great day.\n\n" +
+                "— Quezon City University",
+                guardianName, studentFullName, formattedTime, formattedDate
+            );
+        }
+        
+        return new String[]{subject, message};
     }
 }

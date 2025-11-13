@@ -57,6 +57,25 @@
                   <Font name="Poppins Regular" size="15.0" />
                </font>
             </PasswordField>
+            <TextField fx:id="passwordTextField" layoutX="100.0" layoutY="540.0" prefHeight="55.0" prefWidth="660.0" promptText="Enter your password" style="-fx-background-color: #F5F5F5; -fx-background-radius: 10; -fx-border-color: #E0E0E0; -fx-border-width: 2; -fx-border-radius: 10; -fx-padding: 15;" visible="false">
+               <font>
+                  <Font name="Poppins Regular" size="15.0" />
+               </font>
+            </TextField>
+            
+            <!-- Eye icon button for password visibility toggle -->
+            <Button fx:id="togglePasswordButton" layoutX="710.0" layoutY="548.0" mnemonicParsing="false" onAction="#handleTogglePassword" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-cursor: hand; -fx-font-family: 'Segoe UI Emoji', 'Noto Color Emoji', 'Apple Color Emoji', 'Symbola', sans-serif;" text="👁️">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </Button>
+            
+            <!-- Back Button -->
+            <Button fx:id="backButton" layoutX="100.0" layoutY="785.0" mnemonicParsing="false" onAction="#handleBackClick" prefHeight="50.0" prefWidth="200.0" style="-fx-background-color: #E0E0E0; -fx-background-radius: 10; -fx-cursor: hand; -fx-font-family: 'Segoe UI Emoji', 'Noto Color Emoji', 'Apple Color Emoji', 'Symbola', sans-serif;" text="⬅️ Back" textFill="#424242">
+               <font>
+                  <Font name="Poppins SemiBold" size="16.0" />
+               </font>
+            </Button>
       
             <Button layoutX="100.0" layoutY="640.0" onAction="#handleLoginClick" prefHeight="55.0" prefWidth="660.0" style="-fx-background-color: linear-gradient(to right, #1976D2, #1565C0); -fx-background-radius: 10; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(25, 118, 210, 0.4), 15, 0, 0, 5);" text="LOG IN" textFill="WHITE">
                <font>

@@ -79,7 +79,33 @@
                </children>
             </Pane>
             
-            <Button fx:id="btnRemoveStudent" layoutX="1170.0" layoutY="17.5" mnemonicParsing="false" onAction="#handleRemoveStudent" prefHeight="45.0" prefWidth="185.0" style="-fx-background-color: linear-gradient(to right, #f44336, #d32f2f); -fx-background-radius: 10; -fx-cursor: hand;" text="❌ Remove Student" textFill="WHITE">
+            <Button fx:id="btnRemoveStudent" layoutX="965.0" layoutY="17.5" mnemonicParsing="false" onAction="#handleRemoveStudent" prefHeight="45.0" prefWidth="195.0" style="-fx-background-color: linear-gradient(to right, #f44336, #d32f2f); -fx-background-radius: 10; -fx-cursor: hand; -fx-font-family: 'Segoe UI Emoji', 'Noto Color Emoji', 'Apple Color Emoji', 'Symbola', sans-serif;" text="❌ Remove Student" textFill="WHITE">
+               <font>
+                  <Font name="Poppins SemiBold" size="16.0" />
+               </font>
+               <effect>
+                  <DropShadow>
+                     <color>
+                        <Color opacity="0.25" />
+                     </color>
+                  </DropShadow>
+               </effect>
+            </Button>
+            
+            <Button fx:id="btnCheckAttendance" layoutX="950.0" layoutY="17.5" mnemonicParsing="false" onAction="#handleCheckAttendance" prefHeight="45.0" prefWidth="185.0" style="-fx-background-color: linear-gradient(to right, #4CAF50, #388E3C); -fx-background-radius: 10; -fx-cursor: hand; -fx-font-family: 'Segoe UI Emoji', 'Noto Color Emoji', 'Apple Color Emoji', 'Symbola', sans-serif;" text="📋 Attendance" textFill="WHITE">
+               <font>
+                  <Font name="Poppins SemiBold" size="16.0" />
+               </font>
+               <effect>
+                  <DropShadow>
+                     <color>
+                        <Color opacity="0.25" />
+                     </color>
+                  </DropShadow>
+               </effect>
+            </Button>
+            
+            <Button fx:id="btnDownloadPDF" layoutX="1155.0" layoutY="17.5" mnemonicParsing="false" onAction="#handleDownloadPDFReport" prefHeight="45.0" prefWidth="200.0" style="-fx-background-color: linear-gradient(to right, #E53935, #C62828); -fx-background-radius: 10; -fx-cursor: hand; -fx-font-family: 'Segoe UI Emoji', 'Noto Color Emoji', 'Apple Color Emoji', 'Symbola', sans-serif;" text="📄 Download PDF" textFill="WHITE">
                <font>
                   <Font name="Poppins SemiBold" size="16.0" />
                </font>

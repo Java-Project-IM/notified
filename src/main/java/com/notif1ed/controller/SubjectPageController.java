@@ -19,6 +19,12 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Map;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -69,6 +75,12 @@ public class SubjectPageController implements Initializable {
     private javafx.scene.control.TextField searchField;
     @FXML
     private Button addSubjectButton;
+    @FXML
+    private javafx.scene.text.Text timeLabel;
+    @FXML
+    private javafx.scene.text.Text dateLabel;
+    
+    private Timeline clock;
     
     private ObservableList<SubjectEntry> subjectList = FXCollections.observableArrayList();
 
@@ -100,6 +112,26 @@ public class SubjectPageController implements Initializable {
         
         // Load subjects from database
         loadSubjects();
+        
+        // Start the clock
+        startClock();
+    }
+    
+    /**
+     * Start the real-time clock display
+     */
+    private void startClock() {
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm:ss a");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy");
+        
+        clock = new Timeline(new KeyFrame(Duration.ZERO, e -> {
+            LocalDateTime now = LocalDateTime.now();
+            timeLabel.setText(now.format(timeFormatter));
+            dateLabel.setText(now.format(dateFormatter));
+        }), new KeyFrame(Duration.seconds(1)));
+        
+        clock.setCycleCount(Animation.INDEFINITE);
+        clock.play();
     }
     
     @FXML

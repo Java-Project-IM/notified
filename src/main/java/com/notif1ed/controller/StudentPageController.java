@@ -29,10 +29,22 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
+import javafx.stage.FileChooser;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.IOException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 
 /**
  * FXML Controller class for Student Page
@@ -76,6 +88,12 @@ public class StudentPageController implements Initializable {
     private Button recordsButton;
     @FXML
     private Button addStudentButton;
+    @FXML
+    private javafx.scene.text.Text timeLabel;
+    @FXML
+    private javafx.scene.text.Text dateLabel;
+    
+    private Timeline clock;
     
     private ObservableList<StudentEntry> studentList = FXCollections.observableArrayList();
 
@@ -180,6 +198,26 @@ public class StudentPageController implements Initializable {
         
         // Load students from database
         loadStudents();
+        
+        // Start the clock
+        startClock();
+    }
+    
+    /**
+     * Start the real-time clock display
+     */
+    private void startClock() {
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm:ss a");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy");
+        
+        clock = new Timeline(new KeyFrame(Duration.ZERO, e -> {
+            LocalDateTime now = LocalDateTime.now();
+            timeLabel.setText(now.format(timeFormatter));
+            dateLabel.setText(now.format(dateFormatter));
+        }), new KeyFrame(Duration.seconds(1)));
+        
+        clock.setCycleCount(Animation.INDEFINITE);
+        clock.play();
     }
     
     private void loadStudents() {
@@ -677,6 +715,199 @@ public class StudentPageController implements Initializable {
                 ToastNotification.showError(stage, "Error during logout");
                 e.printStackTrace();
             }
+        }
+    }
+    
+    /**
+     * Handles importing students from an Excel file
+     * Expected columns: Student Number, First Name, Last Name, Section, Student Email, Guardian Name, Guardian Email
+     */
+    @FXML
+    private void handleImportFromExcel(ActionEvent event) {
+        Stage stage = (Stage) studentTable.getScene().getWindow();
+        
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Import Students from Excel");
+        fileChooser.getExtensionFilters().add(
+            new FileChooser.ExtensionFilter("Excel Files", "*.xlsx", "*.xls")
+        );
+        
+        File file = fileChooser.showOpenDialog(stage);
+        if (file == null) {
+            return; // User cancelled
+        }
+        
+        int successCount = 0;
+        int errorCount = 0;
+        StringBuilder errors = new StringBuilder();
+        
+        try (FileInputStream fis = new FileInputStream(file);
+             Workbook workbook = new XSSFWorkbook(fis)) {
+            
+            Sheet sheet = workbook.getSheetAt(0);
+            
+            // Skip header row (row 0)
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+                Row row = sheet.getRow(i);
+                if (row == null) continue;
+                
+                try {
+                    String studentNumber = getCellValue(row.getCell(0));
+                    String firstName = getCellValue(row.getCell(1));
+                    String lastName = getCellValue(row.getCell(2));
+                    String section = getCellValue(row.getCell(3));
+                    String studentEmail = getCellValue(row.getCell(4));
+                    String guardianName = getCellValue(row.getCell(5));
+                    String guardianEmail = getCellValue(row.getCell(6));
+                    
+                    // Validate required fields
+                    if (studentNumber.isEmpty() || firstName.isEmpty() || lastName.isEmpty() ||
+                        studentEmail.isEmpty() || guardianName.isEmpty() || guardianEmail.isEmpty()) {
+                        errorCount++;
+                        errors.append("Row ").append(i + 1).append(": Missing required fields\n");
+                        continue;
+                    }
+                    
+                    // Create student entry using 5-parameter constructor
+                    StudentEntry student = new StudentEntry(studentNumber, lastName, firstName, guardianName, guardianEmail);
+                    student.setSection(section);
+                    student.setEmail(studentEmail);
+                    
+                    // Add to database using correct method signature
+                    if (studentService.addStudent(student, guardianName, guardianEmail, section)) {
+                        successCount++;
+                    } else {
+                        errorCount++;
+                        errors.append("Row ").append(i + 1).append(": Failed to add student\n");
+                    }
+                    
+                } catch (Exception e) {
+                    errorCount++;
+                    errors.append("Row ").append(i + 1).append(": ").append(e.getMessage()).append("\n");
+                    log.error("Error importing row {}", i + 1, e);
+                }
+            }
+            
+            // Refresh table
+            refreshTable();
+            
+            // Show result
+            String message = String.format("✅ Successfully imported %d students", successCount);
+            if (errorCount > 0) {
+                message += String.format("\n⚠️ %d errors occurred", errorCount);
+            }
+            
+            ToastNotification.showSuccess(stage, message);
+            
+            if (errorCount > 0 && errors.length() > 0) {
+                CustomModal.showInfo(stage, "Import Errors", errors.toString());
+            }
+            
+            log.info("Excel import completed: {} success, {} errors", successCount, errorCount);
+            
+        } catch (Exception e) {
+            log.error("Error importing Excel file", e);
+            ToastNotification.showError(stage, "Error importing Excel file: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Helper method to get cell value as string
+     */
+    private String getCellValue(Cell cell) {
+        if (cell == null) {
+            return "";
+        }
+        
+        return switch (cell.getCellType()) {
+            case STRING -> cell.getStringCellValue().trim();
+            case NUMERIC -> String.valueOf((long) cell.getNumericCellValue());
+            case BOOLEAN -> String.valueOf(cell.getBooleanCellValue());
+            case FORMULA -> cell.getCellFormula();
+            default -> "";
+        };
+    }
+    
+    /**
+     * Handle Download Excel Template button click
+     * Creates a sample Excel file with proper headers and example data
+     */
+    @FXML
+    private void handleDownloadTemplate(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Excel Template");
+        fileChooser.setInitialFileName("student_import_template.xlsx");
+        fileChooser.getExtensionFilters().add(
+            new FileChooser.ExtensionFilter("Excel Files", "*.xlsx")
+        );
+        
+        // Show save dialog
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        File file = fileChooser.showSaveDialog(stage);
+        
+        if (file == null) {
+            return; // User cancelled
+        }
+        
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Students");
+            
+            // Create header style
+            CellStyle headerStyle = workbook.createCellStyle();
+            Font headerFont = workbook.createFont();
+            headerFont.setBold(true);
+            headerFont.setFontHeightInPoints((short) 12);
+            headerStyle.setFont(headerFont);
+            headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            
+            // Create header row
+            Row headerRow = sheet.createRow(0);
+            String[] headers = {
+                "Student Number", "First Name", "Last Name", "Section", 
+                "Student Email", "Guardian Name", "Guardian Email"
+            };
+            
+            for (int i = 0; i < headers.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(headers[i]);
+                cell.setCellStyle(headerStyle);
+                sheet.setColumnWidth(i, 20 * 256); // Set column width
+            }
+            
+            // Add example data rows
+            String[][] exampleData = {
+                {"250001", "John", "Doe", "Section A", "john.doe@example.com", "Jane Doe", "jane.doe@example.com"},
+                {"250002", "Alice", "Smith", "Section B", "alice.smith@example.com", "Bob Smith", "bob.smith@example.com"},
+                {"250003", "Michael", "Johnson", "Section A", "michael.j@example.com", "Sarah Johnson", "sarah.j@example.com"}
+            };
+            
+            CellStyle exampleStyle = workbook.createCellStyle();
+            Font exampleFont = workbook.createFont();
+            exampleFont.setItalic(true);
+            exampleFont.setColor(IndexedColors.GREY_50_PERCENT.getIndex());
+            exampleStyle.setFont(exampleFont);
+            
+            for (int i = 0; i < exampleData.length; i++) {
+                Row row = sheet.createRow(i + 1);
+                for (int j = 0; j < exampleData[i].length; j++) {
+                    Cell cell = row.createCell(j);
+                    cell.setCellValue(exampleData[i][j]);
+                    cell.setCellStyle(exampleStyle);
+                }
+            }
+            
+            // Write to file
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                workbook.write(fos);
+            }
+            
+            ToastNotification.showSuccess(stage, "✅ Excel template downloaded successfully!");
+            log.info("Excel template saved to: {}", file.getAbsolutePath());
+            
+        } catch (IOException e) {
+            ToastNotification.showError(stage, "Failed to create Excel template");
+            log.error("Error creating Excel template", e);
         }
     }
 }

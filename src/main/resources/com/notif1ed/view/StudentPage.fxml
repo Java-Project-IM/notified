@@ -50,6 +50,19 @@
                   <Font name="Poppins Bold" size="20.0" />
                </font>
             </Button>
+            
+            <!-- Time and Date Display -->
+            <Text fx:id="timeLabel" layoutX="1450.0" layoutY="45.0" text="12:00 PM" fill="#1976D2">
+               <font>
+                  <Font name="Poppins Bold" size="18.0" />
+               </font>
+            </Text>
+            <Text fx:id="dateLabel" layoutX="1450.0" layoutY="68.0" text="Nov 13, 2025" fill="#616161">
+               <font>
+                  <Font name="Poppins Regular" size="13.0" />
+               </font>
+            </Text>
+            
             <Button fx:id="logoutButton" graphicTextGap="10.0" layoutX="1685.0" layoutY="24.0" lineSpacing="100.0" mnemonicParsing="false" onAction="#handleLogoutClick" prefHeight="43.0" prefWidth="180.0" style="-fx-background-color: linear-gradient(to bottom, #f44336, #d32f2f); -fx-background-radius: 22; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(244,67,54,0.3), 8, 0, 0, 3);" text="LOGOUT" textFill="WHITE">
                <font>
                   <Font name="Poppins Bold" size="18.0" />
@@ -91,6 +104,20 @@
                   <Line endX="6.5" endY="6.5" layoutX="292.0" layoutY="26.5" startX="0.0" startY="0.0" stroke="#1976D2" strokeLineCap="ROUND" strokeWidth="2.3" />
                </children>
             </Pane>
+            
+            <!-- Import Excel Button -->
+            <Button fx:id="btnImportExcel" layoutX="1090.0" layoutY="70.0" mnemonicParsing="false" onAction="#handleImportFromExcel" prefHeight="50.0" prefWidth="220.0" style="-fx-background-color: linear-gradient(to right, #4CAF50, #388E3C); -fx-background-radius: 10; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(76,175,80,0.25), 8, 0, 0, 2); -fx-font-family: 'Segoe UI Emoji', 'Noto Color Emoji', 'Apple Color Emoji', 'Symbola', sans-serif;" text="📥 Import Excel" textFill="WHITE">
+               <font>
+                  <Font name="Poppins SemiBold" size="16.0" />
+               </font>
+            </Button>
+            
+            <!-- Download Template Button -->
+            <Button fx:id="btnDownloadTemplate" layoutX="1320.0" layoutY="70.0" mnemonicParsing="false" onAction="#handleDownloadTemplate" prefHeight="50.0" prefWidth="235.0" style="-fx-background-color: linear-gradient(to right, #FF9800, #F57C00); -fx-background-radius: 10; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(255,152,0,0.25), 8, 0, 0, 2); -fx-font-family: 'Segoe UI Emoji', 'Noto Color Emoji', 'Apple Color Emoji', 'Symbola', sans-serif;" text="📄 Download Template" textFill="WHITE">
+               <font>
+                  <Font name="Poppins SemiBold" size="16.0" />
+               </font>
+            </Button>
             
             <!-- Add Student Button with emoji -->
             <Button fx:id="btnAddStudent" layoutX="1565.0" layoutY="70.0" mnemonicParsing="false" onAction="#handleAddStudent" prefHeight="50.0" prefWidth="225.0" style="-fx-background-color: linear-gradient(to right, #1976D2, #1565C0); -fx-background-radius: 10; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(25,118,210,0.25), 8, 0, 0, 2); -fx-font-family: 'Segoe UI Emoji', 'Noto Color Emoji', 'Apple Color Emoji', 'Symbola', sans-serif;" text="➕ Add Student" textFill="WHITE">

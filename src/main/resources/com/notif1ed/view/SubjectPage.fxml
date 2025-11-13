@@ -49,6 +49,19 @@
                   <Font name="Poppins Bold" size="20.0" />
                </font>
             </Button>
+            
+            <!-- Time and Date Display -->
+            <Text fx:id="timeLabel" layoutX="1450.0" layoutY="45.0" text="12:00 PM" fill="#1976D2">
+               <font>
+                  <Font name="Poppins Bold" size="18.0" />
+               </font>
+            </Text>
+            <Text fx:id="dateLabel" layoutX="1450.0" layoutY="68.0" text="Nov 13, 2025" fill="#616161">
+               <font>
+                  <Font name="Poppins Regular" size="13.0" />
+               </font>
+            </Text>
+            
             <Button fx:id="logoutButton" graphicTextGap="10.0" layoutX="1685.0" layoutY="24.0" lineSpacing="100.0" mnemonicParsing="false" onAction="#handleLogoutClick" prefHeight="43.0" prefWidth="180.0" style="-fx-background-color: linear-gradient(to bottom, #f44336, #d32f2f); -fx-background-radius: 22; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(244,67,54,0.3), 8, 0, 0, 3);" text="LOGOUT" textFill="WHITE">
                <font>
                   <Font name="Poppins Bold" size="18.0" />

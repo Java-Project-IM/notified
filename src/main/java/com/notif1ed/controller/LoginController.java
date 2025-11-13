@@ -18,6 +18,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import java.io.IOException;
 import java.sql.Connection;
@@ -41,6 +42,17 @@ public class LoginController {
 
     @FXML
     private PasswordField passwordField;
+    
+    @FXML
+    private TextField passwordTextField;
+    
+    @FXML
+    private Button togglePasswordButton;
+    
+    @FXML
+    private Button backButton;
+    
+    private boolean passwordVisible = false;
 
     @FXML
     private void handleLoginClick(ActionEvent event) {
@@ -122,6 +134,47 @@ public class LoginController {
             stage.setTitle("Notifyed - Sign Up");
             stage.show();
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Toggle password visibility between masked and visible
+     */
+    @FXML
+    private void handleTogglePassword(ActionEvent event) {
+        if (passwordVisible) {
+            // Hide password - copy text from TextField to PasswordField
+            passwordField.setText(passwordTextField.getText());
+            passwordTextField.setVisible(false);
+            passwordField.setVisible(true);
+            togglePasswordButton.setText("👁️");
+            passwordVisible = false;
+        } else {
+            // Show password - copy text from PasswordField to TextField
+            passwordTextField.setText(passwordField.getText());
+            passwordField.setVisible(false);
+            passwordTextField.setVisible(true);
+            togglePasswordButton.setText("🙈");
+            passwordVisible = true;
+        }
+    }
+    
+    /**
+     * Navigate back to the start/landing page
+     */
+    @FXML
+    private void handleBackClick(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/notif1ed/view/LandingPage.fxml"));
+            Scene scene = new Scene(loader.load());
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.setTitle("Notifyed - Welcome");
+            stage.show();
+            log.info("User returned to landing page");
+        } catch (IOException e) {
+            log.error("Error loading landing page", e);
             e.printStackTrace();
         }
     }

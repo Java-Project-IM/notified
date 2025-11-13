@@ -17,6 +17,12 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -26,6 +32,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 /**
@@ -59,6 +66,12 @@ public class HomepageController implements Initializable {
     private Button recordsButton;
     @FXML
     private Button logoutButton;
+    @FXML
+    private Text timeLabel;
+    @FXML
+    private Text dateLabel;
+    
+    private Timeline clock;
 
     /**
      * Initializes the controller class.
@@ -74,6 +87,26 @@ public class HomepageController implements Initializable {
         
         // Load dashboard statistics
         loadDashboardStats();
+        
+        // Start the clock
+        startClock();
+    }
+    
+    /**
+     * Start the real-time clock display
+     */
+    private void startClock() {
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm:ss a");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy");
+        
+        clock = new Timeline(new KeyFrame(Duration.ZERO, e -> {
+            LocalDateTime now = LocalDateTime.now();
+            timeLabel.setText(now.format(timeFormatter));
+            dateLabel.setText(now.format(dateFormatter));
+        }), new KeyFrame(Duration.seconds(1)));
+        
+        clock.setCycleCount(Animation.INDEFINITE);
+        clock.play();
     }
     
     @FXML
