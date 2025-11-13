@@ -14,10 +14,10 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane id="AnchorPane" prefHeight="700.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.notif1ed.controller.EmailPromptController">
+<AnchorPane id="AnchorPane" prefHeight="650.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.notif1ed.controller.EmailPromptController">
    <children>
       <!-- Modern Card Container - Perfectly Centered -->
-      <Pane layoutX="100.0" layoutY="70.0" prefHeight="560.0" prefWidth="500.0" style="-fx-background-color: white; -fx-background-radius: 18;">
+      <Pane layoutX="50.0" layoutY="50.0" prefHeight="550.0" prefWidth="500.0" style="-fx-background-color: white; -fx-background-radius: 16;">
          <effect>
             <DropShadow height="30.0" radius="14.5" width="30.0">
                <color>
@@ -27,73 +27,73 @@
          </effect>
          <children>
             <!-- Header with Icon (clean circle + emoji) -->
-            <VBox alignment="CENTER" layoutX="0.0" layoutY="30.0" prefHeight="110.0" prefWidth="500.0" spacing="8.0">
+            <VBox alignment="CENTER" layoutX="0.0" layoutY="25.0" prefHeight="100.0" prefWidth="500.0" spacing="6.0">
                      <children>
-                        <StackPane prefHeight="64.0" prefWidth="64.0">
+                        <StackPane prefHeight="56.0" prefWidth="56.0">
                            <children>
-                              <Circle fill="#2196F3" radius="32.0" />
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="📧" style="-fx-font-size: 30px;" />
+                              <Circle fill="#2196F3" radius="28.0" />
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="📧" style="-fx-font-size: 28px;" />
                            </children>
                         </StackPane>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Send Email" fill="#212121">
                            <font>
-                              <Font name="Poppins Bold" size="20.0" />
+                              <Font name="Poppins Bold" size="22.0" />
                            </font>
                         </Text>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Compose and send a message to the selected recipient(s)" fill="#757575" opacity="0.9">
                            <font>
-                              <Font name="Poppins Regular" size="12.0" />
+                              <Font name="Poppins Regular" size="11.5" />
                            </font>
                         </Text>
                      </children>
                   </VBox>
             
             <!-- Form Fields -->
-            <VBox layoutX="50.0" layoutY="160.0" prefHeight="320.0" prefWidth="400.0" spacing="18.0">
+            <VBox layoutX="50.0" layoutY="140.0" prefHeight="340.0" prefWidth="400.0" spacing="16.0">
                <children>
                   <!-- To Field -->
-                  <VBox spacing="8.0">
+                  <VBox spacing="6.0">
                      <children>
                         <Label text="To:" textFill="#424242">
                            <font>
-                              <Font name="Poppins SemiBold" size="13.0" />
+                              <Font name="Poppins SemiBold" size="12.5" />
                            </font>
                         </Label>
-                        <TextField fx:id="toField" promptText="recipient@example.com" style="-fx-font-size: 14px; -fx-padding: 12; -fx-border-color: #CCCCCC; -fx-border-width: 2; -fx-border-radius: 8; -fx-background-radius: 8;">
+                        <TextField fx:id="toField" promptText="recipient@example.com" style="-fx-font-size: 13px; -fx-padding: 11; -fx-border-color: #D0D0D0; -fx-border-width: 1.5; -fx-border-radius: 8; -fx-background-radius: 8; -fx-text-fill: #424242; -fx-highlight-fill: transparent; -fx-highlight-text-fill: #424242;">
                            <font>
-                              <Font name="Poppins Regular" size="14.0" />
+                              <Font name="Poppins Regular" size="13.0" />
                            </font>
                         </TextField>
                      </children>
                   </VBox>
                   
                   <!-- Subject Field -->
-                  <VBox spacing="8.0">
+                  <VBox spacing="6.0">
                      <children>
                         <Label text="Subject: *" textFill="#424242">
                            <font>
-                              <Font name="Poppins SemiBold" size="13.0" />
+                              <Font name="Poppins SemiBold" size="12.5" />
                            </font>
                         </Label>
-                        <TextField fx:id="subjectField" promptText="Email subject..." style="-fx-font-size: 14px; -fx-padding: 12; -fx-border-color: #CCCCCC; -fx-border-width: 2; -fx-border-radius: 8; -fx-background-radius: 8;">
+                        <TextField fx:id="subjectField" promptText="Email subject..." style="-fx-font-size: 13px; -fx-padding: 11; -fx-border-color: #D0D0D0; -fx-border-width: 1.5; -fx-border-radius: 8; -fx-background-radius: 8;">
                            <font>
-                              <Font name="Poppins Regular" size="14.0" />
+                              <Font name="Poppins Regular" size="13.0" />
                            </font>
                         </TextField>
                      </children>
                   </VBox>
                   
                   <!-- Message Field - larger textarea for readability -->
-                  <VBox spacing="8.0">
+                  <VBox spacing="6.0">
                      <children>
                         <Label text="Message: *" textFill="#424242">
                            <font>
-                              <Font name="Poppins SemiBold" size="13.0" />
+                              <Font name="Poppins SemiBold" size="12.5" />
                            </font>
                         </Label>
-                        <TextArea fx:id="messageArea" prefHeight="180.0" promptText="Type your message here..." style="-fx-font-size: 14px; -fx-padding: 12; -fx-border-color: #E0E0E0; -fx-border-width: 1.5; -fx-border-radius: 10; -fx-background-radius: 10;" wrapText="true">
+                        <TextArea fx:id="messageArea" prefHeight="165.0" promptText="Type your message here..." style="-fx-font-size: 13px; -fx-padding: 11; -fx-border-color: #D0D0D0; -fx-border-width: 1.5; -fx-border-radius: 8; -fx-background-radius: 8;" wrapText="true">
                            <font>
-                              <Font name="Poppins Regular" size="14.0" />
+                              <Font name="Poppins Regular" size="13.0" />
                            </font>
                         </TextArea>
                      </children>
@@ -104,26 +104,26 @@
             <!-- Error Label -->
             <Label fx:id="errorLabel" layoutX="50.0" layoutY="490.0" prefWidth="400.0" style="-fx-text-fill: #F44336; -fx-font-weight: 600;" visible="false">
                <font>
-                  <Font name="Poppins SemiBold" size="13.0" />
+                  <Font name="Poppins SemiBold" size="12.0" />
                </font>
             </Label>
             
             <!-- Buttons - aligned to the right, primary/secondary styling -->
-            <Pane layoutX="0.0" layoutY="505.0" prefWidth="500.0">
+            <Pane layoutX="0.0" layoutY="495.0" prefWidth="500.0" prefHeight="55.0">
                <children>
-                  <Button fx:id="cancelButton" layoutX="300.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="42.0" prefWidth="100.0" style="-fx-background-color: #F5F5F5; -fx-background-radius: 8; -fx-cursor: hand; -fx-border-color: #E0E0E0;" text="Cancel" textFill="#424242">
+                  <Button fx:id="cancelButton" layoutX="285.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="40.0" prefWidth="95.0" style="-fx-background-color: #F5F5F5; -fx-background-radius: 8; -fx-cursor: hand; -fx-border-color: #D0D0D0; -fx-border-width: 1; -fx-border-radius: 8;" text="Cancel" textFill="#616161">
                      <font>
                         <Font name="Poppins SemiBold" size="13.0" />
                      </font>
                   </Button>
-                  <Button fx:id="sendButton" layoutX="410.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleSend" prefHeight="42.0" prefWidth="90.0" style="-fx-background-color: linear-gradient(to right, #2196F3, #1976D2); -fx-background-radius: 8; -fx-cursor: hand;" text="Send" textFill="WHITE">
+                  <Button fx:id="sendButton" layoutX="390.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleSend" prefHeight="40.0" prefWidth="100.0" style="-fx-background-color: linear-gradient(to right, #2196F3, #1976D2); -fx-background-radius: 8; -fx-cursor: hand;" text="Send" textFill="WHITE">
                      <font>
                         <Font name="Poppins SemiBold" size="13.0" />
                      </font>
                      <effect>
-                        <DropShadow>
+                        <DropShadow height="10.0" radius="4.5" width="10.0">
                            <color>
-                              <Color opacity="0.12" />
+                              <Color opacity="0.15" />
                            </color>
                         </DropShadow>
                      </effect>

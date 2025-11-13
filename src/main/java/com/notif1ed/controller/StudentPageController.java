@@ -49,6 +49,9 @@ public class StudentPageController implements Initializable {
     private TableView<StudentEntry> studentTable;
     
     @FXML
+    private TableColumn<StudentEntry, Boolean> selectCol;
+    
+    @FXML
     private TableColumn<StudentEntry, String> studentNumberCol;
     
     @FXML
@@ -86,6 +89,34 @@ public class StudentPageController implements Initializable {
         }
         
         log.info("Initializing Students page for user: {}", SessionManager.getInstance().getUserName());
+        
+        // Setup checkbox column
+        if (selectCol != null) {
+            selectCol.setCellValueFactory(cellData -> cellData.getValue().selectedProperty());
+            selectCol.setCellFactory(col -> new TableCell<StudentEntry, Boolean>() {
+                private final javafx.scene.control.CheckBox checkBox = new javafx.scene.control.CheckBox();
+                
+                {
+                    checkBox.setOnAction(event -> {
+                        StudentEntry student = getTableView().getItems().get(getIndex());
+                        student.setSelected(checkBox.isSelected());
+                    });
+                }
+                
+                @Override
+                protected void updateItem(Boolean item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        setGraphic(null);
+                    } else {
+                        StudentEntry student = getTableView().getItems().get(getIndex());
+                        checkBox.setSelected(student.isSelected());
+                        setGraphic(checkBox);
+                        setStyle("-fx-alignment: CENTER;");
+                    }
+                }
+            });
+        }
         
         // Setup table columns if they exist
         if (studentNumberCol != null) {
@@ -297,19 +328,32 @@ public class StudentPageController implements Initializable {
     private void handleSendEmailClick(ActionEvent event) {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         
-        // Get selected student or all students
-        if (studentTable.getSelectionModel().getSelectedItem() != null) {
-            StudentEntry selectedStudent = studentTable.getSelectionModel().getSelectedItem();
+        // Get students with checkboxes checked
+        java.util.List<StudentEntry> selectedStudents = studentList.stream()
+            .filter(StudentEntry::isSelected)
+            .collect(java.util.stream.Collectors.toList());
+        
+        if (selectedStudents.isEmpty()) {
+            // No checkboxes selected, use all students
+            if (studentList.size() > 0) {
+                ToastNotification.showInfo(stage, 
+                    "Opening email prompt for all students (" + studentList.size() + " recipients)");
+                openEmailPromptForAll();
+            } else {
+                ToastNotification.showWarning(stage, 
+                    "No students available to send email to.");
+            }
+        } else if (selectedStudents.size() == 1) {
+            // Single student selected
+            StudentEntry student = selectedStudents.get(0);
             ToastNotification.showInfo(stage, 
-                "Opening email prompt for: " + selectedStudent.getEmail());
-            openEmailPrompt(selectedStudent.getEmail());
-        } else if (studentList.size() > 0) {
-            ToastNotification.showInfo(stage, 
-                "Opening email prompt for all students (" + studentList.size() + " recipients)");
-            openEmailPromptForAll();
+                "Opening email prompt for: " + student.getEmail());
+            openEmailPrompt(student.getEmail());
         } else {
-            ToastNotification.showWarning(stage, 
-                "No students available to send email to.");
+            // Multiple students selected
+            ToastNotification.showInfo(stage, 
+                "Opening email prompt for selected students (" + selectedStudents.size() + " recipients)");
+            openEmailPromptForSelected(selectedStudents);
         }
     }
     
@@ -380,6 +424,62 @@ public class StudentPageController implements Initializable {
             // Create modal dialog with backdrop styling
             Stage emailStage = new Stage();
             emailStage.setTitle("Send Email to All Students (" + studentList.size() + " recipients)");
+            emailStage.initOwner(stage);
+            emailStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            emailStage.initStyle(javafx.stage.StageStyle.TRANSPARENT);
+            emailStage.setResizable(false);
+            
+            // Wrap content in backdrop
+            javafx.scene.layout.StackPane backdrop = new javafx.scene.layout.StackPane();
+            backdrop.setStyle("-fx-background-color: rgba(0, 0, 0, 0.65);");
+            backdrop.getChildren().add(root);
+            
+            Scene scene = new Scene(backdrop);
+            scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+            emailStage.setScene(scene);
+            
+            // Match owner window size and position
+            emailStage.setX(stage.getX());
+            emailStage.setY(stage.getY());
+            emailStage.setWidth(stage.getWidth());
+            emailStage.setHeight(stage.getHeight());
+            
+            // Close on backdrop click
+            backdrop.setOnMouseClicked(e -> {
+                if (e.getTarget() == backdrop) {
+                    emailStage.close();
+                }
+            });
+            
+            emailStage.showAndWait();
+        } catch (IOException e) {
+            ToastNotification.showError(stage, "Could not open email prompt");
+            e.printStackTrace();
+        }
+    }
+    
+    private void openEmailPromptForSelected(java.util.List<StudentEntry> selectedStudents) {
+        Stage stage = (Stage) studentTable.getScene().getWindow();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/notif1ed/view/EmailPrompt.fxml"));
+            Parent root = loader.load();
+            
+            // Get controller and set multiple recipients
+            EmailPromptController controller = loader.getController();
+            
+            // Collect selected student emails
+            StringBuilder emails = new StringBuilder();
+            for (int i = 0; i < selectedStudents.size(); i++) {
+                emails.append(selectedStudents.get(i).getEmail());
+                if (i < selectedStudents.size() - 1) {
+                    emails.append(", ");
+                }
+            }
+            controller.setMultipleRecipients(emails.toString());
+            
+            // Create modal dialog with backdrop styling
+            Stage emailStage = new Stage();
+            emailStage.setTitle("Send Email - " + selectedStudents.size() + " Recipients");
             emailStage.initOwner(stage);
             emailStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
             emailStage.initStyle(javafx.stage.StageStyle.TRANSPARENT);

@@ -24,12 +24,12 @@ public class Constants {
         "COALESCE(section, '') as section, email FROM students ORDER BY student_number";
     
     public static final String INSERT_STUDENT = 
-        "INSERT INTO students (student_number, first_name, last_name, email, section, guardian_name, guardian_email, created_by) " +
-        "VALUES (?, ?, ?, ?, ?, ?, ?, 1)";
+        "INSERT INTO students (student_number, first_name, last_name, email, section, guardian_name, created_by) " +
+        "VALUES (?, ?, ?, ?, ?, ?, 1)";
     
     public static final String UPDATE_STUDENT = 
         "UPDATE students SET first_name = ?, last_name = ?, email = ?, section = ?, " +
-        "guardian_name = ?, guardian_email = ? WHERE student_number = ?";
+        "guardian_name = ? WHERE student_number = ?";
     
     public static final String DELETE_STUDENT = 
         "DELETE FROM students WHERE student_number = ?";

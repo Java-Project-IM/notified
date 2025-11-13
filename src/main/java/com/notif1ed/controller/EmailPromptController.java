@@ -65,6 +65,13 @@ public class EmailPromptController implements Initializable {
         this.isMultipleRecipients = false;
         toField.setText(email);
         toField.setEditable(false); // Don't allow editing when set programmatically
+        
+        // Ensure deselection happens after UI is fully rendered
+        javafx.application.Platform.runLater(() -> {
+            toField.positionCaret(0);
+            toField.deselect();
+            toField.setFocusTraversable(false);
+        });
     }
     
     /**
@@ -75,6 +82,13 @@ public class EmailPromptController implements Initializable {
         this.isMultipleRecipients = true;
         toField.setText(emails);
         toField.setEditable(false);
+        
+        // Ensure deselection happens after UI is fully rendered
+        javafx.application.Platform.runLater(() -> {
+            toField.positionCaret(0);
+            toField.deselect();
+            toField.setFocusTraversable(false);
+        });
     }
     
     /**
@@ -162,8 +176,8 @@ public class EmailPromptController implements Initializable {
         // SMTP Configuration - CONFIGURE THESE FOR YOUR EMAIL SERVER
         final String SMTP_HOST = "smtp.gmail.com";
         final String SMTP_PORT = "587"; // TLS port
-        final String FROM_EMAIL = "your-email@gmail.com"; // TODO: Configure your email
-        final String APP_PASSWORD = "your-app-password"; // TODO: Use Gmail App Password, NOT regular password
+        final String FROM_EMAIL = "venturinachen@gmail.com"; // TODO: Configure your email
+        final String APP_PASSWORD = "surn emra mqyi fmfx"; // TODO: Use Gmail App Password, NOT regular password
         
         // Verify configuration
         if (FROM_EMAIL.equals("your-email@gmail.com") || APP_PASSWORD.equals("your-app-password")) {
