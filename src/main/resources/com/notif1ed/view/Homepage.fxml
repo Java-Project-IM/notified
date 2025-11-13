@@ -53,12 +53,12 @@
             </Button>
          </children>
       </Pane>
-      <Text fill="#2f92dc" layoutX="198.0" layoutY="322.0" strokeType="OUTSIDE" strokeWidth="0.0" text="GOALS">
+      <Text fill="#2f92dc" layoutX="180.0" layoutY="310.0" strokeType="OUTSIDE" strokeWidth="0.0" text="GOALS">
          <font>
-            <Font name="Poppins Bold" size="150.0" />
+            <Font name="Poppins Bold" size="140.0" />
          </font>
       </Text>
-      <Pane layoutY="403.0" prefHeight="160.0" prefWidth="900.0" style="-fx-background-color: #011E37;">
+      <Pane layoutY="390.0" prefHeight="165.0" prefWidth="920.0" style="-fx-background-color: #011E37; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 12, 0, 0, 3);">
          <children>
             <Text fill="#2f92dc" layoutX="47.0" layoutY="122.0" strokeType="OUTSIDE" strokeWidth="0.0" text="01">
                <font>
@@ -82,7 +82,7 @@
             </Text>
          </children>
       </Pane>
-      <Pane layoutY="593.0" prefHeight="160.0" prefWidth="900.0" style="-fx-background-color: #011E37;">
+      <Pane layoutY="580.0" prefHeight="165.0" prefWidth="920.0" style="-fx-background-color: #011E37; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 12, 0, 0, 3);">
          <children>
             <Text fill="WHITE" layoutX="203.0" layoutY="100.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Send immediate email alerts to parents or guardians.">
                <font>

@@ -378,6 +378,7 @@ public class StudentPageController implements Initializable {
             // Wrap content in backdrop
             javafx.scene.layout.StackPane backdrop = new javafx.scene.layout.StackPane();
             backdrop.setStyle("-fx-background-color: rgba(0, 0, 0, 0.65);");
+            backdrop.setAlignment(javafx.geometry.Pos.CENTER);
             backdrop.getChildren().add(root);
             
             Scene scene = new Scene(backdrop);
@@ -432,6 +433,7 @@ public class StudentPageController implements Initializable {
             // Wrap content in backdrop
             javafx.scene.layout.StackPane backdrop = new javafx.scene.layout.StackPane();
             backdrop.setStyle("-fx-background-color: rgba(0, 0, 0, 0.65);");
+            backdrop.setAlignment(javafx.geometry.Pos.CENTER);
             backdrop.getChildren().add(root);
             
             Scene scene = new Scene(backdrop);
@@ -488,6 +490,7 @@ public class StudentPageController implements Initializable {
             // Wrap content in backdrop
             javafx.scene.layout.StackPane backdrop = new javafx.scene.layout.StackPane();
             backdrop.setStyle("-fx-background-color: rgba(0, 0, 0, 0.65);");
+            backdrop.setAlignment(javafx.geometry.Pos.CENTER);
             backdrop.getChildren().add(root);
             
             Scene scene = new Scene(backdrop);
