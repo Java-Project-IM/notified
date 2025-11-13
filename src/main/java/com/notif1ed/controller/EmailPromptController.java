@@ -65,6 +65,13 @@ public class EmailPromptController implements Initializable {
         this.isMultipleRecipients = false;
         toField.setText(email);
         toField.setEditable(false); // Don't allow editing when set programmatically
+        
+        // Ensure deselection happens after UI is fully rendered
+        javafx.application.Platform.runLater(() -> {
+            toField.positionCaret(0);
+            toField.deselect();
+            toField.setFocusTraversable(false);
+        });
     }
     
     /**
@@ -75,6 +82,13 @@ public class EmailPromptController implements Initializable {
         this.isMultipleRecipients = true;
         toField.setText(emails);
         toField.setEditable(false);
+        
+        // Ensure deselection happens after UI is fully rendered
+        javafx.application.Platform.runLater(() -> {
+            toField.positionCaret(0);
+            toField.deselect();
+            toField.setFocusTraversable(false);
+        });
     }
     
     /**

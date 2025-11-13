@@ -59,7 +59,7 @@
                               <Font name="Poppins SemiBold" size="13.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="toField" promptText="recipient@example.com" style="-fx-font-size: 14px; -fx-padding: 12; -fx-border-color: #CCCCCC; -fx-border-width: 2; -fx-border-radius: 8; -fx-background-radius: 8;">
+                        <TextField fx:id="toField" promptText="recipient@example.com" style="-fx-font-size: 14px; -fx-padding: 12; -fx-border-color: #CCCCCC; -fx-border-width: 2; -fx-border-radius: 8; -fx-background-radius: 8; -fx-text-fill: #424242; -fx-highlight-fill: transparent; -fx-highlight-text-fill: #424242;">
                            <font>
                               <Font name="Poppins Regular" size="14.0" />
                            </font>
