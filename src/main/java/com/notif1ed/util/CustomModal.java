@@ -905,4 +905,254 @@ public class CustomModal {
         
         return confirmed.get() ? result : null;
     }
+    
+    /**
+     * Show an email composition modal
+     * @param ownerStage Parent stage
+     * @param recipientEmail Pre-filled recipient email (can be null)
+     * @param onSend Callback when email is sent successfully (receives subject and message)
+     */
+    public static void showEmailModal(Stage ownerStage, String recipientEmail, 
+                                     java.util.function.BiConsumer<String, String> onSend) {
+        Stage dialog = new Stage();
+        dialog.initOwner(ownerStage);
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.initStyle(StageStyle.TRANSPARENT);
+        dialog.setResizable(false);
+        
+        StackPane backdrop = new StackPane();
+        backdrop.setStyle("-fx-background-color: rgba(0, 0, 0, 0.65);");
+        
+        VBox mainContent = new VBox(25);
+        mainContent.setAlignment(Pos.TOP_CENTER);
+        mainContent.setPadding(new Insets(40, 45, 40, 45));
+        mainContent.setStyle(
+            "-fx-background-color: white;" +
+            "-fx-background-radius: 15;" +
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 25, 0, 0, 8);"
+        );
+        mainContent.setPrefWidth(874);
+        mainContent.setMaxWidth(874);
+        mainContent.setMaxHeight(Region.USE_PREF_SIZE);
+        
+        // Header with icon and title
+        HBox header = new HBox(20);
+        header.setAlignment(Pos.CENTER_LEFT);
+        
+        Label iconLabel = new Label("✉");
+        StackPane iconContainer = new StackPane(iconLabel);
+        iconContainer.setStyle(
+            "-fx-background-color: linear-gradient(to bottom right, #2196F3, #1976D2);" +
+            "-fx-background-radius: 50%;" +
+            "-fx-min-width: 80px;" +
+            "-fx-min-height: 80px;" +
+            "-fx-max-width: 80px;" +
+            "-fx-max-height: 80px;" +
+            "-fx-effect: dropshadow(gaussian, rgba(33,150,243,0.4), 15, 0, 0, 5);"
+        );
+        iconLabel.setStyle("-fx-font-size: 42px;");
+        
+        Label titleLabel = new Label("Send Email");
+        titleLabel.setStyle(
+            "-fx-font-family: 'Arial';" +
+            "-fx-font-size: 28px;" +
+            "-fx-font-weight: bold;" +
+            "-fx-text-fill: #1a1a1a;"
+        );
+        
+        header.getChildren().addAll(iconContainer, titleLabel);
+        
+        // Form fields
+        VBox formContainer = new VBox(20);
+        formContainer.setAlignment(Pos.CENTER_LEFT);
+        
+        // To field
+        VBox toBox = new VBox(8);
+        Label toLabel = new Label("To:");
+        toLabel.setStyle(
+            "-fx-font-family: 'Arial';" +
+            "-fx-font-size: 16px;" +
+            "-fx-font-weight: 600;" +
+            "-fx-text-fill: #424242;"
+        );
+        
+        TextField toField = new TextField(recipientEmail != null ? recipientEmail : "");
+        toField.setPromptText("Recipient email address");
+        toField.setStyle(
+            "-fx-font-family: 'Arial';" +
+            "-fx-font-size: 16px;" +
+            "-fx-pref-height: 75px;" +
+            "-fx-padding: 0 20;" +
+            "-fx-border-color: #CCCCCC;" +
+            "-fx-border-width: 2;" +
+            "-fx-border-radius: 8;" +
+            "-fx-background-radius: 8;" +
+            "-fx-focus-color: #2196F3;" +
+            "-fx-faint-focus-color: transparent;"
+        );
+        toField.setPrefWidth(784);
+        toField.setMaxWidth(784);
+        toField.setEditable(false); // Read-only as recipient is pre-set
+        
+        toBox.getChildren().addAll(toLabel, toField);
+        
+        // Subject field
+        VBox subjectBox = new VBox(8);
+        Label subjectLabel = new Label("Subject:");
+        subjectLabel.setStyle(
+            "-fx-font-family: 'Arial';" +
+            "-fx-font-size: 16px;" +
+            "-fx-font-weight: 600;" +
+            "-fx-text-fill: #424242;"
+        );
+        
+        TextField subjectField = new TextField();
+        subjectField.setPromptText("Email subject");
+        subjectField.setStyle(
+            "-fx-font-family: 'Arial';" +
+            "-fx-font-size: 16px;" +
+            "-fx-pref-height: 75px;" +
+            "-fx-padding: 0 20;" +
+            "-fx-border-color: #CCCCCC;" +
+            "-fx-border-width: 2;" +
+            "-fx-border-radius: 8;" +
+            "-fx-background-radius: 8;" +
+            "-fx-focus-color: #2196F3;" +
+            "-fx-faint-focus-color: transparent;"
+        );
+        subjectField.setPrefWidth(784);
+        subjectField.setMaxWidth(784);
+        
+        // Focus styling for subject
+        subjectField.focusedProperty().addListener((obs, wasFocused, isFocused) -> {
+            if (isFocused) {
+                subjectField.setStyle(subjectField.getStyle().replace("-fx-border-color: #CCCCCC;", "-fx-border-color: #2196F3;"));
+            } else {
+                subjectField.setStyle(subjectField.getStyle().replace("-fx-border-color: #2196F3;", "-fx-border-color: #CCCCCC;"));
+            }
+        });
+        
+        subjectBox.getChildren().addAll(subjectLabel, subjectField);
+        
+        // Message field
+        VBox messageBox = new VBox(8);
+        Label messageLabel = new Label("Message:");
+        messageLabel.setStyle(
+            "-fx-font-family: 'Arial';" +
+            "-fx-font-size: 16px;" +
+            "-fx-font-weight: 600;" +
+            "-fx-text-fill: #424242;"
+        );
+        
+        TextArea messageField = new TextArea();
+        messageField.setPromptText("Type your message here...");
+        messageField.setWrapText(true);
+        messageField.setPrefRowCount(8);
+        messageField.setStyle(
+            "-fx-font-family: 'Arial';" +
+            "-fx-font-size: 16px;" +
+            "-fx-padding: 20;" +
+            "-fx-border-color: #CCCCCC;" +
+            "-fx-border-width: 2;" +
+            "-fx-border-radius: 8;" +
+            "-fx-background-radius: 8;" +
+            "-fx-focus-color: #2196F3;" +
+            "-fx-faint-focus-color: transparent;"
+        );
+        messageField.setPrefWidth(784);
+        messageField.setMaxWidth(784);
+        messageField.setPrefHeight(300);
+        
+        // Focus styling for message
+        messageField.focusedProperty().addListener((obs, wasFocused, isFocused) -> {
+            if (isFocused) {
+                messageField.setStyle(messageField.getStyle().replace("-fx-border-color: #CCCCCC;", "-fx-border-color: #2196F3;"));
+            } else {
+                messageField.setStyle(messageField.getStyle().replace("-fx-border-color: #2196F3;", "-fx-border-color: #CCCCCC;"));
+            }
+        });
+        
+        messageBox.getChildren().addAll(messageLabel, messageField);
+        
+        formContainer.getChildren().addAll(toBox, subjectBox, messageBox);
+        
+        // Error message
+        Label errorLabel = new Label();
+        errorLabel.setStyle(
+            "-fx-font-family: 'Arial';" +
+            "-fx-font-size: 14px;" +
+            "-fx-text-fill: #F44336;" +
+            "-fx-font-weight: 600;"
+        );
+        errorLabel.setVisible(false);
+        errorLabel.setManaged(false);
+        
+        // Buttons
+        HBox buttonBox = new HBox(15);
+        buttonBox.setAlignment(Pos.CENTER);
+        buttonBox.setPadding(new Insets(10, 0, 0, 0));
+        
+        Button sendBtn = createButton("Send Email", "#1E88E5", 200);
+        Button cancelBtn = createButton("Cancel", "#757575", 200);
+        
+        sendBtn.setOnAction(e -> {
+            String subject = subjectField.getText().trim();
+            String message = messageField.getText().trim();
+            
+            if (subject.isEmpty()) {
+                errorLabel.setText("Please enter an email subject");
+                errorLabel.setVisible(true);
+                errorLabel.setManaged(true);
+                subjectField.setStyle(subjectField.getStyle().replace("-fx-border-color: #CCCCCC;", "-fx-border-color: #F44336;")
+                                                              .replace("-fx-border-color: #2196F3;", "-fx-border-color: #F44336;"));
+                return;
+            }
+            
+            if (message.isEmpty()) {
+                errorLabel.setText("Please enter a message");
+                errorLabel.setVisible(true);
+                errorLabel.setManaged(true);
+                messageField.setStyle(messageField.getStyle().replace("-fx-border-color: #CCCCCC;", "-fx-border-color: #F44336;")
+                                                              .replace("-fx-border-color: #2196F3;", "-fx-border-color: #F44336;"));
+                return;
+            }
+            
+            dialog.close();
+            if (onSend != null) {
+                onSend.accept(subject, message);
+            }
+        });
+        
+        cancelBtn.setOnAction(e -> dialog.close());
+        
+        buttonBox.getChildren().addAll(sendBtn, cancelBtn);
+        
+        mainContent.getChildren().addAll(header, formContainer, errorLabel, buttonBox);
+        backdrop.getChildren().add(mainContent);
+        StackPane.setAlignment(mainContent, Pos.CENTER);
+        
+        Scene scene = new Scene(backdrop);
+        scene.setFill(Color.TRANSPARENT);
+        dialog.setScene(scene);
+        
+        // CRITICAL: Match owner stage dimensions and position exactly
+        dialog.setX(ownerStage.getX());
+        dialog.setY(ownerStage.getY());
+        dialog.setWidth(ownerStage.getWidth());
+        dialog.setHeight(ownerStage.getHeight());
+        
+        animateDialog(backdrop, mainContent);
+        
+        // Close on backdrop click
+        backdrop.setOnMouseClicked(e -> {
+            if (e.getTarget() == backdrop) {
+                dialog.close();
+            }
+        });
+        
+        // Focus subject field
+        Platform.runLater(() -> subjectField.requestFocus());
+        
+        dialog.showAndWait();
+    }
 }

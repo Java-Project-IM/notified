@@ -5,42 +5,38 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.DropShadow?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.paint.Color?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane id="AnchorPane" prefHeight="1080.0" prefWidth="1920.0" style="-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #CAE5DE 0%, #EFF0F2 50%, #C8DAE6 100%);" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.notif1ed.controller.EmailPromptController">
+<!-- Modal Card Container - No AnchorPane wrapper, just the card itself -->
+<Pane prefHeight="924.0" prefWidth="874.0" style="-fx-background-color: white; -fx-background-radius: 15;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.notif1ed.controller.EmailPromptController">
+   <effect>
+      <DropShadow />
+   </effect>
    <children>
-      <!-- Modern Card Container - Centered with matching StudentForm size -->
-      <Pane layoutX="523.0" layoutY="78.0" prefHeight="924.0" prefWidth="874.0" style="-fx-background-color: white; -fx-background-radius: 15;">
-         <effect>
-            <DropShadow />
-         </effect>
+      <!-- Header with Icon -->
+      <VBox alignment="CENTER" layoutX="0.0" layoutY="28.0" prefHeight="116.0" prefWidth="874.0" spacing="8.0">
          <children>
-            <!-- Header with Icon -->
-            <VBox alignment="CENTER" layoutX="0.0" layoutY="28.0" prefHeight="116.0" prefWidth="874.0" spacing="8.0">
-                     <children>
-                        <StackPane prefHeight="60.0" prefWidth="60.0">
-                           <children>
-                              <Circle fill="#2196F3" radius="30.0" />
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="📧" style="-fx-font-size: 32px;" />
-                           </children>
-                        </StackPane>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Send Email" fill="#212121">
-                           <font>
-                              <Font name="Arial Rounded MT Bold" size="24.0" />
-                           </font>
-                        </Text>
-                     </children>
-                  </VBox>
-            
-            <!-- Form Fields -->
-            <VBox layoutX="69.0" layoutY="180.0" prefHeight="580.0" prefWidth="736.0" spacing="24.0">
+            <StackPane prefHeight="60.0" prefWidth="60.0">
+               <children>
+                  <Circle fill="#2196F3" radius="30.0" />
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="📧" style="-fx-font-size: 32px;" />
+               </children>
+            </StackPane>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Send Email" fill="#212121">
+               <font>
+                  <Font name="Arial Rounded MT Bold" size="24.0" />
+               </font>
+            </Text>
+         </children>
+      </VBox>
+      
+      <!-- Form Fields -->
+      <VBox layoutX="69.0" layoutY="180.0" prefHeight="580.0" prefWidth="736.0" spacing="24.0">
                <children>
                   <!-- To Field -->
                   <VBox spacing="10.0">
@@ -74,7 +70,7 @@
                      </children>
                   </VBox>
                   
-                  <!-- Message Field -->
+                  <!-- Message Field -->  
                   <VBox spacing="10.0">
                      <children>
                         <Label text="Message:" textFill="#212121">
@@ -89,28 +85,26 @@
                         </TextArea>
                      </children>
                   </VBox>
-               </children>
-            </VBox>
-            
-            <!-- Error Label -->
-            <Label fx:id="errorLabel" layoutX="69.0" layoutY="770.0" prefWidth="736.0" style="-fx-text-fill: #F44336;" textFill="#f44336" visible="false">
-               <font>
-                  <Font name="Arial Rounded MT Bold" size="16.0" />
-               </font>
-            </Label>
-            
-            <!-- Buttons - matching StudentForm style -->
-            <Button fx:id="cancelButton" layoutX="100.0" layoutY="815.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="60.0" prefWidth="325.0" style="-fx-background-color: transparent; -fx-border-color: #011E37; -fx-border-width: 3;" styleClass="action-button" text="CANCEL" textFill="#011e37">
-               <font>
-                  <Font name="Arial Black" size="20.0" />
-               </font>
-            </Button>
-            <Button fx:id="sendButton" layoutX="450.0" layoutY="815.0" mnemonicParsing="false" onAction="#handleSend" prefHeight="60.0" prefWidth="325.0" style="-fx-background-color: #011E37; -fx-border-color: white; -fx-border-width: 3;" styleClass="action-button" text="SEND" textFill="WHITE">
-               <font>
-                  <Font name="Arial Black" size="20.0" />
-               </font>
-            </Button>
          </children>
-      </Pane>
+      </VBox>
+      
+      <!-- Error Label -->
+      <Label fx:id="errorLabel" layoutX="69.0" layoutY="770.0" prefWidth="736.0" style="-fx-text-fill: #F44336;" textFill="#f44336" visible="false">
+         <font>
+            <Font name="Arial Rounded MT Bold" size="16.0" />
+         </font>
+      </Label>
+      
+      <!-- Buttons - matching StudentForm style -->
+      <Button fx:id="cancelButton" layoutX="100.0" layoutY="815.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="60.0" prefWidth="325.0" style="-fx-background-color: transparent; -fx-border-color: #011E37; -fx-border-width: 3;" styleClass="action-button" text="CANCEL" textFill="#011e37">
+         <font>
+            <Font name="Arial Black" size="20.0" />
+         </font>
+      </Button>
+      <Button fx:id="sendButton" layoutX="450.0" layoutY="815.0" mnemonicParsing="false" onAction="#handleSend" prefHeight="60.0" prefWidth="325.0" style="-fx-background-color: #011E37; -fx-border-color: white; -fx-border-width: 3;" styleClass="action-button" text="SEND" textFill="WHITE">
+         <font>
+            <Font name="Arial Black" size="20.0" />
+         </font>
+      </Button>
    </children>
-</AnchorPane>
+</Pane>

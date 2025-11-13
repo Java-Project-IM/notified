@@ -6,11 +6,16 @@ package com.notif1ed.controller;
 
 import com.notif1ed.model.StudentEntry;
 import com.notif1ed.service.StudentService;
+import com.notif1ed.service.RecordService;
 import com.notif1ed.util.ToastNotification;
 import com.notif1ed.util.CustomModal;
 import com.notif1ed.util.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.mail.*;
+import javax.mail.internet.*;
+import java.util.Properties;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -44,6 +49,7 @@ public class StudentPageController implements Initializable {
     
     private static final Logger log = LoggerFactory.getLogger(StudentPageController.class);
     private final StudentService studentService = new StudentService();
+    private final RecordService recordService = new RecordService();
 
     @FXML
     private TableView<StudentEntry> studentTable;
@@ -359,162 +365,131 @@ public class StudentPageController implements Initializable {
     
     private void openEmailPrompt(String email) {
         Stage stage = (Stage) studentTable.getScene().getWindow();
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/notif1ed/view/EmailPrompt.fxml"));
-            Parent root = loader.load();
-            
-            // Get controller and set recipient
-            EmailPromptController controller = loader.getController();
-            controller.setRecipient(email);
-            
-            // Create modal dialog with backdrop styling
-            Stage emailStage = new Stage();
-            emailStage.setTitle("Send Email - " + email);
-            emailStage.initOwner(stage);
-            emailStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
-            emailStage.initStyle(javafx.stage.StageStyle.TRANSPARENT);
-            emailStage.setResizable(false);
-            
-            // Wrap content in backdrop
-            javafx.scene.layout.StackPane backdrop = new javafx.scene.layout.StackPane();
-            backdrop.setStyle("-fx-background-color: rgba(0, 0, 0, 0.65);");
-            backdrop.setAlignment(javafx.geometry.Pos.CENTER);
-            backdrop.getChildren().add(root);
-            
-            Scene scene = new Scene(backdrop);
-            scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
-            emailStage.setScene(scene);
-            
-            // Match owner window size and position
-            emailStage.setX(stage.getX());
-            emailStage.setY(stage.getY());
-            emailStage.setWidth(stage.getWidth());
-            emailStage.setHeight(stage.getHeight());
-            
-            // Close on backdrop click
-            backdrop.setOnMouseClicked(e -> {
-                if (e.getTarget() == backdrop) {
-                    emailStage.close();
+        
+        CustomModal.showEmailModal(stage, email, (subject, message) -> {
+            // Send email
+            try {
+                boolean success = sendEmail(email, subject, message);
+                if (success) {
+                    ToastNotification.show(stage, ToastNotification.ToastType.SUCCESS,
+                        "Email sent successfully to " + email);
+                    
+                    // Find student ID and record the email
+                    studentList.stream()
+                        .filter(s -> s.getEmail().equals(email))
+                        .findFirst()
+                        .ifPresent(student -> {
+                            try {
+                                int studentId = Integer.parseInt(student.getId());
+                                recordService.recordEmailSent(studentId, email, subject);
+                            } catch (NumberFormatException e) {
+                                log.warn("Could not parse student ID: {}", student.getId());
+                            }
+                        });
+                } else {
+                    ToastNotification.show(stage, ToastNotification.ToastType.ERROR,
+                        "Failed to send email. Please check your email configuration.");
                 }
-            });
-            
-            emailStage.showAndWait();
-        } catch (IOException e) {
-            ToastNotification.showError(stage, "Could not open email prompt");
-            e.printStackTrace();
-        }
+            } catch (Exception e) {
+                log.error("Error sending email", e);
+                ToastNotification.show(stage, ToastNotification.ToastType.ERROR,
+                    "Error sending email: " + e.getMessage());
+            }
+        });
     }
     
     private void openEmailPromptForAll() {
         Stage stage = (Stage) studentTable.getScene().getWindow();
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/notif1ed/view/EmailPrompt.fxml"));
-            Parent root = loader.load();
+        
+        // Build comma-separated email list
+        StringBuilder emails = new StringBuilder();
+        for (int i = 0; i < studentList.size(); i++) {
+            emails.append(studentList.get(i).getEmail());
+            if (i < studentList.size() - 1) {
+                emails.append(", ");
+            }
+        }
+        
+        CustomModal.showEmailModal(stage, emails.toString(), (subject, message) -> {
+            // Send email to all students
+            int successCount = 0;
+            int failCount = 0;
             
-            // Get controller and set multiple recipients
-            EmailPromptController controller = loader.getController();
-            StringBuilder emails = new StringBuilder();
-            for (int i = 0; i < studentList.size(); i++) {
-                emails.append(studentList.get(i).getEmail());
-                if (i < studentList.size() - 1) {
-                    emails.append(", ");
+            for (StudentEntry student : studentList) {
+                try {
+                    boolean success = sendEmail(student.getEmail(), subject, message);
+                    if (success) {
+                        successCount++;
+                        try {
+                            int studentId = Integer.parseInt(student.getId());
+                            recordService.recordEmailSent(studentId, student.getEmail(), subject);
+                        } catch (NumberFormatException e) {
+                            log.warn("Could not parse student ID: {}", student.getId());
+                        }
+                    } else {
+                        failCount++;
+                    }
+                } catch (Exception e) {
+                    log.error("Error sending email to " + student.getEmail(), e);
+                    failCount++;
                 }
             }
-            controller.setMultipleRecipients(emails.toString());
             
-            // Create modal dialog with backdrop styling
-            Stage emailStage = new Stage();
-            emailStage.setTitle("Send Email to All Students (" + studentList.size() + " recipients)");
-            emailStage.initOwner(stage);
-            emailStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
-            emailStage.initStyle(javafx.stage.StageStyle.TRANSPARENT);
-            emailStage.setResizable(false);
-            
-            // Wrap content in backdrop
-            javafx.scene.layout.StackPane backdrop = new javafx.scene.layout.StackPane();
-            backdrop.setStyle("-fx-background-color: rgba(0, 0, 0, 0.65);");
-            backdrop.setAlignment(javafx.geometry.Pos.CENTER);
-            backdrop.getChildren().add(root);
-            
-            Scene scene = new Scene(backdrop);
-            scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
-            emailStage.setScene(scene);
-            
-            // Match owner window size and position
-            emailStage.setX(stage.getX());
-            emailStage.setY(stage.getY());
-            emailStage.setWidth(stage.getWidth());
-            emailStage.setHeight(stage.getHeight());
-            
-            // Close on backdrop click
-            backdrop.setOnMouseClicked(e -> {
-                if (e.getTarget() == backdrop) {
-                    emailStage.close();
-                }
-            });
-            
-            emailStage.showAndWait();
-        } catch (IOException e) {
-            ToastNotification.showError(stage, "Could not open email prompt");
-            e.printStackTrace();
-        }
+            if (failCount == 0) {
+                ToastNotification.show(stage, ToastNotification.ToastType.SUCCESS,
+                    "Successfully sent email to all " + successCount + " students");
+            } else {
+                ToastNotification.show(stage, ToastNotification.ToastType.WARNING,
+                    "Sent to " + successCount + " students, " + failCount + " failed");
+            }
+        });
     }
     
     private void openEmailPromptForSelected(java.util.List<StudentEntry> selectedStudents) {
         Stage stage = (Stage) studentTable.getScene().getWindow();
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/notif1ed/view/EmailPrompt.fxml"));
-            Parent root = loader.load();
+        
+        // Build comma-separated email list
+        StringBuilder emails = new StringBuilder();
+        for (int i = 0; i < selectedStudents.size(); i++) {
+            emails.append(selectedStudents.get(i).getEmail());
+            if (i < selectedStudents.size() - 1) {
+                emails.append(", ");
+            }
+        }
+        
+        CustomModal.showEmailModal(stage, emails.toString(), (subject, message) -> {
+            // Send email to selected students
+            int successCount = 0;
+            int failCount = 0;
             
-            // Get controller and set multiple recipients
-            EmailPromptController controller = loader.getController();
-            
-            // Collect selected student emails
-            StringBuilder emails = new StringBuilder();
-            for (int i = 0; i < selectedStudents.size(); i++) {
-                emails.append(selectedStudents.get(i).getEmail());
-                if (i < selectedStudents.size() - 1) {
-                    emails.append(", ");
+            for (StudentEntry student : selectedStudents) {
+                try {
+                    boolean success = sendEmail(student.getEmail(), subject, message);
+                    if (success) {
+                        successCount++;
+                        try {
+                            int studentId = Integer.parseInt(student.getId());
+                            recordService.recordEmailSent(studentId, student.getEmail(), subject);
+                        } catch (NumberFormatException e) {
+                            log.warn("Could not parse student ID: {}", student.getId());
+                        }
+                    } else {
+                        failCount++;
+                    }
+                } catch (Exception e) {
+                    log.error("Error sending email to " + student.getEmail(), e);
+                    failCount++;
                 }
             }
-            controller.setMultipleRecipients(emails.toString());
             
-            // Create modal dialog with backdrop styling
-            Stage emailStage = new Stage();
-            emailStage.setTitle("Send Email - " + selectedStudents.size() + " Recipients");
-            emailStage.initOwner(stage);
-            emailStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
-            emailStage.initStyle(javafx.stage.StageStyle.TRANSPARENT);
-            emailStage.setResizable(false);
-            
-            // Wrap content in backdrop
-            javafx.scene.layout.StackPane backdrop = new javafx.scene.layout.StackPane();
-            backdrop.setStyle("-fx-background-color: rgba(0, 0, 0, 0.65);");
-            backdrop.setAlignment(javafx.geometry.Pos.CENTER);
-            backdrop.getChildren().add(root);
-            
-            Scene scene = new Scene(backdrop);
-            scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
-            emailStage.setScene(scene);
-            
-            // Match owner window size and position
-            emailStage.setX(stage.getX());
-            emailStage.setY(stage.getY());
-            emailStage.setWidth(stage.getWidth());
-            emailStage.setHeight(stage.getHeight());
-            
-            // Close on backdrop click
-            backdrop.setOnMouseClicked(e -> {
-                if (e.getTarget() == backdrop) {
-                    emailStage.close();
-                }
-            });
-            
-            emailStage.showAndWait();
-        } catch (IOException e) {
-            ToastNotification.showError(stage, "Could not open email prompt");
-            e.printStackTrace();
-        }
+            if (failCount == 0) {
+                ToastNotification.show(stage, ToastNotification.ToastType.SUCCESS,
+                    "Successfully sent email to all " + successCount + " selected students");
+            } else {
+                ToastNotification.show(stage, ToastNotification.ToastType.WARNING,
+                    "Sent to " + successCount + " students, " + failCount + " failed");
+            }
+        });
     }
     
     private void navigateToPage(ActionEvent event, String fxmlFile) {
@@ -680,6 +655,70 @@ public class StudentPageController implements Initializable {
                 ToastNotification.showError(stage, "Error during logout");
                 e.printStackTrace();
             }
+        }
+    }
+    
+    /**
+     * Send email using JavaMail API with Gmail SMTP
+     * Reused from EmailPromptController - centralized email sending logic
+     */
+    private boolean sendEmail(String to, String subject, String body) {
+        // SMTP Configuration
+        final String SMTP_HOST = "smtp.gmail.com";
+        final String SMTP_PORT = "587";
+        final String FROM_EMAIL = "venturinachen@gmail.com";
+        final String APP_PASSWORD = "surn emra mqyi fmfx";
+        
+        // Setup mail server properties
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", SMTP_HOST);
+        props.put("mail.smtp.port", SMTP_PORT);
+        props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+        
+        // Create authenticator
+        Authenticator auth = new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(FROM_EMAIL, APP_PASSWORD);
+            }
+        };
+        
+        try {
+            Session session = Session.getInstance(props, auth);
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(FROM_EMAIL));
+            
+            // Handle multiple recipients (comma-separated)
+            if (to.contains(",")) {
+                String[] recipients = to.split(",");
+                InternetAddress[] addresses = new InternetAddress[recipients.length];
+                for (int i = 0; i < recipients.length; i++) {
+                    addresses[i] = new InternetAddress(recipients[i].trim());
+                }
+                message.setRecipients(Message.RecipientType.TO, addresses);
+            } else {
+                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+            }
+            
+            message.setSubject(subject);
+            
+            String htmlBody = "<html><body style='font-family: Poppins, Arial, sans-serif;'>" +
+                            "<p>" + body.replace("\n", "<br>") + "</p>" +
+                            "<br><br>" +
+                            "<p style='color: #757575; font-size: 12px;'>Sent from Notif1ed Student Management System</p>" +
+                            "</body></html>";
+            message.setContent(htmlBody, "text/html; charset=utf-8");
+            
+            Transport.send(message);
+            
+            log.info("✅ Email sent successfully to: {}", to);
+            return true;
+            
+        } catch (MessagingException e) {
+            log.error("❌ Email sending failed to: {}", to, e);
+            return false;
         }
     }
 }
