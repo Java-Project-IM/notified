@@ -104,17 +104,22 @@
             <!-- Student Table -->
             <TableView fx:id="studentTable" layoutX="30.0" layoutY="140.0" prefHeight="590.0" prefWidth="1760.0" styleClass="student-table">
                <columns>
-                  <TableColumn fx:id="studentNumberCol" prefWidth="220.0" text="STUDENT NUMBER">
+                  <TableColumn fx:id="selectCol" prefWidth="80.0" text="SELECT" sortable="false">
+                     <cellValueFactory>
+                        <javafx.scene.control.cell.PropertyValueFactory property="selected" />
+                     </cellValueFactory>
+                  </TableColumn>
+                  <TableColumn fx:id="studentNumberCol" prefWidth="200.0" text="STUDENT NUMBER">
                      <cellValueFactory>
                         <javafx.scene.control.cell.PropertyValueFactory property="studentNumber" />
                      </cellValueFactory>
                   </TableColumn>
-                  <TableColumn fx:id="firstNameCol" prefWidth="280.0" text="FIRST NAME">
+                  <TableColumn fx:id="firstNameCol" prefWidth="250.0" text="FIRST NAME">
                      <cellValueFactory>
                         <javafx.scene.control.cell.PropertyValueFactory property="firstName" />
                      </cellValueFactory>
                   </TableColumn>
-                  <TableColumn fx:id="lastNameCol" prefWidth="280.0" text="LAST NAME / GUARDIAN">
+                  <TableColumn fx:id="lastNameCol" prefWidth="250.0" text="LAST NAME / GUARDIAN">
                      <cellValueFactory>
                         <javafx.scene.control.cell.PropertyValueFactory property="lastNameGuardian" />
                      </cellValueFactory>
