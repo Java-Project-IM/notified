@@ -143,6 +143,13 @@
                   <Font name="Poppins SemiBold" size="15.5" />
                </font>
             </Button>
+            
+            <!-- Download PDF Report Button -->
+            <Button fx:id="btnDownloadReport" layoutX="280.0" layoutY="760.0" mnemonicParsing="false" onAction="#handleDownloadReportClick" prefHeight="48.0" prefWidth="250.0" style="-fx-background-color: linear-gradient(to right, #E53935, #C62828); -fx-background-radius: 10; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(229,57,53,0.25), 8, 0, 0, 2); -fx-font-family: 'Segoe UI Emoji', 'Noto Color Emoji', 'Apple Color Emoji', 'Symbola', sans-serif;" text="📄 Download PDF Report" textFill="WHITE">
+               <font>
+                  <Font name="Poppins SemiBold" size="15.5" />
+               </font>
+            </Button>
          </children>
       </Pane>
    </children>

@@ -21,6 +21,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
+import javafx.stage.FileChooser;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -36,9 +37,13 @@ import javafx.scene.layout.HBox;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
 import java.io.IOException;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * FXML Controller class for Student Page
@@ -83,6 +88,8 @@ public class StudentPageController implements Initializable {
     private Button recordsButton;
     @FXML
     private Button addStudentButton;
+    @FXML
+    private Button btnDownloadReport;
     @FXML
     private javafx.scene.control.TextField searchField;
     
@@ -394,6 +401,47 @@ public class StudentPageController implements Initializable {
             ToastNotification.showInfo(stage, 
                 "Opening email prompt for selected students (" + selectedStudents.size() + " recipients)");
             openEmailPromptForSelected(selectedStudents);
+        }
+    }
+    
+    @FXML
+    private void handleDownloadReportClick(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        
+        if (studentList.isEmpty()) {
+            ToastNotification.showWarning(stage, "No students available to generate report.");
+            return;
+        }
+        
+        // Generate filename with current date
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String dateStr = LocalDateTime.now().format(formatter);
+        String defaultFileName = "Student_Report_" + dateStr + ".pdf";
+        
+        // Show file chooser
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Student Report");
+        fileChooser.setInitialFileName(defaultFileName);
+        fileChooser.getExtensionFilters().add(
+            new FileChooser.ExtensionFilter("PDF Files", "*.pdf")
+        );
+        
+        File file = fileChooser.showSaveDialog(stage);
+        
+        if (file != null) {
+            try {
+                generatePDFReport(file);
+                ToastNotification.showSuccess(stage, "PDF report generated successfully!");
+                
+                // Record the report generation
+                recordService.addRecord(0, null, "REPORT_GENERATED", 
+                    "Daily student report generated: " + file.getName());
+                
+                log.info("PDF report generated: {}", file.getAbsolutePath());
+            } catch (Exception e) {
+                log.error("Error generating PDF report", e);
+                ToastNotification.showError(stage, "Failed to generate PDF report: " + e.getMessage());
+            }
         }
     }
     
@@ -753,6 +801,114 @@ public class StudentPageController implements Initializable {
         } catch (MessagingException e) {
             log.error("❌ Email sending failed to: {}", to, e);
             return false;
+        }
+    }
+    
+    /**
+     * Generate PDF report of all students
+     * Professional daily report with iText PDF library
+     */
+    private void generatePDFReport(File file) throws Exception {
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            // Initialize PDF writer and document
+            com.itextpdf.kernel.pdf.PdfWriter writer = new com.itextpdf.kernel.pdf.PdfWriter(fos);
+            com.itextpdf.kernel.pdf.PdfDocument pdf = new com.itextpdf.kernel.pdf.PdfDocument(writer);
+            com.itextpdf.layout.Document document = new com.itextpdf.layout.Document(pdf);
+            
+            // Set up fonts and colors
+            com.itextpdf.kernel.colors.Color primaryColor = com.itextpdf.kernel.colors.ColorConstants.BLUE;
+            com.itextpdf.kernel.colors.Color headerColor = new com.itextpdf.kernel.colors.DeviceRgb(25, 118, 210);
+            
+            // Add title
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy");
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
+            LocalDateTime now = LocalDateTime.now();
+            
+            com.itextpdf.layout.element.Paragraph title = new com.itextpdf.layout.element.Paragraph("STUDENT REPORT")
+                .setFontSize(24)
+                .setBold()
+                .setFontColor(headerColor)
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setMarginBottom(5);
+            document.add(title);
+            
+            // Add date and time
+            com.itextpdf.layout.element.Paragraph dateTime = new com.itextpdf.layout.element.Paragraph(
+                "Generated: " + now.format(dateFormatter) + " at " + now.format(timeFormatter))
+                .setFontSize(10)
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setMarginBottom(20);
+            document.add(dateTime);
+            
+            // Add summary section
+            com.itextpdf.layout.element.Paragraph summary = new com.itextpdf.layout.element.Paragraph(
+                "Total Students: " + studentList.size())
+                .setFontSize(12)
+                .setBold()
+                .setMarginBottom(15);
+            document.add(summary);
+            
+            // Add generated by
+            com.itextpdf.layout.element.Paragraph generatedBy = new com.itextpdf.layout.element.Paragraph(
+                "Generated by: " + SessionManager.getInstance().getUserName())
+                .setFontSize(10)
+                .setMarginBottom(20);
+            document.add(generatedBy);
+            
+            // Create table with 4 columns
+            float[] columnWidths = {2, 3, 3, 4};
+            com.itextpdf.layout.element.Table table = new com.itextpdf.layout.element.Table(columnWidths);
+            table.setWidth(com.itextpdf.layout.properties.UnitValue.createPercentValue(100));
+            
+            // Add table headers
+            String[] headers = {"Student Number", "First Name", "Last Name", "Email"};
+            for (String header : headers) {
+                com.itextpdf.layout.element.Cell headerCell = new com.itextpdf.layout.element.Cell()
+                    .add(new com.itextpdf.layout.element.Paragraph(header).setBold())
+                    .setBackgroundColor(headerColor)
+                    .setFontColor(com.itextpdf.kernel.colors.ColorConstants.WHITE)
+                    .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                    .setPadding(8);
+                table.addHeaderCell(headerCell);
+            }
+            
+            // Add student data rows
+            for (StudentEntry student : studentList) {
+                // Student Number
+                table.addCell(new com.itextpdf.layout.element.Cell()
+                    .add(new com.itextpdf.layout.element.Paragraph(student.getStudentNumber()))
+                    .setPadding(5));
+                
+                // First Name
+                table.addCell(new com.itextpdf.layout.element.Cell()
+                    .add(new com.itextpdf.layout.element.Paragraph(student.getFirstName()))
+                    .setPadding(5));
+                
+                // Last Name
+                table.addCell(new com.itextpdf.layout.element.Cell()
+                    .add(new com.itextpdf.layout.element.Paragraph(student.getLastName()))
+                    .setPadding(5));
+                
+                // Email
+                table.addCell(new com.itextpdf.layout.element.Cell()
+                    .add(new com.itextpdf.layout.element.Paragraph(student.getEmail()))
+                    .setPadding(5));
+            }
+            
+            document.add(table);
+            
+            // Add footer
+            com.itextpdf.layout.element.Paragraph footer = new com.itextpdf.layout.element.Paragraph(
+                "\n\nNotif1ed Student Management System")
+                .setFontSize(8)
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setFontColor(com.itextpdf.kernel.colors.ColorConstants.GRAY);
+            document.add(footer);
+            
+            // Close document
+            document.close();
+            
+            log.info("✅ PDF report generated successfully");
         }
     }
 }
