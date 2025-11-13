@@ -14,86 +14,77 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane id="AnchorPane" prefHeight="650.0" prefWidth="600.0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.notif1ed.controller.EmailPromptController">
+<AnchorPane id="AnchorPane" prefHeight="1080.0" prefWidth="1920.0" style="-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #CAE5DE 0%, #EFF0F2 50%, #C8DAE6 100%);" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.notif1ed.controller.EmailPromptController">
    <children>
-      <!-- Modern Card Container - Centered with auto margins -->
-      <Pane layoutX="50.0" layoutY="50.0" prefHeight="550.0" prefWidth="500.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="50.0" AnchorPane.bottomAnchor="50.0" style="-fx-background-color: white; -fx-background-radius: 16;">
+      <!-- Modern Card Container - Centered with matching StudentForm size -->
+      <Pane layoutX="523.0" layoutY="78.0" prefHeight="924.0" prefWidth="874.0" style="-fx-background-color: white; -fx-background-radius: 15;">
          <effect>
-            <DropShadow height="40.0" radius="19.5" width="40.0">
-               <color>
-                  <Color opacity="0.3" />
-               </color>
-            </DropShadow>
+            <DropShadow />
          </effect>
          <children>
-            <!-- Header with Icon (clean circle + emoji) -->
-            <VBox alignment="CENTER" layoutX="0.0" layoutY="25.0" prefHeight="100.0" prefWidth="500.0" spacing="6.0">
+            <!-- Header with Icon -->
+            <VBox alignment="CENTER" layoutX="0.0" layoutY="28.0" prefHeight="116.0" prefWidth="874.0" spacing="8.0">
                      <children>
-                        <StackPane prefHeight="56.0" prefWidth="56.0">
+                        <StackPane prefHeight="60.0" prefWidth="60.0">
                            <children>
-                              <Circle fill="#2196F3" radius="28.0" />
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="📧" style="-fx-font-size: 28px;" />
+                              <Circle fill="#2196F3" radius="30.0" />
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="📧" style="-fx-font-size: 32px;" />
                            </children>
                         </StackPane>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Send Email" fill="#212121">
                            <font>
-                              <Font name="Poppins Bold" size="22.0" />
-                           </font>
-                        </Text>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Compose and send a message to the selected recipient(s)" fill="#757575" opacity="0.9">
-                           <font>
-                              <Font name="Poppins Regular" size="11.5" />
+                              <Font name="Arial Rounded MT Bold" size="24.0" />
                            </font>
                         </Text>
                      </children>
                   </VBox>
             
             <!-- Form Fields -->
-            <VBox layoutX="50.0" layoutY="140.0" prefHeight="340.0" prefWidth="400.0" spacing="16.0">
+            <VBox layoutX="69.0" layoutY="180.0" prefHeight="580.0" prefWidth="736.0" spacing="24.0">
                <children>
                   <!-- To Field -->
-                  <VBox spacing="6.0">
+                  <VBox spacing="10.0">
                      <children>
-                        <Label text="To:" textFill="#424242">
+                        <Label text="To:" textFill="#212121">
                            <font>
-                              <Font name="Poppins SemiBold" size="12.5" />
+                              <Font name="Arial Rounded MT Bold" size="20.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="toField" promptText="recipient@example.com" style="-fx-font-size: 13px; -fx-padding: 11; -fx-border-color: #D0D0D0; -fx-border-width: 1.5; -fx-border-radius: 8; -fx-background-radius: 8; -fx-text-fill: #424242; -fx-highlight-fill: transparent; -fx-highlight-text-fill: #424242;">
+                        <TextField fx:id="toField" prefHeight="75.0" promptText="recipient@example.com">
                            <font>
-                              <Font name="Poppins Regular" size="13.0" />
+                              <Font name="Arial" size="20.0" />
                            </font>
                         </TextField>
                      </children>
                   </VBox>
                   
                   <!-- Subject Field -->
-                  <VBox spacing="6.0">
+                  <VBox spacing="10.0">
                      <children>
-                        <Label text="Subject: *" textFill="#424242">
+                        <Label text="Subject:" textFill="#212121">
                            <font>
-                              <Font name="Poppins SemiBold" size="12.5" />
+                              <Font name="Arial Rounded MT Bold" size="20.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="subjectField" promptText="Email subject..." style="-fx-font-size: 13px; -fx-padding: 11; -fx-border-color: #D0D0D0; -fx-border-width: 1.5; -fx-border-radius: 8; -fx-background-radius: 8;">
+                        <TextField fx:id="subjectField" prefHeight="75.0" promptText="Email subject...">
                            <font>
-                              <Font name="Poppins Regular" size="13.0" />
+                              <Font name="Arial" size="20.0" />
                            </font>
                         </TextField>
                      </children>
                   </VBox>
                   
-                  <!-- Message Field - larger textarea for readability -->
-                  <VBox spacing="6.0">
+                  <!-- Message Field -->
+                  <VBox spacing="10.0">
                      <children>
-                        <Label text="Message: *" textFill="#424242">
+                        <Label text="Message:" textFill="#212121">
                            <font>
-                              <Font name="Poppins SemiBold" size="12.5" />
+                              <Font name="Arial Rounded MT Bold" size="20.0" />
                            </font>
                         </Label>
-                        <TextArea fx:id="messageArea" prefHeight="165.0" promptText="Type your message here..." style="-fx-font-size: 13px; -fx-padding: 11; -fx-border-color: #D0D0D0; -fx-border-width: 1.5; -fx-border-radius: 8; -fx-background-radius: 8;" wrapText="true">
+                        <TextArea fx:id="messageArea" prefHeight="240.0" promptText="Type your message here..." wrapText="true">
                            <font>
-                              <Font name="Poppins Regular" size="13.0" />
+                              <Font name="Arial" size="20.0" />
                            </font>
                         </TextArea>
                      </children>
@@ -102,34 +93,23 @@
             </VBox>
             
             <!-- Error Label -->
-            <Label fx:id="errorLabel" layoutX="50.0" layoutY="490.0" prefWidth="400.0" style="-fx-text-fill: #F44336; -fx-font-weight: 600;" visible="false">
+            <Label fx:id="errorLabel" layoutX="69.0" layoutY="770.0" prefWidth="736.0" style="-fx-text-fill: #F44336;" textFill="#f44336" visible="false">
                <font>
-                  <Font name="Poppins SemiBold" size="12.0" />
+                  <Font name="Arial Rounded MT Bold" size="16.0" />
                </font>
             </Label>
             
-            <!-- Buttons - aligned to the right, primary/secondary styling -->
-            <Pane layoutX="0.0" layoutY="495.0" prefWidth="500.0" prefHeight="55.0">
-               <children>
-                  <Button fx:id="cancelButton" layoutX="285.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="40.0" prefWidth="95.0" style="-fx-background-color: #F5F5F5; -fx-background-radius: 8; -fx-cursor: hand; -fx-border-color: #D0D0D0; -fx-border-width: 1; -fx-border-radius: 8;" text="Cancel" textFill="#616161">
-                     <font>
-                        <Font name="Poppins SemiBold" size="13.0" />
-                     </font>
-                  </Button>
-                  <Button fx:id="sendButton" layoutX="390.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleSend" prefHeight="40.0" prefWidth="100.0" style="-fx-background-color: linear-gradient(to right, #2196F3, #1976D2); -fx-background-radius: 8; -fx-cursor: hand;" text="Send" textFill="WHITE">
-                     <font>
-                        <Font name="Poppins SemiBold" size="13.0" />
-                     </font>
-                     <effect>
-                        <DropShadow height="10.0" radius="4.5" width="10.0">
-                           <color>
-                              <Color opacity="0.15" />
-                           </color>
-                        </DropShadow>
-                     </effect>
-                  </Button>
-               </children>
-            </Pane>
+            <!-- Buttons - matching StudentForm style -->
+            <Button fx:id="cancelButton" layoutX="100.0" layoutY="815.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="60.0" prefWidth="325.0" style="-fx-background-color: transparent; -fx-border-color: #011E37; -fx-border-width: 3;" styleClass="action-button" text="CANCEL" textFill="#011e37">
+               <font>
+                  <Font name="Arial Black" size="20.0" />
+               </font>
+            </Button>
+            <Button fx:id="sendButton" layoutX="450.0" layoutY="815.0" mnemonicParsing="false" onAction="#handleSend" prefHeight="60.0" prefWidth="325.0" style="-fx-background-color: #011E37; -fx-border-color: white; -fx-border-width: 3;" styleClass="action-button" text="SEND" textFill="WHITE">
+               <font>
+                  <Font name="Arial Black" size="20.0" />
+               </font>
+            </Button>
          </children>
       </Pane>
    </children>
