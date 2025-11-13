@@ -176,8 +176,8 @@ public class EmailPromptController implements Initializable {
         // SMTP Configuration - CONFIGURE THESE FOR YOUR EMAIL SERVER
         final String SMTP_HOST = "smtp.gmail.com";
         final String SMTP_PORT = "587"; // TLS port
-        final String FROM_EMAIL = "your-email@gmail.com"; // TODO: Configure your email
-        final String APP_PASSWORD = "your-app-password"; // TODO: Use Gmail App Password, NOT regular password
+        final String FROM_EMAIL = "venturinachen@gmail.com"; // TODO: Configure your email
+        final String APP_PASSWORD = "surn emra mqyi fmfx"; // TODO: Use Gmail App Password, NOT regular password
         
         // Verify configuration
         if (FROM_EMAIL.equals("your-email@gmail.com") || APP_PASSWORD.equals("your-app-password")) {

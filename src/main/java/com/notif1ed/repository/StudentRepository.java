@@ -91,7 +91,7 @@ public class StudentRepository {
             stmt.setString(4, student.getEmail());
             stmt.setString(5, section);
             stmt.setString(6, guardianName);
-            stmt.setString(7, guardianEmail);
+            // Note: guardian_email parameter ignored as column doesn't exist in database
             
             int rowsAffected = stmt.executeUpdate();
             
@@ -122,8 +122,8 @@ public class StudentRepository {
             stmt.setString(3, student.getEmail());
             stmt.setString(4, section);
             stmt.setString(5, guardianName);
-            stmt.setString(6, guardianEmail);
-            stmt.setString(7, student.getStudentNumber());
+            stmt.setString(6, student.getStudentNumber());
+            // Note: guardian_email parameter ignored as column doesn't exist in database
             
             int rowsAffected = stmt.executeUpdate();
             
