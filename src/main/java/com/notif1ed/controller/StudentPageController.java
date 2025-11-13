@@ -19,6 +19,7 @@ import java.util.Properties;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -82,8 +83,11 @@ public class StudentPageController implements Initializable {
     private Button recordsButton;
     @FXML
     private Button addStudentButton;
+    @FXML
+    private javafx.scene.control.TextField searchField;
     
     private ObservableList<StudentEntry> studentList = FXCollections.observableArrayList();
+    private javafx.collections.transformation.FilteredList<StudentEntry> filteredStudents;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -196,8 +200,38 @@ public class StudentPageController implements Initializable {
             log.debug("Loading students from database");
             studentList.addAll(studentService.getAllStudents());
             
+            // Setup filtered list for search functionality
+            filteredStudents = new FilteredList<>(studentList, p -> true);
+            
+            // Setup search filter if searchField exists
+            if (searchField != null) {
+                searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+                    filteredStudents.setPredicate(student -> {
+                        // If filter text is empty, display all students
+                        if (newValue == null || newValue.isEmpty()) {
+                            return true;
+                        }
+                        
+                        String lowerCaseFilter = newValue.toLowerCase();
+                        
+                        // Search in student number, first name, last name, and email
+                        if (student.getStudentNumber().toLowerCase().contains(lowerCaseFilter)) {
+                            return true;
+                        } else if (student.getFirstName().toLowerCase().contains(lowerCaseFilter)) {
+                            return true;
+                        } else if (student.getLastName().toLowerCase().contains(lowerCaseFilter)) {
+                            return true;
+                        } else if (student.getEmail().toLowerCase().contains(lowerCaseFilter)) {
+                            return true;
+                        }
+                        
+                        return false; // Does not match
+                    });
+                });
+            }
+            
             if (studentTable != null) {
-                studentTable.setItems(studentList);
+                studentTable.setItems(filteredStudents);
             }
             
             log.info("✅ Loaded {} students from database", studentList.size());

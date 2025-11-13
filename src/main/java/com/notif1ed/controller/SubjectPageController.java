@@ -71,6 +71,7 @@ public class SubjectPageController implements Initializable {
     private Button addSubjectButton;
     
     private ObservableList<SubjectEntry> subjectList = FXCollections.observableArrayList();
+    private javafx.collections.transformation.FilteredList<SubjectEntry> filteredSubjects;
 
     /**
      * Initializes the controller class.
@@ -277,8 +278,38 @@ public class SubjectPageController implements Initializable {
                 subjectList.add(entry);
             }
             
+            // Setup filtered list for search functionality
+            filteredSubjects = new javafx.collections.transformation.FilteredList<>(subjectList, p -> true);
+            
+            // Setup search filter if searchField exists
+            if (searchField != null) {
+                searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+                    filteredSubjects.setPredicate(subject -> {
+                        // If filter text is empty, display all subjects
+                        if (newValue == null || newValue.isEmpty()) {
+                            return true;
+                        }
+                        
+                        String lowerCaseFilter = newValue.toLowerCase();
+                        
+                        // Search in subject code, subject name, year level, and section
+                        if (subject.getSubjectCode().toLowerCase().contains(lowerCaseFilter)) {
+                            return true;
+                        } else if (subject.getSubjectName().toLowerCase().contains(lowerCaseFilter)) {
+                            return true;
+                        } else if (String.valueOf(subject.getYearLevel()).contains(lowerCaseFilter)) {
+                            return true;
+                        } else if (subject.getSection() != null && subject.getSection().toLowerCase().contains(lowerCaseFilter)) {
+                            return true;
+                        }
+                        
+                        return false; // Does not match
+                    });
+                });
+            }
+            
             if (subjectTable != null) {
-                subjectTable.setItems(subjectList);
+                subjectTable.setItems(filteredSubjects);
             }
             
             log.info("✅ Loaded {} subjects from database", subjectList.size());

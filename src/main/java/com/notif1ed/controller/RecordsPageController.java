@@ -76,6 +76,7 @@ public class RecordsPageController implements Initializable {
     private javafx.scene.control.DatePicker datePicker;
     
     private ObservableList<RecordEntry> recordsList = FXCollections.observableArrayList();
+    private javafx.collections.transformation.FilteredList<RecordEntry> filteredRecords;
 
     /**
      * Initializes the controller class.
@@ -209,8 +210,40 @@ public class RecordsPageController implements Initializable {
                     recordsList.add(record);
                 }
                 
+                // Setup filtered list for search functionality
+                filteredRecords = new javafx.collections.transformation.FilteredList<>(recordsList, p -> true);
+                
+                // Setup search filter if searchField exists
+                if (searchField != null) {
+                    searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+                        filteredRecords.setPredicate(record -> {
+                            // If filter text is empty, display all records
+                            if (newValue == null || newValue.isEmpty()) {
+                                return true;
+                            }
+                            
+                            String lowerCaseFilter = newValue.toLowerCase();
+                            
+                            // Search in student number, first name, last name, email, and record type
+                            if (record.getStudentNumber().toLowerCase().contains(lowerCaseFilter)) {
+                                return true;
+                            } else if (record.getFirstName().toLowerCase().contains(lowerCaseFilter)) {
+                                return true;
+                            } else if (record.getLastName().toLowerCase().contains(lowerCaseFilter)) {
+                                return true;
+                            } else if (record.getEmail().toLowerCase().contains(lowerCaseFilter)) {
+                                return true;
+                            } else if (record.getRecordType().toLowerCase().contains(lowerCaseFilter)) {
+                                return true;
+                            }
+                            
+                            return false; // Does not match
+                        });
+                    });
+                }
+                
                 if (recordsTable != null) {
-                    recordsTable.setItems(recordsList);
+                    recordsTable.setItems(filteredRecords);
                 }
                 
                 log.info("✅ Loaded {} records from database", recordsList.size());
